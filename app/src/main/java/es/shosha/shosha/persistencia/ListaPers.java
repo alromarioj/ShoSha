@@ -13,22 +13,27 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
+import es.shosha.shosha.dominio.Lista;
 import es.shosha.shosha.dominio.Usuario;
 
 /**
  * Created by Jesús Iráizoz on 02/03/2017.
  */
 
-public class UsuarioPers extends AsyncTask<String, Void, Usuario> {
-    private final static String URL = "http://shosha.jiraizoz.es/getUsuario.php?";
-    private final static String ATRIBUTO = "id=";
-
-    public UsuarioPers() {
+public class ListaPers extends AsyncTask<String,Void,List<Lista>> {
+    private final static String URL = "http://shosha.jiraizoz.es/getListas.php?";
+    private final static String ATRIBUTO = "usuario=";
+    public ListaPers() {
     }
 
     @Override
-    protected Usuario doInBackground(String... params) {
+    protected List<Lista> doInBackground(String... params) {
+        List<Lista> lListas = null;
+
         String data = "";
         Usuario usu = null;
         if (params.length == 1) {
@@ -39,7 +44,7 @@ public class UsuarioPers extends AsyncTask<String, Void, Usuario> {
             }
 
             try {
-                java.net.URL urlObj = new URL(UsuarioPers.URL + UsuarioPers.ATRIBUTO + data);
+                java.net.URL urlObj = new URL(ListaPers.URL + ListaPers.ATRIBUTO + data);
 
                 HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
 
@@ -50,7 +55,7 @@ public class UsuarioPers extends AsyncTask<String, Void, Usuario> {
                 }
 
                 rd.close();
-                usu = jsonParser(res);
+                lListas = jsonParser(res);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -61,23 +66,38 @@ public class UsuarioPers extends AsyncTask<String, Void, Usuario> {
                 e.printStackTrace();
             }
         }
-        return usu;
+
+        return lListas;
     }
 
-    private Usuario jsonParser(String data) {
-        Usuario u = null;
+    private List<Lista> jsonParser(String data) {
+        List<Lista> lListas = new ArrayList<Lista>();
         try {
             JSONObject jso = new JSONObject(data);
-            JSONArray listas = jso.getJSONArray("usuario");
+            JSONArray listas = jso.getJSONArray("listas");
             for (int i = 0; i < listas.length(); i++) {
                 JSONObject o = listas.getJSONObject(i);
 
-                u = new Usuario(o.getString("id"),o.getString("nombre"),o.getString("email"));
+                Lista l = new Lista();
+                l.setId(o.getString("id"));
+                l.setNombre(o.getString("nombre"));
+                // l.setPropietario(o.getString("propietario"));
+
+           /*     UsuarioPers up = new UsuarioPers();
+                up.execute(o.getString("propietario"));
+                Usuario u = up.get();
+
+                l.setPropietario(u);*/
+
+                l.setEstado(o.getString("estado").equals("1"));
+
+                lListas.add(l);
+
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return u;
+        return lListas;
     }
 
     private void lanzadorExcepcion() throws Exception{
