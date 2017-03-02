@@ -17,6 +17,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 
+import es.shosha.shosha.dominio.Lista;
+
 /**
  * Created by Jesús Iráizoz on 28/02/2017.
  */
@@ -41,27 +43,15 @@ public class DataBaseResult extends AsyncTask<Void, Void, Void> {
 
         try {
             URL urlObj = new URL(url);
-            //URLConnection lu = urlObj.openConnection();
 
             HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
 
-            // Send data - if you don't need to send data
-            // ignore this section and just move on to the next one
-
-       /*     System.out.println(" > " + data);
-            lu.setDoOutput(true);
-            OutputStreamWriter wr = new OutputStreamWriter(lu.getOutputStream());
-            wr.write(data);
-            wr.flush();*/
-
-// Get the response
             BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
             String line = "", res = "";
             while ((line = rd.readLine()) != null) {
                 res += line;
             }
 
-            //wr.flush();
             rd.close();
             System.out.println(res);
             jsonParser(res);
@@ -75,13 +65,22 @@ public class DataBaseResult extends AsyncTask<Void, Void, Void> {
         try {
             JSONObject jso = new JSONObject(data);
             JSONArray listas = jso.getJSONArray("listas");
-            for(int i =0 ;i<listas.length();i++){
+            for (int i = 0; i < listas.length(); i++) {
                 JSONObject o = listas.getJSONObject(i);
-              //  System.out.println(o.toString());
+                //  System.out.println(o.toString());
                 System.out.println(o.getString("id"));
                 System.out.println(o.getString("nombre"));
                 System.out.println(o.getString("propietario"));
                 System.out.println(o.getString("estado"));
+
+                Lista l = new Lista();
+                l.setId(o.getString("id"));
+                l.setNombre(o.getString("nombre"));
+               // l.setPropietario(o.getString("propietario"));
+                l.setEstado(o.getString("estado").equals("1"));
+
+                System.out.println(l.toString());
+
             }
         } catch (JSONException e) {
             e.printStackTrace();

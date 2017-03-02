@@ -7,10 +7,10 @@ package es.shosha.shosha.dominio;
 public class Lista {
     private String id;
     private String nombre;
-    private String propietario;
+    private Usuario propietario;
     private boolean estado;
 
-    public Lista(String id, String nombre, String propietario, boolean estado) {
+    public Lista(String id, String nombre, Usuario propietario, boolean estado) {
         this.id = id;
         this.nombre = nombre;
         this.propietario = propietario;
@@ -18,6 +18,16 @@ public class Lista {
     }
 
     public Lista() {
+    }
+
+    @Override
+    public String toString() {
+        return "[id = " + this.getId() + ", nombre = " + this.getNombre() + ", propietario = " + this.getPropietario() + ", estado = " + (this.isEstado() ? "activa" : "inactiva") + "]";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
     }
 
     public String getId() {
@@ -36,11 +46,11 @@ public class Lista {
         this.nombre = nombre;
     }
 
-    public String getPropietario() {
+    public Usuario getPropietario() {
         return propietario;
     }
 
-    public void setPropietario(String propietario) {
+    public void setPropietario(Usuario propietario) {
         this.propietario = propietario;
     }
 
