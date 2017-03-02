@@ -16,11 +16,14 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@android:color/holo_blue_light"
-            app:popupTheme="@style/Base.AlertDialog.AppCompat.Light" />
+            android:background="@color/colorPrimary"
+            app:popupTheme="@style/Base.AlertDialog.AppCompat.Light"
+            app:title="ShoSha"
+            android:textAlignment="center" />
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_inicio" />
+    <include layout="@layout/content_inicio"
+      />
 
 </android.support.design.widget.CoordinatorLayout>
