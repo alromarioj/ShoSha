@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ListasActivas">
 
-    <item android:id="@+id/anadir"
-        android:title="Añadir lista"
+    <item
+        android:id="@+id/anadir"
+        android:icon="@android:drawable/ic_input_add"
         android:orderInCategory="100"
-        android:showAsAction="ifRoom"
-        android:icon="@android:drawable/ic_input_add" />
+        android:title="@string/nueva_lista"
+        app:showAsAction="ifRoom" />
 
 </menu>

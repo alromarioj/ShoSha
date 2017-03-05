@@ -17,15 +17,16 @@
             android:id="@+id/toolbar1"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@android:color/white"
-            app:popupTheme="@style/Base.AlertDialog.AppCompat.Light"
             android:layout_weight="1"
-            app:title="Listas activas" />
+            android:background="@android:color/white"
+            android:gravity="center"
+            app:popupTheme="@style/Base.AlertDialog.AppCompat.Light"
+            app:title="@string/listas" />
     </android.support.design.widget.AppBarLayout>
 
 
     <TextView
-        android:text="Listas activas"
+        android:text="@string/listas"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:id="@+id/textView" />

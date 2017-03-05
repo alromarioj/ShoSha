@@ -7,6 +7,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -39,10 +40,20 @@ public class ListasActivas extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //Mostrar menú para las listas activas?
+        getMenuInflater().inflate(R.menu.menu_listas_activas,menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
             case android.R.id.home:
                 onBackPressed();
+                return true;
+            case R.id.anadir:
+                //Muestra el menú para crear una lista
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
