@@ -1,5 +1,7 @@
 package es.shosha.shosha.persistencia;
 
+import android.content.Context;
+import android.database.Cursor;
 import android.os.AsyncTask;
 
 import org.json.JSONArray;
@@ -15,6 +17,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 import es.shosha.shosha.dominio.Usuario;
+import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 /**
  * Created by Jesús Iráizoz on 02/03/2017.
@@ -24,7 +27,10 @@ public class UsuarioPers extends AsyncTask<String, Void, Usuario> {
     private final static String URL = "http://shosha.jiraizoz.es/getUsuario.php?";
     private final static String ATRIBUTO = "id=";
 
-    public UsuarioPers() {
+    private Context contexto;
+
+    public UsuarioPers(Context c) {
+        this.contexto = c;
     }
 
     @Override
@@ -72,15 +78,31 @@ public class UsuarioPers extends AsyncTask<String, Void, Usuario> {
             for (int i = 0; i < listas.length(); i++) {
                 JSONObject o = listas.getJSONObject(i);
 
-                u = new Usuario(o.getString("id"),o.getString("nombre"),o.getString("email"));
+                u = new Usuario(o.getString("id"), o.getString("nombre"), o.getString("email"));
+
+                insertarBD(u);
+
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return u;
+
+
     }
 
-    private void lanzadorExcepcion() throws Exception{
+    private void lanzadorExcepcion() throws Exception {
         throw new Exception("Se ha enviado más de un parámetro en: UsuarioPers");
     }
+
+    private void insertarBD(Usuario u) {
+        AdaptadorBD adap = new AdaptadorBD(this.contexto);
+        adap.open();
+        try {
+            adap.insertarUsuario(u.getId(), u.getNombre(), u.getEmail());
+        } finally {
+            adap.close();
+        }
+    }
+
 }

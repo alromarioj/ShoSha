@@ -9,8 +9,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -24,9 +22,12 @@ public class AdaptadorBD {
     private static final int VERSION_BD = 1;
 
     private static final String TB_USUARIO = "usuario";
-    private static final String USR_ID = "id";
-    private static final String USR_NOMBRE = "nombre";
+    private static final String TB_LISTA = "lista";
+    private static final String ID = "id";
+    private static final String NOMBRE = "nombre";
     private static final String USR_EMAIL = "email";
+    private static final String LST_PROP = "propietario";
+    private static final String LST_ESTADO = "estado";
 
     private static final String ID_LOG = "USO DE BD";
 
@@ -97,13 +98,41 @@ public class AdaptadorBD {
         auxBD.close();
     }
 
-    public long insertarFila(String id, String nombre, String email) {
-        ContentValues valores = new ContentValues();
-        valores.put(USR_ID, id);
-        valores.put(USR_NOMBRE, nombre);
-        valores.put(USR_EMAIL, email);
+    public long insertarUsuario(String id, String nombre, String email) {
+        bdatos.beginTransaction();
+        long res;
+        try {
+            ContentValues valores = new ContentValues();
+            valores.put(ID, id);
+            valores.put(NOMBRE, nombre);
+            valores.put(USR_EMAIL, email);
+            res = bdatos.insert(TB_USUARIO, null, valores);
 
-        return bdatos.insert(TB_USUARIO, null, valores);
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+
+        return res;
+    }
+
+    public long insertarLista(String id, String nombre, String propietario, String estado) {
+        bdatos.beginTransaction();
+        long res;
+        try {
+            ContentValues valores = new ContentValues();
+            valores.put(ID, id);
+            valores.put(NOMBRE, nombre);
+            valores.put(LST_PROP, propietario);
+            valores.put(LST_ESTADO, estado);
+            res = bdatos.insert(TB_LISTA, null, valores);
+
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+
+        return res;
     }
 
     public Cursor leerTodos() {

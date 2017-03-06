@@ -1,5 +1,6 @@
 package es.shosha.shosha.persistencia;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 import org.json.JSONArray;
@@ -15,19 +16,22 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import es.shosha.shosha.dominio.Lista;
 import es.shosha.shosha.dominio.Usuario;
+import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 /**
  * Created by Jesús Iráizoz on 02/03/2017.
  */
 
-public class ListaPers extends AsyncTask<String,Void,List<Lista>> {
+public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
     private final static String URL = "http://shosha.jiraizoz.es/getListas.php?";
     private final static String ATRIBUTO = "usuario=";
-    public ListaPers() {
+    private Context contexto;
+
+    public ListaPers(Context c) {
+        this.contexto = c;
     }
 
     @Override
@@ -100,7 +104,17 @@ public class ListaPers extends AsyncTask<String,Void,List<Lista>> {
         return lListas;
     }
 
-    private void lanzadorExcepcion() throws Exception{
+    private void lanzadorExcepcion() throws Exception {
         throw new Exception("Se ha enviado más de un parámetro en: UsuarioPers");
+    }
+
+    private void insertarBD(Lista l) {
+        AdaptadorBD adap = new AdaptadorBD(this.contexto);
+        adap.open();
+        try {
+            adap.insertarLista(l.getId(), l.getNombre(), l.getPropietario().getId(), l.isEstado() ? "1" : "0");
+        } finally {
+            adap.close();
+        }
     }
 }

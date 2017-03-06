@@ -35,27 +35,6 @@ public class Inicio extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        AdaptadorBD adap = new AdaptadorBD(getBaseContext());
-        adap.open();
-        adap.insertarFila("u1", "nobmre del a persiana", "emailpersiana@mail.com");
-        try {
-            Cursor cur = adap.leerTodos();
-
-
-
-            if (cur.moveToFirst() == false) {
-                System.out.println("No hay na");
-            } else {
-                System.out.println("Hay algo");
-                System.out.println(cur.getString(0));
-                System.out.println(cur.getString(1));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            adap.close();
-        }
     }
 
     @Override
