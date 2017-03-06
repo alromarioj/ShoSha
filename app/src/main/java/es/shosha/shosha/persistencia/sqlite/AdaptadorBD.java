@@ -23,11 +23,16 @@ public class AdaptadorBD {
 
     private static final String TB_USUARIO = "usuario";
     private static final String TB_LISTA = "lista";
+    private static final String TB_ITEM = "item";
     private static final String ID = "id";
     private static final String NOMBRE = "nombre";
     private static final String USR_EMAIL = "email";
     private static final String LST_PROP = "propietario";
     private static final String LST_ESTADO = "estado";
+    private static final String ITM_PRECIO = "precio";
+    private static final String IDLISTA = "idLista";
+    private static final String PPA_IDUSR = "idUsuario";
+    private static final String PPA_ACTIVO = "activo";
 
     private static final String ID_LOG = "USO DE BD";
 
@@ -65,7 +70,7 @@ public class AdaptadorBD {
                 BufferedReader br = new BufferedReader(new InputStreamReader(is));
                 String leido = "", sql = "";
                 while ((leido = br.readLine()) != null) {
-              //      System.out.println(" > " + leido);
+                    //      System.out.println(" > " + leido);
                     if (!leido.endsWith(";")) {
                         sql += leido;
                     } else {
@@ -126,6 +131,44 @@ public class AdaptadorBD {
             valores.put(LST_PROP, propietario);
             valores.put(LST_ESTADO, estado);
             res = bdatos.insert(TB_LISTA, null, valores);
+
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+
+        return res;
+    }
+
+    public long insertarItem(String id, String nombre, double precio, String idLista) {
+        bdatos.beginTransaction();
+        long res;
+        try {
+            ContentValues valores = new ContentValues();
+            valores.put(ID, id);
+            valores.put(NOMBRE, nombre);
+            valores.put(ITM_PRECIO, precio);
+            valores.put(IDLISTA, idLista);
+            res = bdatos.insert(TB_ITEM, null, valores);
+
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+
+        return res;
+    }
+
+    public long insertarParticipa(String idUsr, String idLista, boolean activo) {
+        bdatos.beginTransaction();
+        long res;
+        try {
+            ContentValues valores = new ContentValues();
+
+            valores.put(IDLISTA, idLista);
+            valores.put(PPA_IDUSR, idUsr);
+            valores.put(PPA_ACTIVO, activo ? 1 : 0);
+            res = bdatos.insert(TB_ITEM, null, valores);
 
             bdatos.setTransactionSuccessful();
         } finally {
