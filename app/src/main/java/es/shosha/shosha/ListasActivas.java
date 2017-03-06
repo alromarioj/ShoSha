@@ -2,29 +2,32 @@ package es.shosha.shosha;
 
 
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
-
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import es.shosha.shosha.AdaptadorLista.*;
+import java.util.ArrayList;
 
 public class ListasActivas extends AppCompatActivity {
 
     private ListView list;
-    private String[] listas={"Navidad", "Casa", "Cena 28/02/2017"};
+    //private String[] listas={"Navidad", "Casa", "Cena 28/02/2017"};
+    ArrayList<Lista> listas=new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        listas.add(new Lista("Navidad", "8 participantes"));
+        listas.add(new Lista("Casa", "4 participantes"));
+        listas.add(new Lista("Cena 28/02/2017", "10 participantes"));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listas_activas);
         list=(ListView)findViewById(R.id.listasActivas);
-        ArrayAdapter<String> adaptador=new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,listas);
+        //ArrayAdapter<String> adaptador=new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,listas);
+        AdapterLista adaptador=new AdapterLista(this,listas);
         list.setAdapter(adaptador);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
