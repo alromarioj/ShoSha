@@ -1,5 +1,7 @@
 package es.shosha.shosha;
 
+import android.database.Cursor;
+import android.database.SQLException;
 import android.os.Bundle;
 
 import android.view.View;
@@ -11,6 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.content.Intent;
 import android.view.MenuItem;
+
+import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 public class Inicio extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -31,6 +35,27 @@ public class Inicio extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        AdaptadorBD adap = new AdaptadorBD(getBaseContext());
+        adap.open();
+        adap.insertarFila("u1", "nobmre del a persiana", "emailpersiana@mail.com");
+        try {
+            Cursor cur = adap.leerTodos();
+
+
+
+            if (cur.moveToFirst() == false) {
+                System.out.println("No hay na");
+            } else {
+                System.out.println("Hay algo");
+                System.out.println(cur.getString(0));
+                System.out.println(cur.getString(1));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            adap.close();
+        }
     }
 
     @Override
@@ -76,9 +101,10 @@ public class Inicio extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-    public void mostrarListasActivas(View view){
+
+    public void mostrarListasActivas(View view) {
         //Ejecuta la actividad de listas activas
-        Intent i=new Intent(this, ListasActivas.class);
+        Intent i = new Intent(this, ListasActivas.class);
         startActivity(i);
     }
 }

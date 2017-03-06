@@ -23,12 +23,12 @@ public class ArchivoBD {
 
     public ArchivoBD(Context c) {
         System.out.println("            > ");
-        String fDestino = "/data/data/" + c.getPackageName() + "/databases/ShoSha.db";
+        String fDestino = "/data/data/" + c.getPackageName() + "/databases/ShoSha";
         File f = new File(fDestino);
         if (!f.exists()) {
             InputStream is;
             try {
-                is = c.getAssets().open("ShoSha.db");
+                is = c.getAssets().open("ShoSha");
                 FileOutputStream fos = new FileOutputStream(fDestino);
 
                 copiarBD(is, fos);
