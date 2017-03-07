@@ -59,12 +59,7 @@ public class AdaptadorBD {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-
-            //new ArchivoBD(this.cntx);
-
-
             try {
-                //FileInputStream fis = new FileInputStream(new File("D:\\Dropbox\\UNI\\16-17\\IM\\ShoSha\\app\\src\\main\\assets\\ShoSha.sql"));
                 InputStream is = cntx.getAssets().open("ShoSha.sql");
 
                 BufferedReader br = new BufferedReader(new InputStreamReader(is));
