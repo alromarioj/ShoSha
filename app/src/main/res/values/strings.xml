@@ -1,7 +1,13 @@
 <resources>
     <string name="app_name">ShoSha</string>
-    <string name="title_activity_inicio">ShoSha</string>
-
+    <string name="title_activity_inicio">Shosha</string>
+    <string name="unirse">Unirse a una Lista</string>
+    <string name="listas">Listas Activas</string>
+    <string name="nueva_lista">Nueva Lista</string>
+    <string name="buscar_receta">Buscar Receta</string>
+    <string name="perfil">Mi perfil</string>
+    <string name="config">Configuración</string>
+    <string name="ayuda">Ayuda</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 </resources>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/background_light">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="8 participantes"
+        android:id="@+id/numParticipantes"
+        android:layout_below="@+id/tituloLista"
+        android:layout_toRightOf="@+id/iconoLista"
+        android:layout_toEndOf="@+id/iconoLista" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Navidad"
+        android:id="@+id/tituloLista"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/iconoLista"
+        android:layout_toEndOf="@+id/iconoLista" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:id="@+id/iconoLista"
+        android:cropToPadding="false"
+        android:src="@mipmap/carrito"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:maxHeight="35dp"
+        android:maxWidth="74dp"
+        android:adjustViewBounds="true" />
+
+</RelativeLayout>
