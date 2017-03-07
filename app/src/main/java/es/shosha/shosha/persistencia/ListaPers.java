@@ -1,7 +1,6 @@
 package es.shosha.shosha.persistencia;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.os.AsyncTask;
 
 import org.json.JSONArray;
@@ -15,7 +14,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
+import es.shosha.shosha.dominio.Lista;
 import es.shosha.shosha.dominio.Usuario;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
@@ -23,18 +25,19 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
  * Created by Jesús Iráizoz on 02/03/2017.
  */
 
-public class UsuarioPers extends AsyncTask<String, Void, Usuario> {
-    private final static String URL = "http://shosha.jiraizoz.es/getUsuario.php?";
-    private final static String ATRIBUTO = "id=";
-
+public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
+    private final static String URL = "http://shosha.jiraizoz.es/getListas.php?";
+    private final static String ATRIBUTO = "usuario=";
     private Context contexto;
 
-    public UsuarioPers(Context c) {
+    public ListaPers(Context c) {
         this.contexto = c;
     }
 
     @Override
-    protected Usuario doInBackground(String... params) {
+    protected List<Lista> doInBackground(String... params) {
+        List<Lista> lListas = null;
+
         String data = "";
         Usuario usu = null;
         if (params.length == 1) {
@@ -45,7 +48,7 @@ public class UsuarioPers extends AsyncTask<String, Void, Usuario> {
             }
 
             try {
-                java.net.URL urlObj = new URL(UsuarioPers.URL + UsuarioPers.ATRIBUTO + data);
+                java.net.URL urlObj = new URL(ListaPers.URL + ListaPers.ATRIBUTO + data);
 
                 HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
 
@@ -56,7 +59,7 @@ public class UsuarioPers extends AsyncTask<String, Void, Usuario> {
                 }
 
                 rd.close();
-                usu = jsonParser(res);
+                lListas = jsonParser(res);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -67,42 +70,51 @@ public class UsuarioPers extends AsyncTask<String, Void, Usuario> {
                 e.printStackTrace();
             }
         }
-        return usu;
+
+        return lListas;
     }
 
-    private Usuario jsonParser(String data) {
-        Usuario u = null;
+    private List<Lista> jsonParser(String data) {
+        List<Lista> lListas = new ArrayList<Lista>();
         try {
             JSONObject jso = new JSONObject(data);
-            JSONArray listas = jso.getJSONArray("usuario");
+            JSONArray listas = jso.getJSONArray("listas");
             for (int i = 0; i < listas.length(); i++) {
                 JSONObject o = listas.getJSONObject(i);
 
-                u = new Usuario(o.getString("id"), o.getString("nombre"), o.getString("email"));
+                Lista l = new Lista();
+                l.setId(o.getString("id"));
+                l.setNombre(o.getString("nombre"));
+                // l.setPropietario(o.getString("propietario"));
 
-                insertarBD(u);
+           /*     UsuarioPers up = new UsuarioPers();
+                up.execute(o.getString("propietario"));
+                Usuario u = up.get();
+
+                l.setPropietario(u);*/
+
+                l.setEstado(o.getString("estado").equals("1"));
+
+                lListas.add(l);
 
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return u;
-
-
+        return lListas;
     }
 
     private void lanzadorExcepcion() throws Exception {
         throw new Exception("Se ha enviado más de un parámetro en: UsuarioPers");
     }
 
-    private void insertarBD(Usuario u) {
+    private void insertarBD(Lista l) {
         AdaptadorBD adap = new AdaptadorBD(this.contexto);
         adap.open();
         try {
-            adap.insertarUsuario(u.getId(), u.getNombre(), u.getEmail());
+            adap.insertarLista(l.getId(), l.getNombre(), l.getPropietario().getId(), l.isEstado() ? "1" : "0");
         } finally {
             adap.close();
         }
     }
-
 }

@@ -1,5 +1,7 @@
 package es.shosha.shosha;
 
+import android.database.Cursor;
+import android.database.SQLException;
 import android.os.Bundle;
 
 import android.util.Log;
@@ -12,6 +14,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.content.Intent;
 import android.view.MenuItem;
+
+import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 public class Inicio extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -62,9 +66,10 @@ public class Inicio extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-    public void mostrarListasActivas(View view){
+
+    public void mostrarListasActivas(View view) {
         //Ejecuta la actividad de listas activas
-        Intent i=new Intent(this, ListasActivas.class);
+        Intent i = new Intent(this, ListasActivas.class);
         startActivity(i);
     }
 }
