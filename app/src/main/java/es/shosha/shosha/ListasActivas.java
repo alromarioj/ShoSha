@@ -1,6 +1,7 @@
 package es.shosha.shosha;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -57,6 +58,8 @@ public class ListasActivas extends AppCompatActivity {
                 return true;
             case R.id.anadir:
                 //Muestra el menú para crear una lista
+                Intent i = new Intent(this, AnadirLista.class);
+                startActivity(i);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
