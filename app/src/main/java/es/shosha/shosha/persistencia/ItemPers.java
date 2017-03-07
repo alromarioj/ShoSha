@@ -17,25 +17,27 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.shosha.shosha.dominio.Lista;
+import es.shosha.shosha.dominio.Item;
 import es.shosha.shosha.dominio.Usuario;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 /**
- * Created by Jesús Iráizoz on 02/03/2017.
+ * Created by Jesús Iráizoz on 07/03/2017.
  */
-public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
-    private final static String URL = "http://shosha.jiraizoz.es/getListas.php?";
-    private final static String ATRIBUTO = "usuario=";
+
+public class ItemPers extends AsyncTask<String, Void, List<Item>> {
+    private final static String URL = "http://shosha.jiraizoz.es/getItems.php?";
+    private final static String ATRIBUTO = "lista=";
+
     private Context contexto;
 
-    public ListaPers(Context c) {
+    public ItemPers(Context c) {
         this.contexto = c;
     }
 
     @Override
-    protected List<Lista> doInBackground(String... params) {
-        List<Lista> lListas = null;
+    protected List<Item> doInBackground(String... params) {
+        List<Item> lItems = null;
 
         String data = "";
         Usuario usu = null;
@@ -47,7 +49,7 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
             }
 
             try {
-                java.net.URL urlObj = new URL(ListaPers.URL + ListaPers.ATRIBUTO + data);
+                java.net.URL urlObj = new URL(ItemPers.URL + ItemPers.ATRIBUTO + data);
 
                 HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
 
@@ -58,7 +60,7 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
                 }
 
                 rd.close();
-                lListas = jsonParser(res);
+                lItems = jsonParser(res);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -70,41 +72,40 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
             }
         }
 
-        return lListas;
+        return lItems;
     }
 
-    private List<Lista> jsonParser(String data) {
-        List<Lista> lListas = new ArrayList<Lista>();
+    private void lanzadorExcepcion() throws Exception {
+        throw new Exception("Se ha enviado más de un parámetro en: ItemPers");
+    }
+
+    private List<Item> jsonParser(String data) {
+        List<Item> lItems = new ArrayList<Item>();
         try {
             JSONObject jso = new JSONObject(data);
-            JSONArray listas = jso.getJSONArray("listas");
+            JSONArray listas = jso.getJSONArray("item");
             for (int i = 0; i < listas.length(); i++) {
                 JSONObject o = listas.getJSONObject(i);
 
-                Lista l = new Lista();
-                l.setId(o.getString("id"));
-                l.setNombre(o.getString("nombre"));
+                Item itm = new Item();
+                itm.setId(o.getString("id"));
+                itm.setNombre(o.getString("nombre"));
+                itm.setPrecio(o.getDouble("precio"));
 
-                l.setEstado(o.getString("estado").equals("1"));
-
-                lListas.add(l);
+                lItems.add(itm);
 
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return lListas;
+        return lItems;
     }
 
-    private void lanzadorExcepcion() throws Exception {
-        throw new Exception("Se ha enviado más de un parámetro en: ListaPers");
-    }
-
-    private void insertarBD(Lista l) {
+    private void insertarBD(Item i, String idLista) {
         AdaptadorBD adap = new AdaptadorBD(this.contexto);
         adap.open();
         try {
-            adap.insertarLista(l.getId(), l.getNombre(), l.getPropietario().getId(), l.isEstado() ? "1" : "0");
+            adap.insertarItem(i.getId(), i.getNombre(), i.getPrecio(), idLista);
         } finally {
             adap.close();
         }
