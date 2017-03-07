@@ -33,7 +33,7 @@
         android:layout_marginTop="2dp"
         android:id="@+id/iconoLista"
         android:cropToPadding="false"
-        android:src="@mipmap/carrito"
+        android:src="@mipmap/nueva_lista"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
