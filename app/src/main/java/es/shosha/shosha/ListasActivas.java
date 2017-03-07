@@ -9,8 +9,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import es.shosha.shosha.AdaptadorLista.*;
 import java.util.ArrayList;
+
+import es.shosha.shosha.AdaptadorLista.AdapterLista;
+import es.shosha.shosha.AdaptadorLista.Lista;
 
 public class ListasActivas extends AppCompatActivity {
 
@@ -20,6 +22,9 @@ public class ListasActivas extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // obtener listas del usuario
+
+        // para cada una, la metemos al array listas
         listas.add(new Lista("Navidad", "8 participantes"));
         listas.add(new Lista("Casa", "4 participantes"));
         listas.add(new Lista("Cena 28/02/2017", "10 participantes"));
