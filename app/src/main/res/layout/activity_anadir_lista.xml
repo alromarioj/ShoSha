@@ -25,24 +25,25 @@
 
         <Button
             android:id="@+id/bt_nuevaLista"
+            style="@android:style/Widget.Button"
             android:layout_width="150dp"
-            android:layout_height="200dp"
-            android:layout_margin="10dp"
+            android:layout_height="170dp"
 
+            android:layout_margin="10dp"
             android:background="@android:color/background_light"
             android:drawableTop="@mipmap/ic_camera"
             android:paddingTop="15dp"
-            android:text="Escaneo OCR"
-            style="@android:style/Widget.Button"
+            android:text="@string/OCR"
             android:textSize="12sp"></Button>
 
         <TextView
-            android:text="Escanea una lista con la cámara"
-            android:layout_width="150dp"
-            android:layout_height="200dp"
-            android:layout_margin="10dp"
             android:id="@+id/textView2"
+            android:layout_width="100dp"
+            android:layout_height="170dp"
+            android:layout_margin="10dp"
             android:gravity="center"
+            android:text="@string/lista_camara"
+            android:textColor="@color/black"
             android:textSize="14sp" />
 
     </TableRow>
@@ -54,24 +55,25 @@
 
         <Button
             android:id="@+id/bt_unirseLista"
+            style="@android:style/Widget.Button"
             android:layout_width="150dp"
-            android:layout_height="200dp"
+            android:layout_height="170dp"
             android:layout_margin="10dp"
             android:background="@android:color/background_light"
             android:drawableTop="@mipmap/ic_manual"
             android:paddingTop="15dp"
-            android:text="Manual"
-            style="@android:style/Widget.Button"
+            android:text="@string/manual"
             android:textSize="12sp" />
 
         <TextView
-            android:text="Crea tú mismo la lista desde cero"
-            android:layout_width="150dp"
-            android:layout_height="200dp"
-            android:layout_margin="10dp"
             android:id="@+id/textView3"
-            android:textSize="14dp"
-            android:gravity="center" />
+            android:layout_width="100dp"
+            android:layout_height="170dp"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:text="@string/crea_lista_cero"
+            android:textColor="@color/black"
+            android:textSize="14dp" />
 
     </TableRow>
 </TableLayout>

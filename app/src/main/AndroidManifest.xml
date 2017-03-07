@@ -23,8 +23,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ListasActivas"></activity>
-        <activity android:name=".AnadirLista"></activity>
+        <activity android:name=".ListasActivas" />
+        <activity android:name=".AnadirLista" />
     </application>
 
 </manifest>
