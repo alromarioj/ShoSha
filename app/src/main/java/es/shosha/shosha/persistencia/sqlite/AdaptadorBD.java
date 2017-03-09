@@ -191,6 +191,7 @@ public class AdaptadorBD {
         List<Lista> aux = new ArrayList<Lista>();
         do {
             l = new Lista(c.getString(0), c.getString(2), this.obtenerUsuario(idUsuario), c.getString(4).equals("1"));
+            l.setListaItems(this.obtenerItems(l.getId()));
             aux.add(l);
             c.moveToNext();
         } while (!c.isLast());
@@ -203,6 +204,7 @@ public class AdaptadorBD {
         List<Lista> aux = new ArrayList<Lista>();
         do {
             l = new Lista(c.getString(0), c.getString(2), u, c.getString(4).equals("1"));
+            l.setListaItems(this.obtenerItems(l.getId()));
             aux.add(l);
             c.moveToNext();
         } while (!c.isLast());
