@@ -9,6 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.graphics.drawable.Drawable;
+import es.shosha.shosha.dominio.Lista;
 
 import java.util.ArrayList;
 
@@ -63,11 +64,11 @@ public class AdapterLista extends BaseAdapter {
         Lista dir = items.get(position);
 
         TextView titulo = (TextView) v.findViewById(R.id.tituloLista);
-        titulo.setText(dir.getTitulo());
+        titulo.setText(dir.getNombre());
 
         TextView participantes = (TextView) v.findViewById(R.id.numParticipantes);
         participantes.setText(dir.getNumPartic());
-        Drawable im=dir.getImagen();
+        Drawable im=null;
         if(im!=null){
             ImageView imagen = (ImageView) v.findViewById(R.id.iconoLista);
             imagen.setImageDrawable(im);

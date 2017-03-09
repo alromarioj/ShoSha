@@ -25,6 +25,7 @@
         </activity>
         <activity android:name=".ListasActivas" />
         <activity android:name=".AnadirLista" />
+        <activity android:name=".ListaProductos"></activity>
     </application>
 
 </manifest>

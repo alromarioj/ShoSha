@@ -1,18 +1,42 @@
 package es.shosha.shosha.dominio;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Jesús Iráizoz on 28/02/2017.
  */
-
-public class Lista {
+@SuppressWarnings("serial")
+public class Lista implements Serializable {
     private String id;
     private String nombre;
     private Usuario propietario;
     private boolean estado;
     private List<Item> items;
+    private String numPartic;
+
+    public Lista(String titulo, String numPartic) {
+        super();
+        this.nombre = titulo;
+        this.numPartic = numPartic;
+    }
+
+    public List<Item> getItems() {
+        return items;
+    }
+
+    public void setItems(List<Item> items) {
+        this.items = items;
+    }
+
+    public String getNumPartic() {
+        return numPartic;
+    }
+
+    public void setNumPartic(String numPartic) {
+        this.numPartic = numPartic;
+    }
 
     public Lista(String id, String nombre, Usuario propietario, boolean estado) {
         this.id = id;
