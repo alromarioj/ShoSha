@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import es.shosha.shosha.dominio.Item;
 import es.shosha.shosha.dominio.Lista;
 import es.shosha.shosha.dominio.Usuario;
 
@@ -189,7 +190,7 @@ public class AdaptadorBD {
         Lista l = null;
         List<Lista> aux = new ArrayList<Lista>();
         do {
-            l = new Lista(c.getString(0), c.getString(2), null, c.getString(4).equals("1"));
+            l = new Lista(c.getString(0), c.getString(2), this.obtenerUsuario(idUsuario), c.getString(4).equals("1"));
             aux.add(l);
             c.moveToNext();
         } while (!c.isLast());
@@ -203,6 +204,30 @@ public class AdaptadorBD {
         do {
             l = new Lista(c.getString(0), c.getString(2), u, c.getString(4).equals("1"));
             aux.add(l);
+            c.moveToNext();
+        } while (!c.isLast());
+        return aux;
+    }
+
+    public Usuario obtenerUsuario(String id){
+        Cursor c = bdatos.query(false, TB_USUARIO, null, "id=" + id, null, null, null, null, null);
+        Usuario u = null;
+
+        do {
+            u = new Usuario(c.getString(0),c.getString(1),c.getString(3));
+            c.moveToNext();
+        } while (!c.isLast());
+        return u;
+    }
+
+    public List<Item> obtenerItems(String idLista){
+        Cursor c = bdatos.query(false, TB_ITEM, null, "idLista=" + idLista, null, null, null, null, null);
+        Item i = null;
+        List<Item> aux = new ArrayList<Item>();
+
+        do {
+            i = new Item(c.getString(0),c.getString(1),c.getDouble(2));
+            aux.add(i);
             c.moveToNext();
         } while (!c.isLast());
         return aux;
