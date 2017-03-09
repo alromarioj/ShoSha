@@ -30,7 +30,7 @@ public class ListasActivas extends AppCompatActivity {
 
         AdaptadorBD abd = new AdaptadorBD(getBaseContext());
         abd.open();
-        aux = abd.obtenerListas("u1");
+        aux = abd.obtenerListas("u3");
         abd.close();
 
 

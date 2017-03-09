@@ -34,44 +34,6 @@ public class ListaPers extends AsyncTask<String, Void, Void> {
     }
 
 
-    private void jsonParser(String data) {
-        List<Lista> lListas = new ArrayList<Lista>();
-        try {
-            JSONObject jso = new JSONObject(data);
-            JSONArray listas = jso.getJSONArray("listas");
-            for (int i = 0; i < listas.length(); i++) {
-                JSONObject o = listas.getJSONObject(i);
-
-                Lista l = new Lista();
-                l.setId(o.getString("id"));
-                l.setNombre(o.getString("nombre"));
-
-                l.setEstado(o.getString("estado").equals("1"));
-
-                insertarBD(l);
-
-                //lListas.add(l);
-
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void lanzadorExcepcion() throws Exception {
-        throw new Exception("Se ha enviado más de un parámetro en: ListaPers");
-    }
-
-    private void insertarBD(Lista l) {
-        AdaptadorBD adap = new AdaptadorBD(this.contexto);
-        adap.open();
-        try {
-            adap.insertarLista(l.getId(), l.getNombre(), l.getPropietario().getId(), l.isEstado() ? "1" : "0");
-        } finally {
-            adap.close();
-        }
-    }
-
     @Override
     protected Void doInBackground(String... params) {
         List<Lista> lListas = null;
@@ -110,4 +72,43 @@ public class ListaPers extends AsyncTask<String, Void, Void> {
         }
         return null;
     }
+
+    private void jsonParser(String data) {
+        List<Lista> lListas = new ArrayList<Lista>();
+        try {
+            JSONObject jso = new JSONObject(data);
+            JSONArray listas = jso.getJSONArray("listas");
+            for (int i = 0; i < listas.length(); i++) {
+                JSONObject o = listas.getJSONObject(i);
+
+                Lista l = new Lista();
+                l.setId(o.getString("id"));
+                l.setNombre(o.getString("nombre"));
+
+                l.setEstado(o.getString("estado").equals("1"));
+
+                insertarBD(l,o.getString("propietario"));
+
+                //lListas.add(l);
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void lanzadorExcepcion() throws Exception {
+        throw new Exception("Se ha enviado más de un parámetro en: ListaPers");
+    }
+
+    private void insertarBD(Lista l, String idProp) {
+        AdaptadorBD adap = new AdaptadorBD(this.contexto);
+        adap.open();
+        try {
+            adap.insertarLista(l.getId(), l.getNombre(), idProp, l.isEstado() ? "1" : "0");
+        } finally {
+            adap.close();
+        }
+    }
+
 }
