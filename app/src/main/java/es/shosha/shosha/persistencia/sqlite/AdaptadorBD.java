@@ -29,6 +29,7 @@ public class AdaptadorBD {
 
     private static final String TB_USUARIO = "usuario";
     private static final String TB_LISTA = "lista";
+    private static final String TB_PARTICIPA = "participa";
     private static final String TB_ITEM = "item";
     private static final String ID = "id";
     private static final String NOMBRE = "nombre";
@@ -186,14 +187,29 @@ public class AdaptadorBD {
 
 
     public List<Lista> obtenerListas(String idUsuario) {
+        /*List<Lista> x = new ArrayList<Lista>();
+        List<Usuario> y = new ArrayList<Usuario>();
+        y.add(new Usuario("1","1","1"));
+        y.add(new Usuario("2","2","2"));
+        x.add(new Lista("1","1",new Usuario("1","1","1"),true,y,null));
+        return x;*/
         Cursor c = bdatos.query(false, TB_LISTA, null, "propietario='" + idUsuario + "'", null, null, null, null, null);
+        Cursor c2 = null;
         Lista l = null;
         List<Lista> aux = new ArrayList<Lista>();
+        List<Usuario> participantes;
         while (c.moveToNext()) {
-            l = new Lista(c.getString(0), c.getString(2), this.obtenerUsuario(idUsuario), c.getString(4).equals("1"));
+            c2 = bdatos.query(false, TB_PARTICIPA, null, "idLista='" + c.getString(0) + "'", null, null, null, null, null);
+            participantes = new ArrayList<Usuario>();
+            while(c2.moveToNext()){
+                participantes.add(this.obtenerUsuario(c.getString(1)));
+            }
+            c2.close();
+            l = new Lista(c.getString(0), c.getString(2), this.obtenerUsuario(idUsuario), c.getString(4).equals("1"), participantes,null);
             l.setListaItems(this.obtenerItems(l.getId()));
             aux.add(l);
         }
+        c.close();
         return aux;
     }
 

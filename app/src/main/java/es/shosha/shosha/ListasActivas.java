@@ -1,6 +1,7 @@
 package es.shosha.shosha;
 
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -9,42 +10,53 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import es.shosha.shosha.AdaptadorLista.AdapterLista;
 import es.shosha.shosha.dominio.Lista;
+import es.shosha.shosha.persistencia.ItemPers;
+import es.shosha.shosha.persistencia.ListaPers;
+import es.shosha.shosha.persistencia.UsuarioPers;
+import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 public class ListasActivas extends AppCompatActivity {
 
     private ListView list;
     //private String[] listas={"Navidad", "Casa", "Cena 28/02/2017"};
-    ArrayList<Lista> listas=new ArrayList<>();
+    //ArrayList<Lista> listas=new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // obtener listas del usuario
-        List<Lista> aux = new ArrayList<Lista>();
-        // para cada una, la metemos al array listas
-        listas.add(new Lista("Navidad", "8 participantes"));
-        listas.add(new Lista("Casa", "4 participantes"));
-        listas.add(new Lista("Cena 28/02/2017", "10 participantes"));
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_listas_activas);
-        list=(ListView)findViewById(R.id.listasActivas);
-        //ArrayAdapter<String> adaptador=new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,listas);
-        AdapterLista adaptador=new AdapterLista(this,listas);
-        list.setAdapter(adaptador);
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //Acción a ejecutar al seleccionar elemento de la lista
+        ItemPers itempers = new ItemPers(getBaseContext());
+        ListaPers listapers = new ListaPers(getBaseContext());
+        UsuarioPers usuariopers = new UsuarioPers(getBaseContext());
+
+        AsyncTask<String, Void, List<Lista>> l = listapers.execute("u3");
+        usuariopers.execute("u3");
+
+        AdaptadorBD adaptador = new AdaptadorBD(getBaseContext());
+        adaptador.open();
+        try {
+            List<Lista> listasx = l.get();
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_listas_activas);
+            list=(ListView)findViewById(R.id.listasActivas);
+            //ArrayAdapter<String> adaptador=new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,listas);
+            AdapterLista adapter=new AdapterLista(this,listasx);
+            list.setAdapter(adapter);
+            list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    //Acción a ejecutar al seleccionar elemento de la lista
+                }
+            });
+            //Aparece el botón de atrás
+            if(getSupportActionBar()!=null){
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             }
-        });
-        //Aparece el botón de atrás
-        if(getSupportActionBar()!=null){
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+            adaptador.close();
+        } catch(Exception e){}
+
 
     }
 
