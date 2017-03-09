@@ -1,5 +1,7 @@
 package es.shosha.shosha.dominio;
 
+import android.graphics.drawable.Drawable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +14,8 @@ public class Lista {
     private String nombre;
     private Usuario propietario;
     private boolean estado;
+    private List<Usuario> participantes;
+    private Drawable imagen=null;
     private List<Item> items;
 
     public Lista(String id, String nombre, Usuario propietario, boolean estado) {
@@ -20,6 +24,16 @@ public class Lista {
         this.propietario = propietario;
         this.estado = estado;
         this.items = new ArrayList<Item>();
+    }
+
+    public Lista(String id, String nombre, Usuario propietario, boolean estado,List<Usuario> participantes, Drawable imagen) {
+        this.id = id;
+        this.nombre = nombre;
+        this.propietario = propietario;
+        this.estado = estado;
+        this.items = new ArrayList<Item>();
+        this.participantes = participantes;
+        this.imagen = imagen;
     }
 
     public Lista() {
@@ -92,5 +106,13 @@ public class Lista {
                 return i;
         }
         return null;
+    }
+
+    public int getNumParticipantes() {
+        return this.participantes.size();
+    }
+
+    public Drawable getImagen() {
+        return imagen;
     }
 }
