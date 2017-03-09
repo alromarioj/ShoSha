@@ -14,6 +14,7 @@ import java.util.List;
 
 import es.shosha.shosha.AdaptadorLista.AdapterLista;
 import es.shosha.shosha.dominio.Lista;
+import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 public class ListasActivas extends AppCompatActivity {
 
@@ -24,15 +25,17 @@ public class ListasActivas extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // obtener listas del usuario
-        List<Lista> aux = new ArrayList<Lista>();
-        // para cada una, la metemos al array listas
-        listas.add(new Lista("Navidad", "8 participantes"));
-        listas.add(new Lista("Casa", "4 participantes"));
-        listas.add(new Lista("Cena 28/02/2017", "10 participantes"));
+        List<Lista> aux = null;
         super.onCreate(savedInstanceState);
+
+        AdaptadorBD abd = new AdaptadorBD(getBaseContext());
+        abd.open();
+        aux = abd.obtenerListas("u1");
+        abd.close();
+
+
         setContentView(R.layout.activity_listas_activas);
         list=(ListView)findViewById(R.id.listasActivas);
-        //ArrayAdapter<String> adaptador=new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,listas);
         AdapterLista adaptador=new AdapterLista(this,listas);
         list.setAdapter(adaptador);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
