@@ -2,6 +2,7 @@ package es.shosha.shosha;
 
 import android.database.Cursor;
 import android.database.SQLException;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import android.util.Log;
@@ -15,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.content.Intent;
 import android.view.MenuItem;
 
+import es.shosha.shosha.negocio.CargaDatos;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 public class Inicio extends AppCompatActivity
@@ -23,6 +25,9 @@ public class Inicio extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        new Thread(new CargaDatos("u3",getBaseContext())).start();
+
         setContentView(R.layout.activity_inicio);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);

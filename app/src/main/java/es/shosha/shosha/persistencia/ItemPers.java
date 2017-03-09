@@ -41,28 +41,33 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
 
         String data = "";
         Usuario usu = null;
-        if (params.length == 1) {
-            try {
-                data = URLEncoder.encode(params[0], "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+        System.out.println("                                              >>>>>>>>>>>>>>>>>>>> "+params.length);
+        if (params.length > 0) {
+            for (String s : params) {
 
-            try {
-                java.net.URL urlObj = new URL(ItemPers.URL + ItemPers.ATRIBUTO + data);
 
-                HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
-
-                BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
-                String line = "", res = "";
-                while ((line = rd.readLine()) != null) {
-                    res += line;
+                try {
+                    data = URLEncoder.encode(s, "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
                 }
 
-                rd.close();
-                jsonParser(res,params[0]);
-            } catch (IOException e) {
-                e.printStackTrace();
+                try {
+                    java.net.URL urlObj = new URL(ItemPers.URL + ItemPers.ATRIBUTO + data);
+
+                    HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
+
+                    BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
+                    String line = "", res = "";
+                    while ((line = rd.readLine()) != null) {
+                        res += line;
+                    }
+System.out.println("\t\t>>>>>>> Items");
+                    rd.close();
+                    jsonParser(res, s);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         } else {
             try {
@@ -79,8 +84,8 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
         throw new Exception("Se ha enviado más de un parámetro en: ItemPers");
     }
 
-    private void jsonParser(String data,String idLista) {
-      //  List<Item> lItems = new ArrayList<Item>();
+    private void jsonParser(String data, String idLista) {
+        //  List<Item> lItems = new ArrayList<Item>();
         try {
             JSONObject jso = new JSONObject(data);
             JSONArray listas = jso.getJSONArray("item");
@@ -92,7 +97,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
                 itm.setNombre(o.getString("nombre"));
                 itm.setPrecio(o.getDouble("precio"));
 
-                insertarBD(itm,idLista);
+                insertarBD(itm, idLista);
 
                 //lItems.add(itm);
 
