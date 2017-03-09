@@ -208,6 +208,7 @@ public class AdaptadorBD {
             c2.close();
             l = new Lista(c.getString(0), c.getString(2), this.obtenerUsuario(idUsuario), c.getString(4).equals("1"), null, participantes);
             l.setListaItems(this.obtenerItems(l.getId()));
+            System.out.println("          > "+l.toString());
             aux.add(l);
         }
         c.close();

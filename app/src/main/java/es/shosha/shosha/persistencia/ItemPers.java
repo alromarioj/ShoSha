@@ -25,7 +25,7 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
  * Created by Jesús Iráizoz on 07/03/2017.
  */
 
-public class ItemPers extends AsyncTask<String, Void, List<Item>> {
+public class ItemPers extends AsyncTask<String, Void, Void> {
     private final static String URL = "http://shosha.jiraizoz.es/getItems.php?";
     private final static String ATRIBUTO = "lista=";
 
@@ -36,7 +36,7 @@ public class ItemPers extends AsyncTask<String, Void, List<Item>> {
     }
 
     @Override
-    protected List<Item> doInBackground(String... params) {
+    protected Void doInBackground(String... params) {
         List<Item> lItems = null;
 
         String data = "";
@@ -60,7 +60,7 @@ public class ItemPers extends AsyncTask<String, Void, List<Item>> {
                 }
 
                 rd.close();
-                lItems = jsonParser(res);
+                jsonParser(res,params[0]);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -72,15 +72,15 @@ public class ItemPers extends AsyncTask<String, Void, List<Item>> {
             }
         }
 
-        return lItems;
+        return null;
     }
 
     private void lanzadorExcepcion() throws Exception {
         throw new Exception("Se ha enviado más de un parámetro en: ItemPers");
     }
 
-    private List<Item> jsonParser(String data) {
-        List<Item> lItems = new ArrayList<Item>();
+    private void jsonParser(String data,String idLista) {
+      //  List<Item> lItems = new ArrayList<Item>();
         try {
             JSONObject jso = new JSONObject(data);
             JSONArray listas = jso.getJSONArray("item");
@@ -92,13 +92,14 @@ public class ItemPers extends AsyncTask<String, Void, List<Item>> {
                 itm.setNombre(o.getString("nombre"));
                 itm.setPrecio(o.getDouble("precio"));
 
-                lItems.add(itm);
+                insertarBD(itm,idLista);
+
+                //lItems.add(itm);
 
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return lItems;
     }
 
     private void insertarBD(Item i, String idLista) {
