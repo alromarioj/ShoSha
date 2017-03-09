@@ -179,18 +179,19 @@ public class AdaptadorBD {
         return res;
     }
 
-    public Cursor leerTodos() {
+/*    public Cursor leerTodos() {
         //return bdatos.query(true,TB_USUARIO,null,null,null,null,null,null,"100");
         return bdatos.rawQuery("SELECT * FROM usuario", null);
-    }
+    }*/
 
 
     public List<Lista> obtenerListas(String idUsuario) {
-        Cursor c = bdatos.query(false, TB_LISTA, null, "propietario=" + idUsuario, null, null, null, null, null);
+        Cursor c = bdatos.query(false, TB_LISTA, null, "propietario='" + idUsuario+"'", null, null, null, null, null);
         Lista l = null;
         List<Lista> aux = new ArrayList<Lista>();
         do {
             l = new Lista(c.getString(0), c.getString(2), this.obtenerUsuario(idUsuario), c.getString(4).equals("1"));
+            l.setListaItems(this.obtenerItems(l.getId()));
             aux.add(l);
             c.moveToNext();
         } while (!c.isLast());
@@ -198,11 +199,12 @@ public class AdaptadorBD {
     }
 
     public List<Lista> obtenerListas(Usuario u) {
-        Cursor c = bdatos.query(false, TB_LISTA, null, "propietario=" + u.getId(), null, null, null, null, null);
+        Cursor c = bdatos.query(false, TB_LISTA, null, "propietario='" + u.getId()+"'", null, null, null, null, null);
         Lista l = null;
         List<Lista> aux = new ArrayList<Lista>();
         do {
             l = new Lista(c.getString(0), c.getString(2), u, c.getString(4).equals("1"));
+            l.setListaItems(this.obtenerItems(l.getId()));
             aux.add(l);
             c.moveToNext();
         } while (!c.isLast());
@@ -210,7 +212,7 @@ public class AdaptadorBD {
     }
 
     public Usuario obtenerUsuario(String id){
-        Cursor c = bdatos.query(false, TB_USUARIO, null, "id=" + id, null, null, null, null, null);
+        Cursor c = bdatos.query(false, TB_USUARIO, null, "id='" + id+"'", null, null, null, null, null);
         Usuario u = null;
 
         do {
@@ -221,7 +223,7 @@ public class AdaptadorBD {
     }
 
     public List<Item> obtenerItems(String idLista){
-        Cursor c = bdatos.query(false, TB_ITEM, null, "idLista=" + idLista, null, null, null, null, null);
+        Cursor c = bdatos.query(false, TB_ITEM, null, "idLista='" + idLista+"'", null, null, null, null, null);
         Item i = null;
         List<Item> aux = new ArrayList<Item>();
 

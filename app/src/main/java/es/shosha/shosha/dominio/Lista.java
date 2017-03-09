@@ -86,6 +86,11 @@ public class Lista {
         this.items.add(i);
     }
 
+    /**
+     * Obtiene el objeto <code>Item</code> contenido en la posición <code>index</code> de la lista de items.
+     * @param index Posición del objeto en la lista
+     * @return Objeto <code>Item</code> con posición <code>index</code>.
+     */
     public Item getItem(int index) {
         return this.items.get(index);
     }
@@ -106,6 +111,14 @@ public class Lista {
                 return i;
         }
         return null;
+    }
+
+    public void setListaItems(List<Item> lItem){
+        this.items = lItem;
+    }
+
+    public List<Item> getListaItems(){
+        return this.items;
     }
 
     public int getNumParticipantes() {
