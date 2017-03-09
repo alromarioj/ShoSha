@@ -189,13 +189,11 @@ public class AdaptadorBD {
         Cursor c = bdatos.query(false, TB_LISTA, null, "propietario='" + idUsuario + "'", null, null, null, null, null);
         Lista l = null;
         List<Lista> aux = new ArrayList<Lista>();
-        do {
+        while (c.moveToNext()) {
             l = new Lista(c.getString(0), c.getString(2), this.obtenerUsuario(idUsuario), c.getString(4).equals("1"));
             l.setListaItems(this.obtenerItems(l.getId()));
             aux.add(l);
-            if (!c.isLast())
-                c.moveToNext();
-        } while (!c.isLast());
+        }
         return aux;
     }
 
@@ -203,13 +201,11 @@ public class AdaptadorBD {
         Cursor c = bdatos.query(false, TB_LISTA, null, "propietario='" + u.getId() + "'", null, null, null, null, null);
         Lista l = null;
         List<Lista> aux = new ArrayList<Lista>();
-        do {
+        while (c.moveToNext()) {
             l = new Lista(c.getString(0), c.getString(2), u, c.getString(4).equals("1"));
             l.setListaItems(this.obtenerItems(l.getId()));
             aux.add(l);
-            if (!c.isLast())
-                c.moveToNext();
-        } while (!c.isLast());
+        }
         return aux;
     }
 
@@ -217,11 +213,9 @@ public class AdaptadorBD {
         Cursor c = bdatos.query(false, TB_USUARIO, null, "id='" + id + "'", null, null, null, null, null);
         Usuario u = null;
 
-        do {
+        while (c.moveToNext()) {
             u = new Usuario(c.getString(0), c.getString(1), c.getString(3));
-            if (!c.isLast())
-                c.moveToNext();
-        } while (!c.isLast());
+        }
         return u;
     }
 
@@ -230,12 +224,10 @@ public class AdaptadorBD {
         Item i = null;
         List<Item> aux = new ArrayList<Item>();
 
-        do {
+        while (c.moveToNext())  {
             i = new Item(c.getString(0), c.getString(1), c.getDouble(2));
             aux.add(i);
-            if (!c.isLast())
-                c.moveToNext();
-        } while (!c.isLast());
+        }
         return aux;
     }
 }
