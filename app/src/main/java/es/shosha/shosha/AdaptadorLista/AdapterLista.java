@@ -2,17 +2,18 @@ package es.shosha.shosha.AdaptadorLista;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.graphics.drawable.Drawable;
 
 import java.util.ArrayList;
 
 import es.shosha.shosha.R;
+import es.shosha.shosha.dominio.Lista;
 
 
 public class AdapterLista extends BaseAdapter {
@@ -63,10 +64,10 @@ public class AdapterLista extends BaseAdapter {
         Lista dir = items.get(position);
 
         TextView titulo = (TextView) v.findViewById(R.id.tituloLista);
-        titulo.setText(dir.getTitulo());
+        titulo.setText(dir.getNombre());
 
         TextView participantes = (TextView) v.findViewById(R.id.numParticipantes);
-        participantes.setText(dir.getNumPartic());
+        participantes.setText(dir.getNumParticipantes()+" participantes");
         Drawable im=dir.getImagen();
         if(im!=null){
             ImageView imagen = (ImageView) v.findViewById(R.id.iconoLista);
