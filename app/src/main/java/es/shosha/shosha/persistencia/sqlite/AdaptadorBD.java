@@ -12,6 +12,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
+import es.shosha.shosha.dominio.Lista;
+import es.shosha.shosha.dominio.Usuario;
 
 /**
  * Created by Jesús Iráizoz on 06/03/2017.
@@ -59,12 +64,7 @@ public class AdaptadorBD {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-
-            //new ArchivoBD(this.cntx);
-
-
             try {
-                //FileInputStream fis = new FileInputStream(new File("D:\\Dropbox\\UNI\\16-17\\IM\\ShoSha\\app\\src\\main\\assets\\ShoSha.sql"));
                 InputStream is = cntx.getAssets().open("ShoSha.sql");
 
                 BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -181,5 +181,30 @@ public class AdaptadorBD {
     public Cursor leerTodos() {
         //return bdatos.query(true,TB_USUARIO,null,null,null,null,null,null,"100");
         return bdatos.rawQuery("SELECT * FROM usuario", null);
+    }
+
+
+    public List<Lista> obtenerListas(String idUsuario) {
+        Cursor c = bdatos.query(false, TB_LISTA, null, "propietario=" + idUsuario, null, null, null, null, null);
+        Lista l = null;
+        List<Lista> aux = new ArrayList<Lista>();
+        do {
+            l = new Lista(c.getString(0), c.getString(2), null, c.getString(4).equals("1"));
+            aux.add(l);
+            c.moveToNext();
+        } while (!c.isLast());
+        return aux;
+    }
+
+    public List<Lista> obtenerListas(Usuario u) {
+        Cursor c = bdatos.query(false, TB_LISTA, null, "propietario=" + u.getId(), null, null, null, null, null);
+        Lista l = null;
+        List<Lista> aux = new ArrayList<Lista>();
+        do {
+            l = new Lista(c.getString(0), c.getString(2), u, c.getString(4).equals("1"));
+            aux.add(l);
+            c.moveToNext();
+        } while (!c.isLast());
+        return aux;
     }
 }
