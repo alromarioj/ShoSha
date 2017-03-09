@@ -186,51 +186,55 @@ public class AdaptadorBD {
 
 
     public List<Lista> obtenerListas(String idUsuario) {
-        Cursor c = bdatos.query(false, TB_LISTA, null, "propietario='" + idUsuario+"'", null, null, null, null, null);
+        Cursor c = bdatos.query(false, TB_LISTA, null, "propietario='" + idUsuario + "'", null, null, null, null, null);
         Lista l = null;
         List<Lista> aux = new ArrayList<Lista>();
         do {
             l = new Lista(c.getString(0), c.getString(2), this.obtenerUsuario(idUsuario), c.getString(4).equals("1"));
             l.setListaItems(this.obtenerItems(l.getId()));
             aux.add(l);
-            c.moveToNext();
+            if (!c.isLast())
+                c.moveToNext();
         } while (!c.isLast());
         return aux;
     }
 
     public List<Lista> obtenerListas(Usuario u) {
-        Cursor c = bdatos.query(false, TB_LISTA, null, "propietario='" + u.getId()+"'", null, null, null, null, null);
+        Cursor c = bdatos.query(false, TB_LISTA, null, "propietario='" + u.getId() + "'", null, null, null, null, null);
         Lista l = null;
         List<Lista> aux = new ArrayList<Lista>();
         do {
             l = new Lista(c.getString(0), c.getString(2), u, c.getString(4).equals("1"));
             l.setListaItems(this.obtenerItems(l.getId()));
             aux.add(l);
-            c.moveToNext();
+            if (!c.isLast())
+                c.moveToNext();
         } while (!c.isLast());
         return aux;
     }
 
-    public Usuario obtenerUsuario(String id){
-        Cursor c = bdatos.query(false, TB_USUARIO, null, "id='" + id+"'", null, null, null, null, null);
+    public Usuario obtenerUsuario(String id) {
+        Cursor c = bdatos.query(false, TB_USUARIO, null, "id='" + id + "'", null, null, null, null, null);
         Usuario u = null;
 
         do {
-            u = new Usuario(c.getString(0),c.getString(1),c.getString(3));
-            c.moveToNext();
+            u = new Usuario(c.getString(0), c.getString(1), c.getString(3));
+            if (!c.isLast())
+                c.moveToNext();
         } while (!c.isLast());
         return u;
     }
 
-    public List<Item> obtenerItems(String idLista){
-        Cursor c = bdatos.query(false, TB_ITEM, null, "idLista='" + idLista+"'", null, null, null, null, null);
+    public List<Item> obtenerItems(String idLista) {
+        Cursor c = bdatos.query(false, TB_ITEM, null, "idLista='" + idLista + "'", null, null, null, null, null);
         Item i = null;
         List<Item> aux = new ArrayList<Item>();
 
         do {
-            i = new Item(c.getString(0),c.getString(1),c.getDouble(2));
+            i = new Item(c.getString(0), c.getString(1), c.getDouble(2));
             aux.add(i);
-            c.moveToNext();
+            if (!c.isLast())
+                c.moveToNext();
         } while (!c.isLast());
         return aux;
     }
