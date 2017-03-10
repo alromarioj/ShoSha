@@ -1,42 +1,22 @@
 package es.shosha.shosha.dominio;
 
-import java.io.Serializable;
+import android.graphics.drawable.Drawable;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Jesús Iráizoz on 28/02/2017.
  */
-@SuppressWarnings("serial")
-public class Lista implements Serializable {
+
+public class Lista {
     private String id;
     private String nombre;
     private Usuario propietario;
     private boolean estado;
+    private List<Usuario> participantes;
+    private Drawable imagen=null;
     private List<Item> items;
-    private String numPartic;
-
-    public Lista(String titulo, String numPartic) {
-        super();
-        this.nombre = titulo;
-        this.numPartic = numPartic;
-    }
-
-    public List<Item> getItems() {
-        return items;
-    }
-
-    public void setItems(List<Item> items) {
-        this.items = items;
-    }
-
-    public String getNumPartic() {
-        return numPartic;
-    }
-
-    public void setNumPartic(String numPartic) {
-        this.numPartic = numPartic;
-    }
 
     public Lista(String id, String nombre, Usuario propietario, boolean estado) {
         this.id = id;
@@ -44,6 +24,16 @@ public class Lista implements Serializable {
         this.propietario = propietario;
         this.estado = estado;
         this.items = new ArrayList<Item>();
+    }
+
+    public Lista(String id, String nombre, Usuario propietario, boolean estado,List<Usuario> participantes, Drawable imagen) {
+        this.id = id;
+        this.nombre = nombre;
+        this.propietario = propietario;
+        this.estado = estado;
+        this.items = new ArrayList<Item>();
+        this.participantes = participantes;
+        this.imagen = imagen;
     }
 
     public Lista() {
@@ -96,6 +86,11 @@ public class Lista implements Serializable {
         this.items.add(i);
     }
 
+    /**
+     * Obtiene el objeto <code>Item</code> contenido en la posición <code>index</code> de la lista de items.
+     * @param index Posición del objeto en la lista
+     * @return Objeto <code>Item</code> con posición <code>index</code>.
+     */
     public Item getItem(int index) {
         return this.items.get(index);
     }
@@ -116,5 +111,21 @@ public class Lista implements Serializable {
                 return i;
         }
         return null;
+    }
+
+    public void setListaItems(List<Item> lItem){
+        this.items = lItem;
+    }
+
+    public List<Item> getListaItems(){
+        return this.items;
+    }
+
+    public int getNumParticipantes() {
+        return this.participantes.size();
+    }
+
+    public Drawable getImagen() {
+        return imagen;
     }
 }
