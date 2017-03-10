@@ -23,7 +23,7 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
  * Created by Jesús Iráizoz on 02/03/2017.
  */
 
-public class UsuarioPers extends AsyncTask<String, Void, Usuario> {
+public class UsuarioPers extends AsyncTask<String, Void, Void> {
     private final static String URL = "http://shosha.jiraizoz.es/getUsuario.php?";
     private final static String ATRIBUTO = "id=";
 
@@ -34,7 +34,7 @@ public class UsuarioPers extends AsyncTask<String, Void, Usuario> {
     }
 
     @Override
-    protected Usuario doInBackground(String... params) {
+    protected Void doInBackground(String... params) {
         String data = "";
         Usuario usu = null;
         if (params.length == 1) {
@@ -56,7 +56,7 @@ public class UsuarioPers extends AsyncTask<String, Void, Usuario> {
                 }
 
                 rd.close();
-                usu = jsonParser(res);
+                jsonParser(res);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -67,10 +67,10 @@ public class UsuarioPers extends AsyncTask<String, Void, Usuario> {
                 e.printStackTrace();
             }
         }
-        return usu;
+        return null;
     }
 
-    private Usuario jsonParser(String data) {
+    private void jsonParser(String data) {
         Usuario u = null;
         try {
             JSONObject jso = new JSONObject(data);
@@ -86,8 +86,6 @@ public class UsuarioPers extends AsyncTask<String, Void, Usuario> {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return u;
-
 
     }
 

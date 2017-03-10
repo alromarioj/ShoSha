@@ -24,7 +24,7 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 /**
  * Created by Jesús Iráizoz on 02/03/2017.
  */
-public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
+public class ListaPers extends AsyncTask<String, Void, Void> {
     private final static String URL = "http://shosha.jiraizoz.es/getListas.php?";
     private final static String ATRIBUTO = "usuario=";
     private Context contexto;
@@ -33,8 +33,9 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
         this.contexto = c;
     }
 
+
     @Override
-    protected List<Lista> doInBackground(String... params) {
+    protected Void doInBackground(String... params) {
         List<Lista> lListas = null;
 
         String data = "";
@@ -58,7 +59,7 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
                 }
 
                 rd.close();
-                lListas = jsonParser(res);
+                jsonParser(res);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -69,11 +70,10 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
                 e.printStackTrace();
             }
         }
-
-        return lListas;
+        return null;
     }
 
-    private List<Lista> jsonParser(String data) {
+    private void jsonParser(String data) {
         List<Lista> lListas = new ArrayList<Lista>();
         try {
             JSONObject jso = new JSONObject(data);
@@ -87,26 +87,28 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
 
                 l.setEstado(o.getString("estado").equals("1"));
 
-                lListas.add(l);
+                insertarBD(l,o.getString("propietario"));
+
+                //lListas.add(l);
 
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return lListas;
     }
 
     private void lanzadorExcepcion() throws Exception {
         throw new Exception("Se ha enviado más de un parámetro en: ListaPers");
     }
 
-    private void insertarBD(Lista l) {
+    private void insertarBD(Lista l, String idProp) {
         AdaptadorBD adap = new AdaptadorBD(this.contexto);
         adap.open();
         try {
-            adap.insertarLista(l.getId(), l.getNombre(), l.getPropietario().getId(), l.isEstado() ? "1" : "0");
+            adap.insertarLista(l.getId(), l.getNombre(), idProp, l.isEstado() ? "1" : "0");
         } finally {
             adap.close();
         }
     }
+
 }
