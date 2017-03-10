@@ -1,6 +1,7 @@
 package es.shosha.shosha;
 
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -23,7 +24,7 @@ public class ListasActivas extends AppCompatActivity {
 
     private ListView list;
     //private String[] listas={"Navidad", "Casa", "Cena 28/02/2017"};
-    //ArrayList<Lista> listas=new ArrayList<>();
+    List<Lista> listas;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,17 +38,20 @@ public class ListasActivas extends AppCompatActivity {
         AdaptadorBD adaptador = new AdaptadorBD(getBaseContext());
         adaptador.open();
         try {
-            List<Lista> listasx = l.get();
+            listas = l.get();
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_listas_activas);
             list=(ListView)findViewById(R.id.listasActivas);
             //ArrayAdapter<String> adaptador=new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,listas);
-            AdapterLista adapter=new AdapterLista(this,listasx);
+            AdapterLista adapter=new AdapterLista(this,listas);
             list.setAdapter(adapter);
-            list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     //Acción a ejecutar al seleccionar elemento de la lista
+                    Intent i = new Intent(ListasActivas.this, ListaProductos.class);
+                    i.putExtra("lista",listas.get(position));//Pasa la lista de productos a la actividad
+                    startActivity(i);
                 }
             });
             //Aparece el botón de atrás
@@ -73,8 +77,9 @@ public class ListasActivas extends AppCompatActivity {
             case android.R.id.home:
                 onBackPressed();
                 return true;
-            case R.id.anadir:
-                //Muestra el menú para crear una lista
+            case R.id.anadir_lista:
+                Intent i = new Intent(this, AnadirLista.class);
+                startActivity(i);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

@@ -2,14 +2,15 @@ package es.shosha.shosha.dominio;
 
 import android.graphics.drawable.Drawable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Jesús Iráizoz on 28/02/2017.
  */
-
-public class Lista {
+@SuppressWarnings("serial")
+public class Lista implements Serializable{
     private String id;
     private String nombre;
     private Usuario propietario;

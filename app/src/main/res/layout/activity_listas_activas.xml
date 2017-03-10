@@ -24,13 +24,6 @@
             app:title="@string/listas" />
     </android.support.design.widget.AppBarLayout>
 
-
-    <TextView
-        android:text="@string/listas"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:id="@+id/textView" />
-
     <include layout="@layout/content_listas_activas"/>
 
 
