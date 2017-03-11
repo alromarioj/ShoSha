@@ -10,4 +10,8 @@
     <string name="ayuda">Ayuda</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="lista_camara">Escanea una lista con la cámara</string>
+    <string name="OCR">Escaneo OCR</string>
+    <string name="manual">Manual</string>
+    <string name="crea_lista_cero">Crea tú mismo la lista desde cero</string>
 </resources>
