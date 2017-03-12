@@ -17,6 +17,9 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import es.shosha.shosha.ListasActivas;
+import es.shosha.shosha.MyApplication;
+import es.shosha.shosha.dominio.Item;
 import es.shosha.shosha.dominio.Lista;
 import es.shosha.shosha.dominio.Usuario;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
@@ -27,11 +30,7 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
     private final static String URL = "http://shosha.jiraizoz.es/getListas.php?";
     private final static String ATRIBUTO = "usuario=";
-    private Context contexto;
-
-    public ListaPers(Context c) {
-        this.contexto = c;
-    }
+    private List<Lista> lListas = null;
 
     @Override
     protected List<Lista> doInBackground(String... params) {
@@ -69,26 +68,30 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
                 e.printStackTrace();
             }
         }
-
+        this.lListas = lListas;
         return lListas;
+    }
+
+    protected void onPostExecute(List<Lista> listas) {
+        this.lListas = listas;
     }
 
     private List<Lista> jsonParser(String data) {
         List<Lista> lListas = new ArrayList<Lista>();
+        AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
+        abd.open();
         try {
             JSONObject jso = new JSONObject(data);
             JSONArray listas = jso.getJSONArray("listas");
             for (int i = 0; i < listas.length(); i++) {
                 JSONObject o = listas.getJSONObject(i);
-
-                Lista l = new Lista();
-                l.setId(o.getString("id"));
-                l.setNombre(o.getString("nombre"));
-
-                l.setEstado(o.getString("estado").equals("1"));
-
+                List<Item> objetos = new ArrayList<>();
+                objetos.add(new Item("1","1",1));
+                List<Usuario> particip = new ArrayList<>();
+                particip.add(new Usuario("1","1","1"));
+                Lista l = new Lista(o.getString("id"),o.getString("nombre"), new Usuario("u3","x","x"),true, objetos, particip);
                 lListas.add(l);
-
+                this.insertarBD(l);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -101,10 +104,10 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
     }
 
     private void insertarBD(Lista l) {
-        AdaptadorBD adap = new AdaptadorBD(this.contexto);
+        AdaptadorBD adap = new AdaptadorBD(MyApplication.getAppContext());
         adap.open();
         try {
-            adap.insertarLista(l.getId(), l.getNombre(), l.getPropietario().getId(), l.isEstado() ? "1" : "0");
+            adap.insertarLista(l.getId(), l.getNombre(), l.getPropietario(), l.isEstado() ? "1" : "0");
         } finally {
             adap.close();
         }

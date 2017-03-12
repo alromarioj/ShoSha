@@ -9,8 +9,9 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.graphics.drawable.Drawable;
-
+import es.shosha.shosha.dominio.Lista;
 import java.util.ArrayList;
+import java.util.List;
 
 import es.shosha.shosha.R;
 
@@ -18,9 +19,9 @@ import es.shosha.shosha.R;
 public class AdapterLista extends BaseAdapter {
 
     protected Activity activity;
-    protected ArrayList<Lista> items;
+    protected List<Lista> items;
 
-    public AdapterLista(Activity activity, ArrayList<Lista> items) {
+    public AdapterLista(Activity activity, List<Lista> items) {
         this.activity = activity;
         this.items = items;
     }
@@ -63,11 +64,11 @@ public class AdapterLista extends BaseAdapter {
         Lista dir = items.get(position);
 
         TextView titulo = (TextView) v.findViewById(R.id.tituloLista);
-        titulo.setText(dir.getTitulo());
+        titulo.setText(dir.getNombre());
 
         TextView participantes = (TextView) v.findViewById(R.id.numParticipantes);
-        participantes.setText(dir.getNumPartic());
-        Drawable im=dir.getImagen();
+        participantes.setText(Integer.toString(dir.getParticipantes().size()));
+        Drawable im=null;
         if(im!=null){
             ImageView imagen = (ImageView) v.findViewById(R.id.iconoLista);
             imagen.setImageDrawable(im);

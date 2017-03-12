@@ -13,13 +13,15 @@ public class Lista {
     private Usuario propietario;
     private boolean estado;
     private List<Item> items;
+    private List<Usuario> participantes;
 
-    public Lista(String id, String nombre, Usuario propietario, boolean estado) {
+    public Lista(String id, String nombre, Usuario propietario, boolean estado, List<Item> items, List<Usuario> participantes) {
         this.id = id;
         this.nombre = nombre;
         this.propietario = propietario;
         this.estado = estado;
-        this.items = new ArrayList<Item>();
+        this.items = items;
+        this.participantes = participantes;
     }
 
     public Lista() {
@@ -92,5 +94,21 @@ public class Lista {
                 return i;
         }
         return null;
+    }
+
+    public List<Item> getItems() {
+        return items;
+    }
+
+    public void setItems(List<Item> items) {
+        this.items = items;
+    }
+
+    public List<Usuario> getParticipantes() {
+        return participantes;
+    }
+
+    public void setParticipantes(List<Usuario> participantes) {
+        this.participantes = participantes;
     }
 }

@@ -12,6 +12,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
+import es.shosha.shosha.dominio.Item;
+import es.shosha.shosha.dominio.Lista;
+import es.shosha.shosha.dominio.Usuario;
 
 /**
  * Created by Jesús Iráizoz on 06/03/2017.
@@ -24,6 +30,7 @@ public class AdaptadorBD {
     private static final String TB_USUARIO = "usuario";
     private static final String TB_LISTA = "lista";
     private static final String TB_ITEM = "item";
+    private static final String TB_PARTICIPA = "participa";
     private static final String ID = "id";
     private static final String NOMBRE = "nombre";
     private static final String USR_EMAIL = "email";
@@ -59,18 +66,11 @@ public class AdaptadorBD {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-
-            //new ArchivoBD(this.cntx);
-
-
             try {
-                //FileInputStream fis = new FileInputStream(new File("D:\\Dropbox\\UNI\\16-17\\IM\\ShoSha\\app\\src\\main\\assets\\ShoSha.sql"));
                 InputStream is = cntx.getAssets().open("ShoSha.sql");
-
                 BufferedReader br = new BufferedReader(new InputStreamReader(is));
                 String leido = "", sql = "";
                 while ((leido = br.readLine()) != null) {
-                    //      System.out.println(" > " + leido);
                     if (!leido.endsWith(";")) {
                         sql += leido;
                     } else {
@@ -88,9 +88,12 @@ public class AdaptadorBD {
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            Log.w(ID_LOG, "Acualiza la versión: " + oldVersion + " a la versión: " + newVersion);
-            db.execSQL("DROP TABLE IF EXISTS " + TB_USUARIO);
-            onCreate(db);
+            Log.w(ID_LOG, "Actualiza la versión: " + oldVersion + " a la versión: " + newVersion);
+            db.execSQL("DROP TABLE IF EXISTS " + TB_USUARIO + ";"
+                    + "DROP TABLE IF EXISTS " + TB_PARTICIPA + ";"
+                    + "DROP TABLE IF EXISTS " + TB_LISTA + ";"
+                    + "DROP TABLE IF EXISTS " + TB_ITEM + ";");
+            this.onCreate(db);
         }
     }
 
@@ -121,14 +124,14 @@ public class AdaptadorBD {
         return res;
     }
 
-    public long insertarLista(String id, String nombre, String propietario, String estado) {
+    public long insertarLista(String id, String nombre, Usuario propietario, String estado) {
         bdatos.beginTransaction();
         long res;
         try {
             ContentValues valores = new ContentValues();
             valores.put(ID, id);
             valores.put(NOMBRE, nombre);
-            valores.put(LST_PROP, propietario);
+            valores.put(LST_PROP, propietario.getId());
             valores.put(LST_ESTADO, estado);
             res = bdatos.insert(TB_LISTA, null, valores);
 
@@ -181,5 +184,32 @@ public class AdaptadorBD {
     public Cursor leerTodos() {
         //return bdatos.query(true,TB_USUARIO,null,null,null,null,null,null,"100");
         return bdatos.rawQuery("SELECT * FROM usuario", null);
+    }
+
+    public Usuario getUsuario(String id) {
+        Cursor cursor = bdatos.rawQuery("SELECT * FROM " + TB_USUARIO + " WHERE id='" + id + "'", null);
+        Usuario us = null;
+        if (cursor.moveToFirst()) {
+            us = new Usuario(cursor.getString(0), cursor.getString(1), cursor.getString(2));
+        }
+        cursor.close();
+        return us;
+    }
+
+    public ArrayList<Lista> getListas(String usuario) {
+        Cursor cursor = bdatos.rawQuery("SELECT * FROM " + TB_LISTA + " WHERE propietario='" + usuario + "'", null);
+        ArrayList<Lista> listas = new ArrayList<>();
+        Lista l = null;
+        while (cursor.moveToNext()) {
+            l = new Lista(cursor.getString(0), cursor.getString(1), this.getUsuario(cursor.getString(2)), true, null, null);
+            listas.add(l);
+        }
+        cursor.close();
+        cursor = bdatos.rawQuery("SELECT * FROM " + TB_LISTA + " WHERE id IN(SELECT idLista FROM "+TB_PARTICIPA+" WHERE idUsuario = '" + usuario + "' AND activo = 1)", null);
+        while (cursor.moveToNext()) {
+            l = new Lista(cursor.getString(0), cursor.getString(1), this.getUsuario(cursor.getString(2)), true, null, null);
+            listas.add(l);
+        }
+        return listas;
     }
 }
