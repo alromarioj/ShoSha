@@ -29,6 +29,7 @@ public class AdaptadorBD {
 
     private static final String TB_USUARIO = "usuario";
     private static final String TB_LISTA = "lista";
+    private static final String TB_PARTICIPA = "participa";
     private static final String TB_ITEM = "item";
     private static final String TB_PARTICIPA = "participa";
     private static final String ID = "id";
@@ -181,9 +182,71 @@ public class AdaptadorBD {
         return res;
     }
 
-    public Cursor leerTodos() {
+/*    public Cursor leerTodos() {
         //return bdatos.query(true,TB_USUARIO,null,null,null,null,null,null,"100");
         return bdatos.rawQuery("SELECT * FROM usuario", null);
+    }*/
+
+
+    public List<Lista> obtenerListas(String idUsuario) {
+        /*List<Lista> x = new ArrayList<Lista>();
+        List<Usuario> y = new ArrayList<Usuario>();
+        y.add(new Usuario("1","1","1"));
+        y.add(new Usuario("2","2","2"));
+        x.add(new Lista("1","1",new Usuario("1","1","1"),true,y,null));
+        return x;*/
+        Cursor c = bdatos.query(false, TB_LISTA, null, "propietario='" + idUsuario + "'", null, null, null, null, null);
+        Cursor c2 = null;
+        Lista l = null;
+        List<Lista> aux = new ArrayList<Lista>();
+        List<Usuario> participantes;
+        while (c.moveToNext()) {
+            c2 = bdatos.query(false, TB_PARTICIPA, null, "idLista='" + c.getString(0) + "'", null, null, null, null, null);
+            participantes = new ArrayList<Usuario>();
+            while(c2.moveToNext()){
+                participantes.add(this.obtenerUsuario(c.getString(1)));
+            }
+            c2.close();
+            l = new Lista(c.getString(0), c.getString(2), this.obtenerUsuario(idUsuario), c.getString(4).equals("1"), participantes,null);
+            l.setListaItems(this.obtenerItems(l.getId()));
+            aux.add(l);
+        }
+        c.close();
+        return aux;
+    }
+
+    public List<Lista> obtenerListas(Usuario u) {
+        Cursor c = bdatos.query(false, TB_LISTA, null, "propietario='" + u.getId() + "'", null, null, null, null, null);
+        Lista l = null;
+        List<Lista> aux = new ArrayList<Lista>();
+        while (c.moveToNext()) {
+            l = new Lista(c.getString(0), c.getString(2), u, c.getString(4).equals("1"));
+            l.setListaItems(this.obtenerItems(l.getId()));
+            aux.add(l);
+        }
+        return aux;
+    }
+
+    public Usuario obtenerUsuario(String id) {
+        Cursor c = bdatos.query(false, TB_USUARIO, null, "id='" + id + "'", null, null, null, null, null);
+        Usuario u = null;
+
+        while (c.moveToNext()) {
+            u = new Usuario(c.getString(0), c.getString(1), c.getString(3));
+        }
+        return u;
+    }
+
+    public List<Item> obtenerItems(String idLista) {
+        Cursor c = bdatos.query(false, TB_ITEM, null, "idLista='" + idLista + "'", null, null, null, null, null);
+        Item i = null;
+        List<Item> aux = new ArrayList<Item>();
+
+        while (c.moveToNext())  {
+            i = new Item(c.getString(0), c.getString(1), c.getDouble(2));
+            aux.add(i);
+        }
+        return aux;
     }
 
     public Usuario getUsuario(String id) {
