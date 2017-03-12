@@ -29,7 +29,6 @@ public class AdaptadorBD {
 
     private static final String TB_USUARIO = "usuario";
     private static final String TB_LISTA = "lista";
-    private static final String TB_PARTICIPA = "participa";
     private static final String TB_ITEM = "item";
     private static final String TB_PARTICIPA = "participa";
     private static final String ID = "id";
@@ -207,7 +206,7 @@ public class AdaptadorBD {
                 participantes.add(this.obtenerUsuario(c.getString(1)));
             }
             c2.close();
-            l = new Lista(c.getString(0), c.getString(2), this.obtenerUsuario(idUsuario), c.getString(4).equals("1"), participantes,null);
+            l = new Lista(c.getString(0), c.getString(2), this.obtenerUsuario(idUsuario), c.getString(4).equals("1"), null, participantes);
             l.setListaItems(this.obtenerItems(l.getId()));
             aux.add(l);
         }
@@ -220,7 +219,7 @@ public class AdaptadorBD {
         Lista l = null;
         List<Lista> aux = new ArrayList<Lista>();
         while (c.moveToNext()) {
-            l = new Lista(c.getString(0), c.getString(2), u, c.getString(4).equals("1"));
+            l = new Lista(c.getString(0), c.getString(2), u, c.getString(4).equals("1"),this.obtenerItems(c.getString(0)),null);
             l.setListaItems(this.obtenerItems(l.getId()));
             aux.add(l);
         }

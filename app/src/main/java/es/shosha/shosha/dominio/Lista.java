@@ -111,4 +111,8 @@ public class Lista {
     public void setParticipantes(List<Usuario> participantes) {
         this.participantes = participantes;
     }
+
+    public void setListaItems(List<Item> items){
+        this.items = items;
+    }
 }
