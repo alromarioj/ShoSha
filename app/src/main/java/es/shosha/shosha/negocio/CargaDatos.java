@@ -75,9 +75,9 @@ public class CargaDatos implements Runnable {
                 System.out.println(">>>>>>>>>>>>>> despues del await >>>>>>>>>>>");
 
 
-                Usuario u = abd.obtenerUsuario(this.idUsr);
+           /*     Usuario u = abd.obtenerUsuario(this.idUsr);
 
-                System.out.println(u.toString());
+                System.out.println(u.toString());*/
 
 
                 ItemPers ip = new ItemPers(this.contexto);

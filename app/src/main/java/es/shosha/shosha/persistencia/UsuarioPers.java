@@ -16,6 +16,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.concurrent.CountDownLatch;
 
+import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Usuario;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
@@ -95,6 +96,9 @@ public class UsuarioPers extends AsyncTask<String, Void, Void> {
                 System.out.println(u.toString());
                 System.out.println("#################################################");
                 System.out.println("#################################################\n");
+
+                MyApplication.setUser(u);
+
                 insertarBD(u);
 
             }

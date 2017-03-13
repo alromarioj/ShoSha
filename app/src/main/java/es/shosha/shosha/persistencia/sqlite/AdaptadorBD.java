@@ -182,7 +182,7 @@ public class AdaptadorBD {
             valores.put(IDLISTA, idLista);
             valores.put(PPA_IDUSR, idUsr);
             valores.put(PPA_ACTIVO, activo ? 1 : 0);
-            res = bdatos.insert(TB_ITEM, null, valores);
+            res = bdatos.insert(TB_PARTICIPA, null, valores);
 
             bdatos.setTransactionSuccessful();
         } finally {
@@ -285,5 +285,21 @@ public class AdaptadorBD {
             listas.add(l);
         }
         return listas;
+    }
+
+    public List<Usuario> getParticipantes(String idLista) {
+        Cursor cursor = bdatos.rawQuery("SELECT * FROM " + TB_PARTICIPA + " WHERE " + IDLISTA + "='" + idLista + "'", null);
+        List<Usuario> aux = new ArrayList<Usuario>();
+
+        System.out.println(cursor.getCount()+" ##################################");
+
+        if (cursor.moveToFirst()) {
+            //Recorremos el cursor hasta que no haya más registros
+            do {
+                aux.add(this.getUsuario(cursor.getString(cursor.getColumnIndex(PPA_IDUSR))));
+            } while(cursor.moveToNext());
+        }
+
+        return aux;
     }
 }

@@ -2,7 +2,6 @@ package es.shosha.shosha;
 
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -11,22 +10,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import es.shosha.shosha.AdaptadorLista.AdapterLista;
 import es.shosha.shosha.dominio.Lista;
-import es.shosha.shosha.persistencia.ListaPers;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 public class ListasActivas extends AppCompatActivity {
@@ -42,9 +30,8 @@ public class ListasActivas extends AppCompatActivity {
         AdaptadorBD abd = new AdaptadorBD(getBaseContext());
         abd.open();
 
-        listas = abd.getListas("u1");
+        listas = abd.getListas(MyApplication.getUser().getId());
 
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ "+listas.get(1).toString());
         setListas(listas);
 
         abd.close();

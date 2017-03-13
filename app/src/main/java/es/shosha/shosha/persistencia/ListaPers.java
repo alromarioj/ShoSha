@@ -120,6 +120,25 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
                     }
                 }
 
+                int participantes = o.getInt("participantes");
+
+                if (participantes > 0) {
+                    try {
+                        final CountDownLatch count = new CountDownLatch(participantes);
+                        ExecutorService pool = Executors.newFixedThreadPool(participantes);
+
+                        ParticipaPers pp = new ParticipaPers(this.contexto, count);
+                        pp.executeOnExecutor(pool,o.getString("id"));
+
+                        count.await();
+                        l.setParticipantes(abd.getParticipantes(l.getId()));
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+
+                }
+
                 abd.close();
 
                 insertarBD(l);
