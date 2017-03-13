@@ -67,7 +67,10 @@ public class AdapterLista extends BaseAdapter {
         titulo.setText(dir.getNombre());
 
         TextView participantes = (TextView) v.findViewById(R.id.numParticipantes);
-        participantes.setText(Integer.toString(dir.getParticipantes().size()));
+        if(dir.getParticipantes()==null)
+            participantes.setText("0");
+        else
+            participantes.setText(Integer.toString(dir.getParticipantes().size()));
         Drawable im=null;
         if(im!=null){
             ImageView imagen = (ImageView) v.findViewById(R.id.iconoLista);

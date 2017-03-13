@@ -86,6 +86,7 @@ System.out.println("\t\t>>>>>>> Items");
 
     private void jsonParser(String data, String idLista) {
         //  List<Item> lItems = new ArrayList<Item>();
+        System.out.println(">>>>>>>>>>>>>>>>>>>>> "+idLista);
         try {
             JSONObject jso = new JSONObject(data);
             JSONArray listas = jso.getJSONArray("item");
@@ -96,6 +97,8 @@ System.out.println("\t\t>>>>>>> Items");
                 itm.setId(o.getString("id"));
                 itm.setNombre(o.getString("nombre"));
                 itm.setPrecio(o.getDouble("precio"));
+
+
 
                 insertarBD(itm, idLista);
 

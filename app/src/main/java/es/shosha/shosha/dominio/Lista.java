@@ -13,7 +13,7 @@ public class Lista {
     private Usuario propietario;
     private boolean estado;
     private List<Item> items;
-    private List<Usuario> participantes;
+    private List<Usuario> participantes = new ArrayList<Usuario>();
 
     public Lista(String id, String nombre, Usuario propietario, boolean estado, List<Item> items, List<Usuario> participantes) {
         this.id = id;
@@ -112,7 +112,7 @@ public class Lista {
         this.participantes = participantes;
     }
 
-    public void setListaItems(List<Item> items){
+    public void setListaItems(List<Item> items) {
         this.items = items;
     }
 }

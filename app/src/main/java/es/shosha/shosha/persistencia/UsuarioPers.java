@@ -1,7 +1,6 @@
 package es.shosha.shosha.persistencia;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.os.AsyncTask;
 
 import org.json.JSONArray;
@@ -15,6 +14,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.concurrent.CountDownLatch;
 
 import es.shosha.shosha.dominio.Usuario;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
@@ -28,9 +28,16 @@ public class UsuarioPers extends AsyncTask<String, Void, Void> {
     private final static String ATRIBUTO = "id=";
 
     private Context contexto;
+    private final CountDownLatch count;
 
-    public UsuarioPers(Context c) {
+    public UsuarioPers(Context contexto) {
+        this.contexto = contexto;
+        count = null;
+    }
+
+    public UsuarioPers(Context c, CountDownLatch cdl) {
         this.contexto = c;
+        count = cdl;
     }
 
     @Override
@@ -57,6 +64,10 @@ public class UsuarioPers extends AsyncTask<String, Void, Void> {
 
                 rd.close();
                 jsonParser(res);
+
+                if (count != null)
+                    count.countDown();
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -79,7 +90,11 @@ public class UsuarioPers extends AsyncTask<String, Void, Void> {
                 JSONObject o = listas.getJSONObject(i);
 
                 u = new Usuario(o.getString("id"), o.getString("nombre"), o.getString("email"));
-
+                System.out.println("#################################################");
+                System.out.println("#################################################");
+                System.out.println(u.toString());
+                System.out.println("#################################################");
+                System.out.println("#################################################\n");
                 insertarBD(u);
 
             }

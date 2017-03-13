@@ -38,14 +38,25 @@ public class ListasActivas extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // obtener listas del usuario
-        try {
+
+        AdaptadorBD abd = new AdaptadorBD(getBaseContext());
+        abd.open();
+
+        listas = abd.getListas("u1");
+
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ "+listas.get(1).toString());
+        setListas(listas);
+
+        abd.close();
+
+     /*   try {
             AsyncTask<String, Void, List<Lista>> at = new ListaPers().execute("u1");
             setListas(at.get());
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
-        }
+        }*/
         // para cada una, la metemos al array listas
         /*listas.add(new Lista("Navidad", "8 participantes"));
         listas.add(new Lista("Casa", "4 participantes"));

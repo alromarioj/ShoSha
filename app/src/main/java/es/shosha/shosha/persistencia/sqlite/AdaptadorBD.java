@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import es.shosha.shosha.dominio.Item;
@@ -106,10 +107,20 @@ public class AdaptadorBD {
         auxBD.close();
     }
 
+    public long getUltimaModificacion(String idUsr) {
+        Cursor c = bdatos.rawQuery("SELECT modificacion FROM usuario WHERE id='" + idUsr + "'", null);
+        long l = -1L;
+        if (c.moveToFirst())
+            l = c.getLong(0);
+        c.close();
+        return l;
+    }
+
     public long insertarUsuario(String id, String nombre, String email) {
         bdatos.beginTransaction();
         long res;
         try {
+
             ContentValues valores = new ContentValues();
             valores.put(ID, id);
             valores.put(NOMBRE, nombre);
@@ -202,13 +213,13 @@ public class AdaptadorBD {
         while (c.moveToNext()) {
             c2 = bdatos.query(false, TB_PARTICIPA, null, "idLista='" + c.getString(0) + "'", null, null, null, null, null);
             participantes = new ArrayList<Usuario>();
-            while(c2.moveToNext()){
+            while (c2.moveToNext()) {
                 participantes.add(this.obtenerUsuario(c.getString(1)));
             }
             c2.close();
-            l = new Lista(c.getString(0), c.getString(2), this.obtenerUsuario(idUsuario), c.getString(4).equals("1"), null, participantes);
+            l = new Lista(c.getString(0), c.getString(1), this.obtenerUsuario(idUsuario), c.getString(3).equals("1"), null, participantes);
             l.setListaItems(this.obtenerItems(l.getId()));
-            System.out.println("          > "+l.toString());
+            System.out.println("          > " + l.toString());
             aux.add(l);
         }
         c.close();
@@ -220,7 +231,7 @@ public class AdaptadorBD {
         Lista l = null;
         List<Lista> aux = new ArrayList<Lista>();
         while (c.moveToNext()) {
-            l = new Lista(c.getString(0), c.getString(2), u, c.getString(4).equals("1"),this.obtenerItems(c.getString(0)),null);
+            l = new Lista(c.getString(0), c.getString(2), u, c.getString(4).equals("1"), this.obtenerItems(c.getString(0)), null);
             l.setListaItems(this.obtenerItems(l.getId()));
             aux.add(l);
         }
@@ -242,7 +253,7 @@ public class AdaptadorBD {
         Item i = null;
         List<Item> aux = new ArrayList<Item>();
 
-        while (c.moveToNext())  {
+        while (c.moveToNext()) {
             i = new Item(c.getString(0), c.getString(1), c.getDouble(2));
             aux.add(i);
         }
@@ -268,7 +279,7 @@ public class AdaptadorBD {
             listas.add(l);
         }
         cursor.close();
-        cursor = bdatos.rawQuery("SELECT * FROM " + TB_LISTA + " WHERE id IN(SELECT idLista FROM "+TB_PARTICIPA+" WHERE idUsuario = '" + usuario + "' AND activo = 1)", null);
+        cursor = bdatos.rawQuery("SELECT * FROM " + TB_LISTA + " WHERE id IN(SELECT idLista FROM " + TB_PARTICIPA + " WHERE idUsuario = '" + usuario + "' AND activo = 1)", null);
         while (cursor.moveToNext()) {
             l = new Lista(cursor.getString(0), cursor.getString(1), this.getUsuario(cursor.getString(2)), true, null, null);
             listas.add(l);
