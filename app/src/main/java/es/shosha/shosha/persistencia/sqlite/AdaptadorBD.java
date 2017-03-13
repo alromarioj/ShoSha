@@ -271,7 +271,7 @@ public class AdaptadorBD {
     }
 
     public ArrayList<Lista> getListas(String usuario) {
-        Cursor cursor = bdatos.rawQuery("SELECT * FROM " + TB_LISTA + " WHERE propietario='" + usuario + "'", null);
+        Cursor cursor = bdatos.rawQuery("SELECT * FROM " + TB_LISTA + " WHERE propietario='" + usuario + "' AND estado = '1'", null);
         ArrayList<Lista> listas = new ArrayList<>();
         Lista l = null;
         while (cursor.moveToNext()) {
@@ -279,7 +279,7 @@ public class AdaptadorBD {
             listas.add(l);
         }
         cursor.close();
-        cursor = bdatos.rawQuery("SELECT * FROM " + TB_LISTA + " WHERE id IN(SELECT idLista FROM " + TB_PARTICIPA + " WHERE idUsuario = '" + usuario + "' AND activo = 1)", null);
+        cursor = bdatos.rawQuery("SELECT * FROM " + TB_LISTA + " WHERE id IN(SELECT idLista FROM " + TB_PARTICIPA + " WHERE idUsuario = '" + usuario + "' AND activo = '1')", null);
         while (cursor.moveToNext()) {
             l = new Lista(cursor.getString(0), cursor.getString(1), this.getUsuario(cursor.getString(2)), true, null, null);
             listas.add(l);
@@ -301,5 +301,29 @@ public class AdaptadorBD {
         }
 
         return aux;
+    }
+
+    public long eliminarLista(String id, Usuario usuario) {
+        bdatos.beginTransaction();
+        long res = -1;
+        try {
+            Cursor cursor = bdatos.rawQuery("SELECT * FROM " + TB_LISTA + " WHERE " + ID + "='" + id + "'", null);
+            if(cursor.moveToFirst()){
+                if(cursor.getString(2).equals(usuario.getId())) {
+                    ContentValues valores = new ContentValues();
+                    valores.put(LST_ESTADO, "0");
+                    res = bdatos.update(TB_LISTA, valores, ID + "='" + id + "'", null);
+                }
+                else{
+                    ContentValues valores = new ContentValues();
+                    valores.put(PPA_ACTIVO, "0");
+                    res = bdatos.update(TB_PARTICIPA, valores, IDLISTA + "='" + id + "' AND "+PPA_IDUSR+" = '"+usuario.getId()+"'", null);
+                }
+                bdatos.setTransactionSuccessful();
+            }
+        } finally {
+            bdatos.endTransaction();
+        }
+        return res;
     }
 }

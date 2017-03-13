@@ -4,22 +4,27 @@ package es.shosha.shosha;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import es.shosha.shosha.AdaptadorLista.AdapterLista;
 import es.shosha.shosha.dominio.Lista;
+import es.shosha.shosha.negocio.CargaDatos;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 public class ListasActivas extends AppCompatActivity {
 
     private ListView list;
+    private Lista listaClicada;
     //private String[] listas={"Navidad", "Casa", "Cena 28/02/2017"};
     List<Lista> listas = new ArrayList<>();
 
@@ -31,6 +36,7 @@ public class ListasActivas extends AppCompatActivity {
         abd.open();
 
         listas = abd.getListas(MyApplication.getUser().getId());
+        Log.d("lis",listas.toString());
 
         setListas(listas);
 
@@ -64,6 +70,8 @@ public class ListasActivas extends AppCompatActivity {
                 //Acción a ejecutar al seleccionar elemento de la lista
             }
         });
+        // Registramos el menu contextual
+        registerForContextMenu(list);
         //Aparece el botón de atrás
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -91,5 +99,47 @@ public class ListasActivas extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    /**
+     * Se crea el Context Menu, añadiendo las opciones deseadas
+     */
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        ListView lv = (ListView) v;
+        AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        menu.setHeaderTitle("Opciones");
+        menu.add(0, v.getId(), 0, "Eliminar");
+        listaClicada = (Lista) lv.getItemAtPosition(acmi.position);
+    }
+
+    /**
+     * Se definen las funciones que se llamarán al pulsar las
+     * opciones del Context Menu
+     */
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        if (item.getTitle() == "Eliminar") {
+            function1(listaClicada.getId());
+        }else{
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Se definen las acciones que se realizan al pulsar la Accion1 en
+     * del Context Menu.
+     * En este caso, como ejemplo, damos un mensaje en pantalla
+     */
+    public void function1(String id) {
+        AdaptadorBD abd = new AdaptadorBD(getBaseContext());
+        abd.open();
+        abd.eliminarLista(id,MyApplication.getUser());
+        listas = abd.getListas(MyApplication.getUser().getId());
+        setListas(listas);
+        abd.close();
+        Toast.makeText(this, "Eliminando lista "+id, Toast.LENGTH_SHORT).show();
     }
 }
