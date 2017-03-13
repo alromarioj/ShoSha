@@ -24,7 +24,7 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 /**
  * Created by Jesús Iráizoz on 02/03/2017.
  */
-public class ListaPers extends AsyncTask<String, Void, Void> {
+public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
     private final static String URL = "http://shosha.jiraizoz.es/getListas.php?";
     private final static String ATRIBUTO = "usuario=";
     private Context contexto;
@@ -35,7 +35,7 @@ public class ListaPers extends AsyncTask<String, Void, Void> {
 
 
     @Override
-    protected Void doInBackground(String... params) {
+    protected List<Lista> doInBackground(String... params) {
         List<Lista> lListas = null;
 
         String data = "";

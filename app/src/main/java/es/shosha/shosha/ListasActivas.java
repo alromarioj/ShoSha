@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import es.shosha.shosha.AdaptadorLista.AdapterLista;
@@ -32,13 +33,13 @@ public class ListasActivas extends AppCompatActivity {
         ListaPers listapers = new ListaPers(getBaseContext());
         UsuarioPers usuariopers = new UsuarioPers(getBaseContext());
 
-        AsyncTask<String, Void, List<Lista>> l = listapers.execute("u3");
+        AsyncTask<String,Void,List<Lista>> l=listapers.execute("u3");
         usuariopers.execute("u3");
 
         AdaptadorBD adaptador = new AdaptadorBD(getBaseContext());
         adaptador.open();
         try {
-            listas = l.get();
+            listas = listapers.execute("u3").get();
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_listas_activas);
             list=(ListView)findViewById(R.id.listasActivas);
