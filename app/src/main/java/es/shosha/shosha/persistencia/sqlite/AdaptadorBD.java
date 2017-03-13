@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import es.shosha.shosha.dominio.Item;
@@ -114,6 +113,10 @@ public class AdaptadorBD {
             l = c.getLong(0);
         c.close();
         return l;
+    }
+
+    public void insertarUltimaModificacion(String v) {
+
     }
 
     public long insertarUsuario(String id, String nombre, String email) {
@@ -288,16 +291,18 @@ public class AdaptadorBD {
     }
 
     public List<Usuario> getParticipantes(String idLista) {
-        Cursor cursor = bdatos.rawQuery("SELECT * FROM " + TB_PARTICIPA + " WHERE " + IDLISTA + "='" + idLista + "'", null);
+        //Cursor cursor = bdatos.rawQuery("SELECT * FROM " + TB_PARTICIPA + " WHERE " + IDLISTA + "='" + idLista + "'", null);
+        Cursor cursor = bdatos.query(false, TB_PARTICIPA, null, IDLISTA + "=?", new String[]{idLista}, null, null, null, null);
+
         List<Usuario> aux = new ArrayList<Usuario>();
 
-        System.out.println(cursor.getCount()+" ##################################");
+        System.out.println("++++++++++++++++++++++++++++++++ " + cursor.getCount() + " ##################################");
 
         if (cursor.moveToFirst()) {
             //Recorremos el cursor hasta que no haya más registros
             do {
                 aux.add(this.getUsuario(cursor.getString(cursor.getColumnIndex(PPA_IDUSR))));
-            } while(cursor.moveToNext());
+            } while (cursor.moveToNext());
         }
 
         return aux;

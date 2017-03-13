@@ -19,17 +19,21 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Lista;
 import es.shosha.shosha.dominio.Usuario;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 /**
+ * Método de persistencia para las listas. Se ejecuta en segundo plano.
+ * Si se desean obtener los datos de la BD remota, indicar como parámetro el id del usuario.
+ * Si se desea eliminar una lista de un usuario, indicar en los parámetros <code>"delete, idLista, idUsuario"</code>.
  * Created by Jesús Iráizoz on 02/03/2017.
  */
 public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
-    private final static String URL = "http://shosha.jiraizoz.es/getListas.php?";
-    private final static String ATRIBUTO = "usuario=";
+    private final static String URL_GET = "http://shosha.jiraizoz.es/getListas.php?";
+    private final static String URL_DEL = "http://shosha.jiraizoz.es/delListas.php?";
+    private final static String ATRIBUTO_USR = "usuario=";
+    private final static String ATRIBUTO_LISTA = "lista=";
     private List<Lista> lListas = null;
 
     private Context contexto;
@@ -54,7 +58,7 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
             }
 
             try {
-                java.net.URL urlObj = new URL(ListaPers.URL + ListaPers.ATRIBUTO + data);
+                java.net.URL urlObj = new URL(ListaPers.URL_GET + ListaPers.ATRIBUTO_USR + data);
 
                 HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
 
@@ -71,6 +75,9 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else if (params.length == 3 && params[0].equals("delete")) {
+            //lista y usuario
+            deleteMode(params[1], params[2]);
         } else {
             try {
                 lanzadorExcepcion();
@@ -78,12 +85,46 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
                 e.printStackTrace();
             }
         }
+
         this.lListas = lListas;
         return lListas;
     }
 
     protected void onPostExecute(List<Lista> listas) {
         this.lListas = listas;
+    }
+
+    /**
+     * Clase para eliminar de la BD una lista de un usuario concreto
+     *
+     * @param params 0: idLista, 1: idUsuario
+     */
+    private void deleteMode(String... params) {
+        String idLista = "", idUsr = "";
+        try {
+            idLista = URLEncoder.encode(params[0], "UTF-8");
+            idUsr = URLEncoder.encode(params[1], "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            java.net.URL urlObj = new URL(ListaPers.URL_DEL + ListaPers.ATRIBUTO_LISTA + idLista + ListaPers.ATRIBUTO_USR + idUsr);
+
+            HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
+
+            BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
+            String line = "", res = "";
+            while ((line = rd.readLine()) != null) {
+                res += line;
+            }
+
+            rd.close();
+
+            System.out.println("Delete response: " + res);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private List<Lista> jsonParser(String data) {
@@ -122,16 +163,17 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
 
                 int participantes = o.getInt("participantes");
 
+                System.out.println("\t\t\t%%%%%%%%%%%%%%%%%%%%%%%% " + participantes);
                 if (participantes > 0) {
                     try {
                         final CountDownLatch count = new CountDownLatch(participantes);
                         ExecutorService pool = Executors.newFixedThreadPool(participantes);
 
                         ParticipaPers pp = new ParticipaPers(this.contexto, count);
-                        pp.executeOnExecutor(pool,o.getString("id"));
+                        pp.executeOnExecutor(pool, o.getString("id"));
 
                         count.await();
-                        l.setParticipantes(abd.getParticipantes(l.getId()));
+                        l.setParticipantes(abd.getParticipantes(o.getString("id")));
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -148,31 +190,11 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
             e.printStackTrace();
         }
 
-        /*
-        List<Lista> lListas = new ArrayList<Lista>();
-        AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
-        abd.open();
-        try {
-            JSONObject jso = new JSONObject(data);
-            JSONArray listas = jso.getJSONArray("listas");
-            for (int i = 0; i < listas.length(); i++) {
-                JSONObject o = listas.getJSONObject(i);
-                List<Item> objetos = new ArrayList<>();
-                objetos.add(new Item("1", "1", 1));
-                List<Usuario> particip = new ArrayList<>();
-                particip.add(new Usuario("1", "1", "1"));
-                Lista l = new Lista(o.getString("id"), o.getString("nombre"), new Usuario("u3", "x", "x"), true, objetos, particip);
-                lListas.add(l);
-                this.insertarBD(l);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }*/
         return lListas;
     }
 
     private void lanzadorExcepcion() throws Exception {
-        throw new Exception("Se ha enviado más de un parámetro en: ListaPers");
+        throw new Exception("En ListaPers, error en los parámetros de ejecución.");
     }
 
     private void insertarBD(Lista l) {
