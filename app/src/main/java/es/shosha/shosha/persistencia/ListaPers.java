@@ -2,6 +2,7 @@ package es.shosha.shosha.persistencia;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.SystemClock;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,6 +51,8 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
 
         String data = "";
         Usuario usu = null;
+
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ params ListaPers: " + params.length);
         if (params.length == 1) {
             try {
                 data = URLEncoder.encode(params[0], "UTF-8");
@@ -69,10 +72,12 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
                 }
 
                 rd.close();
+
                 lListas = jsonParser(res);
 
                 if (count != null)
                     count.countDown();
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -110,7 +115,7 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
         }
 
         try {
-            java.net.URL urlObj = new URL(ListaPers.URL_DEL + ListaPers.ATRIBUTO_LISTA + idLista +"&"+ ListaPers.ATRIBUTO_USR + idUsr);
+            java.net.URL urlObj = new URL(ListaPers.URL_DEL + ListaPers.ATRIBUTO_LISTA + idLista + "&" + ListaPers.ATRIBUTO_USR + idUsr);
 
             HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
 
@@ -123,7 +128,6 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
             rd.close();
 
             System.out.println("Delete response: " + res);
-
 
 
         } catch (IOException e) {
@@ -170,13 +174,14 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
                 System.out.println("\t\t\t%%%%%%%%%%%%%%%%%%%%%%%% " + participantes);
                 if (participantes > 0) {
                     try {
-                        final CountDownLatch count = new CountDownLatch(participantes);
-                        ExecutorService pool = Executors.newFixedThreadPool(participantes);
+                        final CountDownLatch count = new CountDownLatch(1);
+                        ExecutorService pool = Executors.newFixedThreadPool(1);
 
                         ParticipaPers pp = new ParticipaPers(this.contexto, count);
                         pp.executeOnExecutor(pool, o.getString("id"));
 
                         count.await();
+                        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Salgo count participantes: ");
                         l.setParticipantes(abd.getParticipantes(o.getString("id")));
                     } catch (InterruptedException e) {
                         e.printStackTrace();
