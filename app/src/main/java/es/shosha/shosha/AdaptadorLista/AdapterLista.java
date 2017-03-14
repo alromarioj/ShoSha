@@ -42,7 +42,7 @@ public class AdapterLista extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int arg0) {
+    public Lista getItem(int arg0) {
         return items.get(arg0);
     }
 

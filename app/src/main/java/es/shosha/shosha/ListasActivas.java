@@ -62,12 +62,16 @@ public class ListasActivas extends AppCompatActivity {
         setContentView(R.layout.activity_listas_activas);
         list = (ListView) findViewById(R.id.listasActivas);
         //ArrayAdapter<String> adaptador=new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,listas);
-        AdapterLista adaptador = new AdapterLista(this, listas);
+        final AdapterLista adaptador = new AdapterLista(this, listas);
         list.setAdapter(adaptador);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //Acción a ejecutar al seleccionar elemento de la lista
+                Intent i = new Intent(ListasActivas.this,ListaProductos.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("lista",adaptador.getItem(position));
+                i.putExtras(bundle);
+                startActivity(i);
             }
         });
         // Registramos el menu contextual

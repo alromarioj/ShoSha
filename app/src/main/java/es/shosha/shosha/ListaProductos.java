@@ -20,7 +20,7 @@ public class ListaProductos extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_productos);
-        this.lista=(Lista)getIntent().getExtras().getSerializable("lista");//Se recoge la lista que se ha pasado desde ListasActivas
+        this.lista=(Lista)this.getIntent().getExtras().getSerializable("lista");//Se recoge la lista que se ha pasado desde ListasActivas
         //Cambia el título de la página que muestra la lista de productos
         final Toolbar tb = (Toolbar) this.findViewById(R.id.toolbar2);
         tb.setTitle(lista.getNombre());

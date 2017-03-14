@@ -128,6 +128,7 @@ public class AdaptadorBD {
             valores.put(ID, id);
             valores.put(NOMBRE, nombre);
             valores.put(USR_EMAIL, email);
+            bdatos.delete(TB_USUARIO, ID+" = '"+id+"'", null);
             res = bdatos.insert(TB_USUARIO, null, valores);
 
             bdatos.setTransactionSuccessful();
@@ -147,6 +148,7 @@ public class AdaptadorBD {
             valores.put(NOMBRE, nombre);
             valores.put(LST_PROP, propietario.getId());
             valores.put(LST_ESTADO, estado);
+            bdatos.delete(TB_LISTA, ID+" = '"+id+"'", null);
             res = bdatos.insert(TB_LISTA, null, valores);
 
             bdatos.setTransactionSuccessful();
@@ -166,6 +168,7 @@ public class AdaptadorBD {
             valores.put(NOMBRE, nombre);
             valores.put(ITM_PRECIO, precio);
             valores.put(IDLISTA, idLista);
+            bdatos.delete(TB_ITEM, ID+" = '"+id+"'", null);
             res = bdatos.insert(TB_ITEM, null, valores);
 
             bdatos.setTransactionSuccessful();
@@ -185,6 +188,7 @@ public class AdaptadorBD {
             valores.put(IDLISTA, idLista);
             valores.put(PPA_IDUSR, idUsr);
             valores.put(PPA_ACTIVO, activo ? 1 : 0);
+            bdatos.delete(TB_PARTICIPA, IDLISTA+" = '"+idLista+"' AND "+PPA_IDUSR+" = '"+idUsr+"'", null);
             res = bdatos.insert(TB_PARTICIPA, null, valores);
 
             bdatos.setTransactionSuccessful();
