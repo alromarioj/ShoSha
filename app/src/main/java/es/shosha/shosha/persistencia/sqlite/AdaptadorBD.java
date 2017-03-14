@@ -278,13 +278,13 @@ public class AdaptadorBD {
         ArrayList<Lista> listas = new ArrayList<>();
         Lista l = null;
         while (cursor.moveToNext()) {
-            l = new Lista(cursor.getString(0), cursor.getString(1), this.getUsuario(cursor.getString(2)), true, null, null);
+            l = new Lista(cursor.getString(0), cursor.getString(1), this.getUsuario(cursor.getString(2)), true, new ArrayList<Item>(), new ArrayList<Usuario>());
             listas.add(l);
         }
         cursor.close();
         cursor = bdatos.rawQuery("SELECT * FROM " + TB_LISTA + " WHERE id IN(SELECT idLista FROM " + TB_PARTICIPA + " WHERE idUsuario = '" + usuario + "' AND activo = '1')", null);
         while (cursor.moveToNext()) {
-            l = new Lista(cursor.getString(0), cursor.getString(1), this.getUsuario(cursor.getString(2)), true, null, null);
+            l = new Lista(cursor.getString(0), cursor.getString(1), this.getUsuario(cursor.getString(2)), true, new ArrayList<Item>(), new ArrayList<Usuario>());
             listas.add(l);
         }
         return listas;
