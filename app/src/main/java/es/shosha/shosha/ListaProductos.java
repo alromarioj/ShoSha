@@ -12,15 +12,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import java.util.List;
+
+import es.shosha.shosha.dominio.Item;
 import es.shosha.shosha.dominio.Lista;
+import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 public class ListaProductos extends AppCompatActivity {
     private Lista lista;
+    private List<Item> productos;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_productos);
         this.lista=(Lista)this.getIntent().getExtras().getSerializable("lista");//Se recoge la lista que se ha pasado desde ListasActivas
+        productos=lista.getItems();
+
         //Cambia el título de la página que muestra la lista de productos
         final Toolbar tb = (Toolbar) this.findViewById(R.id.toolbar2);
         tb.setTitle(lista.getNombre());
@@ -37,8 +44,7 @@ public class ListaProductos extends AppCompatActivity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        AlertDialog.Builder builder;
-        View viewInflated;
+
 
         switch(item.getItemId()){
             case android.R.id.home:
@@ -46,13 +52,15 @@ public class ListaProductos extends AppCompatActivity {
                 return true;
             case R.id.anadir_producto:
                 //Se crea el PopUp para añadir un nuevo producto
+                AlertDialog.Builder builder;
+                View viewInflated;
                 builder=new AlertDialog.Builder(this);
                 builder.setTitle("Añadir nuevo producto");
 
                 viewInflated = LayoutInflater.from(getBaseContext()).inflate(R.layout.nuevo_producto, (ViewGroup) findViewById(android.R.id.content), false);
                 // Set up the input
                 final EditText input_np1 = (EditText) viewInflated.findViewById(R.id.in_nombre_producto);
-                //final EditText input_pp = (EditText) viewInflated.findViewById(R.id.in_precio_producto);
+                final EditText input_pp = (EditText) viewInflated.findViewById(R.id.in_precio_producto);
                 // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
                 builder.setView(viewInflated);
 
@@ -60,9 +68,15 @@ public class ListaProductos extends AppCompatActivity {
                 builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        //Asumiendo que el precio es >=0
+                        AdaptadorBD abd = new AdaptadorBD(getBaseContext());
+                        abd.open();
+                        //Se inserta un producto a la lista a partir de los datos introducidos
+                        String precio=input_pp.getText().toString();
+                        precio=(precio.isEmpty()?"0":precio);
+                        abd.insertarItem(String.valueOf(lista.getItems().size()),input_np1.getText().toString(),Double.valueOf(precio),lista.getId());
+                        abd.close();
                         dialog.dismiss();
-                        //Comprobar campos
-                        //Añadir producto
                     }
                 });
                 builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -72,21 +86,23 @@ public class ListaProductos extends AppCompatActivity {
                     }
                 });
                 builder.show();
+                return true;
             case R.id.editar_producto:
+                AlertDialog.Builder builder1;
                 //Se crea el PopUp para añadir un nuevo producto
-                builder=new AlertDialog.Builder(this);
-                builder.setTitle("Editar producto");
+                builder1=new AlertDialog.Builder(this);
+                builder1.setTitle("Editar producto");
 
-                viewInflated = LayoutInflater.from(getBaseContext()).inflate(R.layout.nuevo_producto, (ViewGroup) findViewById(android.R.id.content), false);
+                View viewInflated1 = LayoutInflater.from(getBaseContext()).inflate(R.layout.nuevo_producto, (ViewGroup) findViewById(android.R.id.content), false);
                 // Set up the input
-                final EditText input_np2 = (EditText) viewInflated.findViewById(R.id.in_nombre_producto);
+                final EditText input_np2 = (EditText) viewInflated1.findViewById(R.id.in_nombre_producto);
                 input_np2.setText("Tomates");
                 //final EditText input_pp = (EditText) viewInflated.findViewById(R.id.in_precio_producto);
                 // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-                builder.setView(viewInflated);
+                builder1.setView(viewInflated1);
 
                 // Set up the buttons
-                builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                builder1.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
@@ -94,13 +110,14 @@ public class ListaProductos extends AppCompatActivity {
                         //Añadir producto
                     }
                 });
-                builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                builder1.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
                     }
                 });
-                builder.show();
+                builder1.show();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
