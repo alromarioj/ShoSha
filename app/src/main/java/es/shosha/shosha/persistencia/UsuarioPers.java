@@ -68,7 +68,6 @@ public class UsuarioPers extends AsyncTask<String, Void, Void> {
 
                 if (count != null)
                     count.countDown();
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
