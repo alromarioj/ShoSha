@@ -3,9 +3,9 @@
     package="es.shosha.shosha">
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <!--<uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />-->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -26,6 +26,7 @@
         </activity>
         <activity android:name=".ListasActivas" />
         <activity android:name=".AnadirLista" />
+        <activity android:name=".ListaProductos"></activity>
     </application>
 
 </manifest>

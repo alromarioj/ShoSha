@@ -1,7 +1,7 @@
 package es.shosha.shosha;
 
-
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -91,8 +91,7 @@ public class ListasActivas extends AppCompatActivity {
             case android.R.id.home:
                 onBackPressed();
                 return true;
-            case R.id.anadir:
-                //Muestra el menú para crear una lista
+            case R.id.anadir_lista:
                 Intent i = new Intent(this, AnadirLista.class);
                 startActivity(i);
                 return true;

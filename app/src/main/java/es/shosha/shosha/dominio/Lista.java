@@ -1,19 +1,31 @@
 package es.shosha.shosha.dominio;
 
+import android.graphics.drawable.Drawable;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Jesús Iráizoz on 28/02/2017.
  */
-
-public class Lista {
+@SuppressWarnings("serial")
+public class Lista implements Serializable{
     private String id;
     private String nombre;
     private Usuario propietario;
     private boolean estado;
+    private List<Usuario> participantes;
+    private Drawable imagen=null;
     private List<Item> items;
-    private List<Usuario> participantes = new ArrayList<Usuario>();
+
+    public Lista(String id, String nombre, Usuario propietario, boolean estado) {
+        this.id = id;
+        this.nombre = nombre;
+        this.propietario = propietario;
+        this.estado = estado;
+        this.items = new ArrayList<Item>();
+    }
 
     public Lista(String id, String nombre, Usuario propietario, boolean estado, List<Item> items, List<Usuario> participantes) {
         this.id = id;
@@ -22,6 +34,16 @@ public class Lista {
         this.estado = estado;
         this.items = items;
         this.participantes = participantes;
+    }
+
+    public Lista(String id, String nombre, Usuario propietario, boolean estado,List<Usuario> participantes, Drawable imagen) {
+        this.id = id;
+        this.nombre = nombre;
+        this.propietario = propietario;
+        this.estado = estado;
+        this.items = new ArrayList<Item>();
+        this.participantes = participantes;
+        this.imagen = imagen;
     }
 
     public Lista() {
@@ -74,6 +96,11 @@ public class Lista {
         this.items.add(i);
     }
 
+    /**
+     * Obtiene el objeto <code>Item</code> contenido en la posición <code>index</code> de la lista de items.
+     * @param index Posición del objeto en la lista
+     * @return Objeto <code>Item</code> con posición <code>index</code>.
+     */
     public Item getItem(int index) {
         return this.items.get(index);
     }
@@ -96,6 +123,21 @@ public class Lista {
         return null;
     }
 
+    public void setListaItems(List<Item> lItem){
+        this.items = lItem;
+    }
+
+    public List<Item> getListaItems(){
+        return this.items;
+    }
+
+    public int getNumParticipantes() {
+        return this.participantes.size();
+    }
+
+    public Drawable getImagen() {
+        return imagen;
+    }
     public List<Item> getItems() {
         return items;
     }
@@ -110,9 +152,5 @@ public class Lista {
 
     public void setParticipantes(List<Usuario> participantes) {
         this.participantes = participantes;
-    }
-
-    public void setListaItems(List<Item> items) {
-        this.items = items;
     }
 }
