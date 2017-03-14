@@ -1,6 +1,7 @@
 package es.shosha.shosha;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,10 +11,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ListView;
 
 import java.util.List;
 
+import es.shosha.shosha.AdaptadorLista.AdapterLista;
+import es.shosha.shosha.AdaptadorLista.AdapterProductos;
 import es.shosha.shosha.dominio.Item;
 import es.shosha.shosha.dominio.Lista;
 import es.shosha.shosha.persistencia.ItemPers;
@@ -21,6 +26,7 @@ import es.shosha.shosha.persistencia.ListaPers;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 public class ListaProductos extends AppCompatActivity {
+    private ListView list;
     private Lista lista;
     private List<Item> productos;
     @Override
@@ -29,7 +35,15 @@ public class ListaProductos extends AppCompatActivity {
         setContentView(R.layout.activity_lista_productos);
         this.lista=(Lista)this.getIntent().getExtras().getSerializable("lista");//Se recoge la lista que se ha pasado desde ListasActivas
         productos=lista.getItems();
+        list = (ListView) findViewById(R.id.listaProductos);
+        final AdapterProductos adaptador = new AdapterProductos(this, productos);
+        list.setAdapter(adaptador);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+            }
+        });
         //Cambia el título de la página que muestra la lista de productos
         final Toolbar tb = (Toolbar) this.findViewById(R.id.toolbar2);
         tb.setTitle(lista.getNombre());
