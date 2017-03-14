@@ -16,6 +16,8 @@ import java.util.List;
 
 import es.shosha.shosha.dominio.Item;
 import es.shosha.shosha.dominio.Lista;
+import es.shosha.shosha.persistencia.ItemPers;
+import es.shosha.shosha.persistencia.ListaPers;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 public class ListaProductos extends AppCompatActivity {
@@ -71,6 +73,7 @@ public class ListaProductos extends AppCompatActivity {
                         //Asumiendo que el precio es >=0
                         AdaptadorBD abd = new AdaptadorBD(getBaseContext());
                         abd.open();
+                        //new ItemPers(MyApplication.getAppContext()).execute("insert", id, MyApplication.getUser().getId());
                         //Se inserta un producto a la lista a partir de los datos introducidos
                         String precio=input_pp.getText().toString();
                         precio=(precio.isEmpty()?"0":precio);
