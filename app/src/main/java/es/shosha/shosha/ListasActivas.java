@@ -1,7 +1,6 @@
 package es.shosha.shosha;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -18,7 +17,7 @@ import java.util.List;
 
 import es.shosha.shosha.AdaptadorLista.AdapterLista;
 import es.shosha.shosha.dominio.Lista;
-import es.shosha.shosha.negocio.CargaDatos;
+import es.shosha.shosha.persistencia.ListaPers;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 public class ListasActivas extends AppCompatActivity {
@@ -36,7 +35,7 @@ public class ListasActivas extends AppCompatActivity {
         abd.open();
 
         listas = abd.getListas(MyApplication.getUser().getId());
-        Log.d("lis",listas.toString());
+        Log.d("lis", listas.toString());
 
         setListas(listas);
 
@@ -67,9 +66,9 @@ public class ListasActivas extends AppCompatActivity {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent i = new Intent(ListasActivas.this,ListaProductos.class);
+                Intent i = new Intent(ListasActivas.this, ListaProductos.class);
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("lista",adaptador.getItem(position));
+                bundle.putSerializable("lista", adaptador.getItem(position));
                 i.putExtras(bundle);
                 startActivity(i);
             }
@@ -125,7 +124,7 @@ public class ListasActivas extends AppCompatActivity {
     public boolean onContextItemSelected(MenuItem item) {
         if (item.getTitle() == "Eliminar") {
             function1(listaClicada.getId());
-        }else{
+        } else {
             return false;
         }
         return true;
@@ -139,10 +138,11 @@ public class ListasActivas extends AppCompatActivity {
     public void function1(String id) {
         AdaptadorBD abd = new AdaptadorBD(getBaseContext());
         abd.open();
-        abd.eliminarLista(id,MyApplication.getUser());
+        new ListaPers(MyApplication.getAppContext(), null).execute("delete", id, MyApplication.getUser().getId());
+        abd.eliminarLista(id, MyApplication.getUser());
         listas = abd.getListas(MyApplication.getUser().getId());
         setListas(listas);
         abd.close();
-        Toast.makeText(this, "Eliminando lista "+id, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Eliminando lista " + id, Toast.LENGTH_SHORT).show();
     }
 }

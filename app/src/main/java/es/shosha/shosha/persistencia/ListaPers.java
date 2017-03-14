@@ -31,7 +31,7 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
  */
 public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
     private final static String URL_GET = "http://shosha.jiraizoz.es/getListas.php?";
-    private final static String URL_DEL = "http://shosha.jiraizoz.es/delListas.php?";
+    private final static String URL_DEL = "http://shosha.jiraizoz.es/delLista.php?";
     private final static String ATRIBUTO_USR = "usuario=";
     private final static String ATRIBUTO_LISTA = "lista=";
     private List<Lista> lListas = null;
@@ -71,7 +71,8 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
                 rd.close();
                 lListas = jsonParser(res);
 
-                count.countDown();
+                if (count != null)
+                    count.countDown();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -109,7 +110,7 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
         }
 
         try {
-            java.net.URL urlObj = new URL(ListaPers.URL_DEL + ListaPers.ATRIBUTO_LISTA + idLista + ListaPers.ATRIBUTO_USR + idUsr);
+            java.net.URL urlObj = new URL(ListaPers.URL_DEL + ListaPers.ATRIBUTO_LISTA + idLista +"&"+ ListaPers.ATRIBUTO_USR + idUsr);
 
             HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
 
@@ -122,6 +123,9 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
             rd.close();
 
             System.out.println("Delete response: " + res);
+
+
+
         } catch (IOException e) {
             e.printStackTrace();
         }
