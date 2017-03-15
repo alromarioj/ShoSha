@@ -1,23 +1,17 @@
 package es.shosha.shosha;
 
-import android.database.Cursor;
-import android.database.SQLException;
-import android.os.AsyncTask;
+import android.content.Intent;
 import android.os.Bundle;
-
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.content.Intent;
 import android.view.MenuItem;
+import android.view.View;
 
 import es.shosha.shosha.negocio.CargaDatos;
-import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 public class Inicio extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -26,7 +20,7 @@ public class Inicio extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        new Thread(new CargaDatos("u3",getBaseContext())).start();
+        new Thread(new CargaDatos("u2",MyApplication.getAppContext())).start();
 
         setContentView(R.layout.activity_inicio);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

@@ -15,30 +15,26 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Usuario;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 /**
- * Created by Jesús Iráizoz on 02/03/2017.
+ * Created by Jesús Iráizoz on 13/03/2017.
  */
 
-public class UsuarioPers extends AsyncTask<String, Void, Void> {
-    private final static String URL = "http://shosha.jiraizoz.es/getUsuario.php?";
-    private final static String ATRIBUTO = "id=";
+public class ParticipaPers extends AsyncTask<String,Void,Void> {
+    private final static String URL = "http://shosha.jiraizoz.es/getParticipaciones.php?";
+    private final static String ATRIBUTO = "lista=";
 
     private Context contexto;
     private final CountDownLatch count;
 
-    public UsuarioPers(Context contexto) {
+    public ParticipaPers(Context contexto, CountDownLatch count) {
         this.contexto = contexto;
-        count = null;
-    }
-
-    public UsuarioPers(Context c, CountDownLatch cdl) {
-        this.contexto = c;
-        count = cdl;
+        this.count = count;
     }
 
     @Override
@@ -53,7 +49,7 @@ public class UsuarioPers extends AsyncTask<String, Void, Void> {
             }
 
             try {
-                java.net.URL urlObj = new URL(UsuarioPers.URL + UsuarioPers.ATRIBUTO + data);
+                java.net.URL urlObj = new URL(ParticipaPers.URL + ParticipaPers.ATRIBUTO + data);
 
                 HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
 
@@ -86,20 +82,29 @@ public class UsuarioPers extends AsyncTask<String, Void, Void> {
         Usuario u = null;
         try {
             JSONObject jso = new JSONObject(data);
-            JSONArray listas = jso.getJSONArray("usuario");
+            JSONArray listas = jso.getJSONArray("participa");
             for (int i = 0; i < listas.length(); i++) {
                 JSONObject o = listas.getJSONObject(i);
+                String idUsr = o.getString("idUsuario");
 
-                u = new Usuario(o.getString("id"), o.getString("nombre"), o.getString("email"));
-                System.out.println("#################################################");
-                System.out.println("#################################################");
-                System.out.println(u.toString());
-                System.out.println("#################################################");
-                System.out.println("#################################################\n");
+                AdaptadorBD abd = new AdaptadorBD(this.contexto);
+                abd.open();
+                u = abd.obtenerUsuario(idUsr);
+                if (u == null){
+                    try {
+                        final int N = 1;
+                        final CountDownLatch cdl = new CountDownLatch(N);
+                        ExecutorService pool = Executors.newFixedThreadPool(N);
+                        new UsuarioPers(this.contexto, cdl).executeOnExecutor(pool,idUsr);
 
-                MyApplication.setUser(u);
+                        cdl.await();
+                        u = abd.obtenerUsuario(idUsr);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
 
-                insertarBD(u);
+                insertarBD(u.getId(),o.getString("idLista"),o.getString("activo"));
 
             }
         } catch (JSONException e) {
@@ -109,17 +114,16 @@ public class UsuarioPers extends AsyncTask<String, Void, Void> {
     }
 
     private void lanzadorExcepcion() throws Exception {
-        throw new Exception("Se ha enviado más de un parámetro en: UsuarioPers");
+        throw new Exception("Se ha enviado más de un parámetro en: ParticipaPers");
     }
 
-    private void insertarBD(Usuario u) {
+    private void insertarBD(String... params) {
         AdaptadorBD adap = new AdaptadorBD(this.contexto);
         adap.open();
         try {
-            adap.insertarUsuario(u.getId(), u.getNombre(), u.getEmail());
+            adap.insertarParticipa(params[0],params[1],params[2].equals("1"));
         } finally {
             adap.close();
         }
     }
-
 }

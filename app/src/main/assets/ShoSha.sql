@@ -3,6 +3,7 @@ CREATE TABLE `usuario` (
 	`id`	TEXT,
 	`nombre`	TEXT NOT NULL,
 	`email`	TEXT NOT NULL UNIQUE,
+	`modificacion` REAL,
 	PRIMARY KEY(`id`)
 );
 CREATE TABLE `participa` (

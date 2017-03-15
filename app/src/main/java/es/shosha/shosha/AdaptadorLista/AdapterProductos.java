@@ -2,28 +2,30 @@ package es.shosha.shosha.AdaptadorLista;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.graphics.drawable.Drawable;
-import es.shosha.shosha.dominio.Lista;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import es.shosha.shosha.R;
+import es.shosha.shosha.dominio.Item;
+import es.shosha.shosha.dominio.Lista;
 
 
-public class AdapterLista extends BaseAdapter {
+public class AdapterProductos extends BaseAdapter {
 
     protected Activity activity;
-    protected List<Lista> items;
+    protected List<Item> items;
 
-    public AdapterLista(Activity activity, List<Lista> items) {
+    public AdapterProductos(Activity activity, List<Item> productos) {
         this.activity = activity;
-        this.items = items;
+        this.items = productos;
     }
 
     @Override
@@ -35,14 +37,14 @@ public class AdapterLista extends BaseAdapter {
         items.clear();
     }
 
-    public void addAll(ArrayList<Lista> category) {
+    public void addAll(ArrayList<Item> category) {
         for (int i = 0; i < category.size(); i++) {
             items.add(category.get(i));
         }
     }
 
     @Override
-    public Lista getItem(int arg0) {
+    public Item getItem(int arg0) {
         return items.get(arg0);
     }
 
@@ -58,24 +60,18 @@ public class AdapterLista extends BaseAdapter {
 
         if (convertView == null) {
             LayoutInflater inf = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            v = inf.inflate(R.layout.item_lista, null);
+            v = inf.inflate(R.layout.item_producto, null);
         }
 
-        Lista dir = items.get(position);
+        Item dir = items.get(position);
 
-        TextView titulo = (TextView) v.findViewById(R.id.tituloLista);
-        titulo.setText(dir.getNombre());
+        TextView nombre = (TextView) v.findViewById(R.id.nombreP);
+        nombre.setText(dir.getNombre());
 
-        TextView participantes = (TextView) v.findViewById(R.id.numParticipantes);
-        if(dir.getParticipantes()==null)
-            participantes.setText("0");
-        else
-            participantes.setText(Integer.toString(dir.getParticipantes().size()));
-        Drawable im=null;
-        if(im!=null){
-            ImageView imagen = (ImageView) v.findViewById(R.id.iconoLista);
-            imagen.setImageDrawable(im);
-        }
+        TextView precio = (TextView) v.findViewById(R.id.precioP);
+        double p=dir.getPrecio();
+        precio.setText(dir.getPrecio()==0?"":p+" €");
+
         return v;
     }
 }

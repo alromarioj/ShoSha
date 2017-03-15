@@ -1,10 +1,12 @@
 package es.shosha.shosha.dominio;
 
+import java.io.Serializable;
+
 /**
  * Created by Jesús Iráizoz on 02/03/2017.
  */
 
-public class Usuario {
+public class Usuario implements Serializable{
     private String id;
     private String nombre;
     private String email;

@@ -28,6 +28,15 @@ public class Lista implements Serializable{
         this.items = new ArrayList<Item>();
     }
 
+    public Lista(String id, String nombre, Usuario propietario, boolean estado, List<Item> items, List<Usuario> participantes) {
+        this.id = id;
+        this.nombre = nombre;
+        this.propietario = propietario;
+        this.estado = estado;
+        this.items = items;
+        this.participantes = participantes;
+    }
+
     public Lista(String id, String nombre, Usuario propietario, boolean estado,List<Usuario> participantes, Drawable imagen) {
         this.id = id;
         this.nombre = nombre;
@@ -129,5 +138,20 @@ public class Lista implements Serializable{
 
     public Drawable getImagen() {
         return imagen;
+    }
+    public List<Item> getItems() {
+        return items;
+    }
+
+    public void setItems(List<Item> items) {
+        this.items = items;
+    }
+
+    public List<Usuario> getParticipantes() {
+        return participantes;
+    }
+
+    public void setParticipantes(List<Usuario> participantes) {
+        this.participantes = participantes;
     }
 }
