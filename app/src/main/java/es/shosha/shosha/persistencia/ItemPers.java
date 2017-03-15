@@ -16,7 +16,9 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
 
+import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Item;
+import es.shosha.shosha.dominio.Lista;
 import es.shosha.shosha.dominio.Usuario;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
@@ -85,7 +87,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
 
     private void jsonParser(String data, String idLista) {
         //  List<Item> lItems = new ArrayList<Item>();
-        System.out.println(">>>>>>>>>>>>>>>>>>>>> " + idLista);
+        System.out.println(">>>>>>>>>>>>>>>>>>>>> ITEMPERS idLista " + idLista);
         try {
             JSONObject jso = new JSONObject(data);
             if (jso.has("item")) {
@@ -98,10 +100,22 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
                     itm.setNombre(o.getString("nombre"));
                     itm.setPrecio(o.getDouble("precio"));
 
+                    System.out.println("-------------------------------------------- "+itm.toString());
 
                     insertarBD(itm, idLista);
 
-                    //lItems.add(itm);
+                    AdaptadorBD adap = new AdaptadorBD(this.contexto);
+                    adap.open();
+                    try {
+                        List<Lista> ll = adap.getListas(MyApplication.getUser().getId());
+                        System.out.println("-------------------------------------------- "+ll.get(0).getItem(0).toString());
+                    } finally {
+                        adap.close();
+                    }
+
+
+
+
 
                 }
             }

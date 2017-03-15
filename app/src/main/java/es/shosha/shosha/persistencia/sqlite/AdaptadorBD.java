@@ -161,7 +161,7 @@ public class AdaptadorBD {
 
     public long insertarItem(String id, String nombre, double precio, String idLista) {
         bdatos.beginTransaction();
-        long res;
+        long res = 0;
         try {
             ContentValues valores = new ContentValues();
             valores.put(ID, id);
@@ -169,7 +169,8 @@ public class AdaptadorBD {
             valores.put(ITM_PRECIO, precio);
             valores.put(IDLISTA, idLista);
             bdatos.delete(TB_ITEM, ID + " = '" + id + "'", null);
-            res = bdatos.insert(TB_ITEM, null, valores);
+            //res = bdatos.insert(TB_ITEM, null, valores);
+            bdatos.rawQuery("INSERT INTO item VALUES ('"+id+"', '"+nombre+"', '"+precio+"', '"+idLista+"')",null);
 
             bdatos.setTransactionSuccessful();
         } finally {
