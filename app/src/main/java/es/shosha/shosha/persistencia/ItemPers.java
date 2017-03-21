@@ -16,16 +16,16 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
 
-import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Item;
-import es.shosha.shosha.dominio.Lista;
 import es.shosha.shosha.dominio.Usuario;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 /**
- * Created by Jesús Iráizoz on 07/03/2017.
+ * Clase que se encarga de obtener los items de la base de datos remota y los añade a la interna.
+ * Es una tarea en segundo plano.
+ * Como parámetros se le pasan los ids de las listas
+ * @author Jesús Iráizoz
  */
-
 public class ItemPers extends AsyncTask<String, Void, Void> {
     private final static String URL = "http://shosha.jiraizoz.es/getItems.php?";
     private final static String ATRIBUTO = "lista=";
@@ -42,7 +42,6 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
 
         String data = "";
         Usuario usu = null;
-        System.out.println("                                              >>>>>>>>>>>>>>>>>>>> " + params.length);
         if (params.length > 0) {
             for (String s : params) {
 
@@ -63,7 +62,6 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
                     while ((line = rd.readLine()) != null) {
                         res += line;
                     }
-                    System.out.println("\t\t>>>>>>> Items");
                     rd.close();
                     jsonParser(res, s);
                 } catch (IOException e) {
@@ -82,12 +80,11 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
     }
 
     private void lanzadorExcepcion() throws Exception {
-        throw new Exception("Se ha enviado más de un parámetro en: ItemPers");
+        throw new Exception("Error en el envio de parámetros en: ItemPers");
     }
 
     private void jsonParser(String data, String idLista) {
-        //  List<Item> lItems = new ArrayList<Item>();
-        System.out.println(">>>>>>>>>>>>>>>>>>>>> ITEMPERS idLista " + idLista);
+
         try {
             JSONObject jso = new JSONObject(data);
             if (jso.has("item")) {
@@ -100,7 +97,6 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
                     itm.setNombre(o.getString("nombre"));
                     itm.setPrecio(o.getDouble("precio"));
 
-                    System.out.println("--------------------" + i + "------------------------ " + itm.toString());
 
                     insertarBD(itm, idLista);
 
@@ -117,7 +113,6 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
         adap.open();
         try {
             long l = adap.insertarItem(i.getId(), i.getNombre(), i.getPrecio(), idLista);
-            System.out.println("\t\t\t " + l);
         } finally {
             adap.close();
         }
