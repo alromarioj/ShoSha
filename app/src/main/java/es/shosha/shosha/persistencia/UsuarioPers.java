@@ -98,6 +98,8 @@ public class UsuarioPers extends AsyncTask<String, Void, Void> {
 
                 MyApplication.setUser(u);
 
+                System.out.println("################################################# " + u.hashCode());
+
                 insertarBD(u);
 
             }

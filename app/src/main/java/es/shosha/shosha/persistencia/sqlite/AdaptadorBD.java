@@ -233,6 +233,8 @@ public class AdaptadorBD {
 
                 l.setListaItems(this.obtenerItems(l.getId()));
 
+                l.setParticipantes(this.getParticipantes(l.getId()));
+
                 aux.add(l);
 
             } while (c.moveToNext());
@@ -262,6 +264,8 @@ public class AdaptadorBD {
                 }
 
                 l.setListaItems(this.obtenerItems(l.getId()));
+
+                l.setParticipantes(this.getParticipantes(l.getId()));
 
                 aux.add(l);
 
