@@ -37,6 +37,8 @@ public class ListasActivas extends AppCompatActivity {
         listas = abd.getListas(MyApplication.getUser().getId());
         Log.d("lis", listas.toString());
 
+        setContentView(R.layout.activity_listas_activas);
+        list = (ListView) findViewById(R.id.listasActivas);
         setListas(listas);
 
         abd.close();
@@ -58,8 +60,6 @@ public class ListasActivas extends AppCompatActivity {
     }
 
     public void setListas(List<Lista> listas) {
-        setContentView(R.layout.activity_listas_activas);
-        list = (ListView) findViewById(R.id.listasActivas);
         //ArrayAdapter<String> adaptador=new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,listas);
         final AdapterLista adaptador = new AdapterLista(this, listas);
         list.setAdapter(adaptador);

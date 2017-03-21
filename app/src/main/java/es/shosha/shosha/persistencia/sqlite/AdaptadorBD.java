@@ -259,11 +259,15 @@ public class AdaptadorBD {
         Cursor c = bdatos.query(false, TB_ITEM, null, "idLista='" + idLista + "'", null, null, null, null, null);
         Item i = null;
         List<Item> aux = new ArrayList<Item>();
-
-        while (c.moveToNext()) {
-            i = new Item(c.getString(0), c.getString(1), c.getDouble(2));
-            aux.add(i);
+        System.out.println("*********************************************************** Antes del if de obtener items");
+        if (c.moveToFirst()) {
+            do {
+                i = new Item(c.getString(0), c.getString(1), c.getDouble(2));
+                aux.add(i);
+                System.out.println("*********************************************************** " + i.toString());
+            } while (c.moveToNext());
         }
+        c.close();
         return aux;
     }
 
@@ -281,15 +285,20 @@ public class AdaptadorBD {
         Cursor cursor = bdatos.rawQuery("SELECT * FROM " + TB_LISTA + " WHERE propietario='" + usuario + "' AND estado = '1'", null);
         ArrayList<Lista> listas = new ArrayList<>();
         Lista l = null;
-        while (cursor.moveToNext()) {
-            l = new Lista(cursor.getString(0), cursor.getString(1), this.getUsuario(cursor.getString(2)), true, new ArrayList<Item>(), new ArrayList<Usuario>());
-            listas.add(l);
+
+        if (cursor.moveToFirst()) {
+            do {
+                l = new Lista(cursor.getString(0), cursor.getString(1), this.getUsuario(cursor.getString(2)), true, new ArrayList<Item>(), new ArrayList<Usuario>());
+                listas.add(l);
+            } while (cursor.moveToNext());
         }
         cursor.close();
         cursor = bdatos.rawQuery("SELECT * FROM " + TB_LISTA + " WHERE id IN(SELECT idLista FROM " + TB_PARTICIPA + " WHERE idUsuario = '" + usuario + "' AND activo = '1')", null);
-        while (cursor.moveToNext()) {
-            l = new Lista(cursor.getString(0), cursor.getString(1), this.getUsuario(cursor.getString(2)), true, new ArrayList<Item>(), new ArrayList<Usuario>());
-            listas.add(l);
+        if (cursor.moveToFirst()) {
+            do {
+                l = new Lista(cursor.getString(0), cursor.getString(1), this.getUsuario(cursor.getString(2)), true, new ArrayList<Item>(), new ArrayList<Usuario>());
+                listas.add(l);
+            } while (cursor.moveToNext());
         }
         return listas;
     }
