@@ -21,5 +21,6 @@
             app:popupTheme="@style/Base.AlertDialog.AppCompat.Light"
             />
     </android.support.design.widget.AppBarLayout>
+    <include layout="@layout/content_lista_productos"/>
 
 </RelativeLayout>
