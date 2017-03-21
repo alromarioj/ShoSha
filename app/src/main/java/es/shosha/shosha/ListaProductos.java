@@ -1,5 +1,6 @@
 package es.shosha.shosha;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AlertDialog;
@@ -14,6 +15,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+
+import com.daimajia.swipe.SwipeLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,11 +43,44 @@ public class ListaProductos extends AppCompatActivity {
 
         final AdapterProductos adaptador = new AdapterProductos(this, productos);
         list.setAdapter(adaptador);
-
+        crearListView();
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                
+                Item producto=adaptador.getItem(position);
 
+                AlertDialog.Builder builder1;
+                //Se crea el PopUp para añadir un nuevo producto
+                builder1=new AlertDialog.Builder(getBaseContext());
+                builder1.setTitle("Editar producto");
+
+                View viewInflated1 = LayoutInflater.from(getBaseContext()).inflate(R.layout.nuevo_producto, (ViewGroup) findViewById(android.R.id.content), false);
+                // Set up the input
+                final EditText input_np2 = (EditText) viewInflated1.findViewById(R.id.in_nombre_producto);
+                input_np2.setText(producto.getNombre());
+                final EditText input_pp = (EditText) viewInflated1.findViewById(R.id.in_precio_producto);
+                input_pp.setText(String.valueOf(producto.getPrecio()));
+
+                // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+                builder1.setView(viewInflated1);
+
+                // Set up the buttons
+                builder1.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        //Comprobar campos
+                        //Añadir producto
+                    }
+                });
+                builder1.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                builder1.show();
             }
         });
         //Cambia el título de la página que muestra la lista de productos
@@ -56,6 +92,11 @@ public class ListaProductos extends AppCompatActivity {
         }
         super.onCreate(savedInstanceState);
     }
+    private void crearListView(){
+        SwipeLayout swipeLayout=(SwipeLayout)findViewById(R.id.swipe_producto);
+
+
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //Mostrar menú para la lista de productos
@@ -64,8 +105,6 @@ public class ListaProductos extends AppCompatActivity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
-
         switch(item.getItemId()){
             case android.R.id.home:
                 onBackPressed();
@@ -107,37 +146,6 @@ public class ListaProductos extends AppCompatActivity {
                     }
                 });
                 builder.show();
-                return true;
-            case R.id.editar_producto:
-                AlertDialog.Builder builder1;
-                //Se crea el PopUp para añadir un nuevo producto
-                builder1=new AlertDialog.Builder(this);
-                builder1.setTitle("Editar producto");
-
-                View viewInflated1 = LayoutInflater.from(getBaseContext()).inflate(R.layout.nuevo_producto, (ViewGroup) findViewById(android.R.id.content), false);
-                // Set up the input
-                final EditText input_np2 = (EditText) viewInflated1.findViewById(R.id.in_nombre_producto);
-                input_np2.setText("Tomates");
-                //final EditText input_pp = (EditText) viewInflated.findViewById(R.id.in_precio_producto);
-                // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-                builder1.setView(viewInflated1);
-
-                // Set up the buttons
-                builder1.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        //Comprobar campos
-                        //Añadir producto
-                    }
-                });
-                builder1.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-                builder1.show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
