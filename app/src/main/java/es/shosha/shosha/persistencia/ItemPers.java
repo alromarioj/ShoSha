@@ -100,21 +100,9 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
                     itm.setNombre(o.getString("nombre"));
                     itm.setPrecio(o.getDouble("precio"));
 
-                    System.out.println("-------------------------------------------- "+itm.toString());
+                    System.out.println("--------------------" + i + "------------------------ " + itm.toString());
 
                     insertarBD(itm, idLista);
-
-                    AdaptadorBD adap = new AdaptadorBD(this.contexto);
-                    adap.open();
-                    try {
-                        List<Lista> ll = adap.getListas(MyApplication.getUser().getId());
-                        System.out.println("-------------------------------------------- "+ll.get(0).getItem(0).toString());
-                    } finally {
-                        adap.close();
-                    }
-
-
-
 
 
                 }
@@ -128,7 +116,8 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
         AdaptadorBD adap = new AdaptadorBD(this.contexto);
         adap.open();
         try {
-            adap.insertarItem(i.getId(), i.getNombre(), i.getPrecio(), idLista);
+            long l = adap.insertarItem(i.getId(), i.getNombre(), i.getPrecio(), idLista);
+            System.out.println("\t\t\t " + l);
         } finally {
             adap.close();
         }

@@ -19,6 +19,13 @@ public class Lista implements Serializable{
     private Drawable imagen=null;
     private List<Item> items;
 
+    /**
+     *
+     * @param id
+     * @param nombre
+     * @param propietario
+     * @param estado
+     */
     public Lista(String id, String nombre, Usuario propietario, boolean estado) {
         this.id = id;
         this.nombre = nombre;
@@ -27,6 +34,15 @@ public class Lista implements Serializable{
         this.items = new ArrayList<Item>();
     }
 
+    /**
+     *
+     * @param id
+     * @param nombre
+     * @param propietario
+     * @param estado
+     * @param items
+     * @param participantes
+     */
     public Lista(String id, String nombre, Usuario propietario, boolean estado, List<Item> items, List<Usuario> participantes) {
         this.id = id;
         this.nombre = nombre;
@@ -36,6 +52,15 @@ public class Lista implements Serializable{
         this.participantes = participantes;
     }
 
+    /**
+     *
+     * @param id
+     * @param nombre
+     * @param propietario
+     * @param estado
+     * @param participantes
+     * @param imagen
+     */
     public Lista(String id, String nombre, Usuario propietario, boolean estado,List<Usuario> participantes, Drawable imagen) {
         this.id = id;
         this.nombre = nombre;
@@ -46,6 +71,9 @@ public class Lista implements Serializable{
         this.imagen = imagen;
     }
 
+    /**
+     *
+     */
     public Lista() {
         this.items = new ArrayList<Item>();
     }
