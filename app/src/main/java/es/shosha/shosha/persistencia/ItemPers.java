@@ -108,7 +108,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
                     adap.open();
                     try {
                         List<Lista> ll = adap.getListas(MyApplication.getUser().getId());
-                        System.out.println("-------------------------------------------- "+ll.get(0).getItem(0).toString());
+                        //System.out.println("-------------------------------------------- "+ll.get(0).getItem(0).toString());
                     } finally {
                         adap.close();
                     }

@@ -66,11 +66,11 @@ public class ListasActivas extends AppCompatActivity {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent i = new Intent(ListasActivas.this, ListaProductos.class);
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("lista", adaptador.getItem(position));
-                i.putExtras(bundle);
-                startActivity(i);
+            Intent i = new Intent(ListasActivas.this, ListaProductos.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("lista", adaptador.getItem(position));
+            i.putExtras(bundle);
+            startActivity(i);
             }
         });
         // Registramos el menu contextual

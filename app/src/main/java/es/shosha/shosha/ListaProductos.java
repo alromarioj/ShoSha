@@ -21,6 +21,7 @@ import com.daimajia.swipe.SwipeLayout;
 import java.util.ArrayList;
 import java.util.List;
 
+import es.shosha.shosha.AdaptadorLista.AdaptadorProductosL;
 import es.shosha.shosha.AdaptadorLista.AdapterProductos;
 import es.shosha.shosha.dominio.Item;
 import es.shosha.shosha.dominio.Lista;
@@ -37,19 +38,20 @@ public class ListaProductos extends AppCompatActivity {
 
         this.lista=(Lista)this.getIntent().getExtras().getSerializable("lista");//Se recoge la lista que se ha pasado desde ListasActivas
         productos=lista.getItems();
+        productos.add(new Item("ref01","Tomate",1.5));
+        productos.add(new Item("ref02","Macarrones",2.06));
+
         setContentView(R.layout.activity_lista_productos);
 
         list = (ListView) findViewById(R.id.listaProductos);
 
-        final AdapterProductos adaptador = new AdapterProductos(this, productos);
+        final AdaptadorProductosL adaptador = new AdaptadorProductosL(this, productos);
         list.setAdapter(adaptador);
         crearListView();
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                
                 Item producto=adaptador.getItem(position);
-
                 AlertDialog.Builder builder1;
                 //Se crea el PopUp para añadir un nuevo producto
                 builder1=new AlertDialog.Builder(getBaseContext());

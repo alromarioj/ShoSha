@@ -2,26 +2,47 @@
 <com.daimajia.swipe.SwipeLayout
     android:id="@+id/swipe_producto"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="80dp">
-    <!-- Bottom View Start-->
+    xmlns:swipe="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="80dp"
+    swipe:leftEdgeSwipeOffset="0dp"
+    swipe:rightEdgeSwipeOffset="0dp">
     <LinearLayout
-        android:orientation="horizontal"
-        android:background="#66ddff00"
-        android:id="@+id/bottom_wrapper"
-        android:layout_width="160dp"
-        android:weightSum="1"
-        android:layout_height="match_parent">
-        <!--What you want to show-->
-    </LinearLayout>
-    <!-- Bottom View End-->
-
-    <!-- Surface View Start -->
-    <LinearLayout
-        android:padding="10dp"
-        android:background="#ffffff"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <!--What you want to show in SurfaceView-->
+        android:layout_height="80dp"
+        android:background="#FF5534"
+        android:gravity="center"
+        android:tag="Bottom3"
+        android:weightSum="10">
+
+        <ImageView
+            android:id="@+id/trash"
+            android:layout_width="27dp"
+            android:layout_height="30dp"
+            android:layout_weight="1"
+            android:src="@drawable/eliminar" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:text="Delete Item?"
+            android:textColor="#fff"
+            android:textSize="17sp" />
+
+        <Button
+            android:id="@+id/delete"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="4"
+            android:background="@color/fondoClaro"
+            android:text="Yes,Delete"
+            android:textColor="#FF5534" />
+
+        <include
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            layout="@layout/item_producto"
+            android:layout_weight="1" />
     </LinearLayout>
-    <!-- Surface View End -->
+
 </com.daimajia.swipe.SwipeLayout>

@@ -5,13 +5,12 @@ import android.graphics.drawable.Drawable;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by Jesús Iráizoz on 28/02/2017.
  */
 @SuppressWarnings("serial")
-public class Lista implements Serializable{
+public class Lista implements Serializable {
     private String id;
     private String nombre;
     private Usuario propietario;
@@ -59,6 +58,18 @@ public class Lista implements Serializable{
     @Override
     public boolean equals(Object obj) {
         return super.equals(obj);
+    }
+
+    public List<Usuario> getParticipantes() {
+        return participantes;
+    }
+
+    public void setParticipantes(List<Usuario> participantes) {
+        this.participantes = participantes;
+    }
+
+    public void setImagen(Drawable imagen) {
+        this.imagen = imagen;
     }
 
     public String getId() {
@@ -145,13 +156,5 @@ public class Lista implements Serializable{
 
     public void setItems(List<Item> items) {
         this.items = items;
-    }
-
-    public List<Usuario> getParticipantes() {
-        return participantes;
-    }
-
-    public void setParticipantes(List<Usuario> participantes) {
-        this.participantes = participantes;
     }
 }
