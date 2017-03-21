@@ -22,6 +22,7 @@ public class MyApplication extends Application {
         MyApplication.user = user;
     }
 
+
     public void onCreate() {
         super.onCreate();
         MyApplication.context = getApplicationContext();

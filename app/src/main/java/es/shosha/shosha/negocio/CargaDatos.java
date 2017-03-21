@@ -9,7 +9,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import es.shosha.shosha.dominio.Lista;
-import es.shosha.shosha.dominio.Usuario;
 import es.shosha.shosha.persistencia.ItemPers;
 import es.shosha.shosha.persistencia.ListaPers;
 import es.shosha.shosha.persistencia.UsuarioPers;
@@ -38,7 +37,7 @@ public class CargaDatos implements Runnable {
         VersionPers vp = new VersionPers();
         vp.execute(this.idUsr);
         Long lVp = null;
-        long bdRemota = 0L;
+        long bdRemota = 1L;
         try {
             lVp = vp.get();
             bdRemota = lVp.longValue();

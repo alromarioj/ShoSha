@@ -11,16 +11,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
-import es.shosha.shosha.negocio.CargaDatos;
-
 public class Inicio extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        new Thread(new CargaDatos("u2",MyApplication.getAppContext())).start();
 
         setContentView(R.layout.activity_inicio);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -69,6 +65,11 @@ public class Inicio extends AppCompatActivity
     public void mostrarListasActivas(View view) {
         //Ejecuta la actividad de listas activas
         Intent i = new Intent(this, ListasActivas.class);
+        startActivity(i);
+    }
+    public void mostrarAnadirLista(View view) {
+        //Ejecuta la actividad de listas activas
+        Intent i = new Intent(this, AnadirLista.class);
         startActivity(i);
     }
 }

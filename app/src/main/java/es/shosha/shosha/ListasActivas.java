@@ -17,6 +17,7 @@ import java.util.List;
 
 import es.shosha.shosha.AdaptadorLista.AdapterLista;
 import es.shosha.shosha.dominio.Lista;
+import es.shosha.shosha.dominio.Usuario;
 import es.shosha.shosha.persistencia.ListaPers;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
@@ -33,7 +34,7 @@ public class ListasActivas extends AppCompatActivity {
 
         AdaptadorBD abd = new AdaptadorBD(getBaseContext());
         abd.open();
-
+        Usuario x = MyApplication.getUser();
         listas = abd.getListas(MyApplication.getUser().getId());
         Log.d("lis", listas.toString());
 

@@ -17,4 +17,18 @@
     <string name="OCR">Escaneo OCR</string>
     <string name="manual">Manual</string>
     <string name="crea_lista_cero">Crea tú mismo la lista desde cero</string>
+    <string name="title_activity_login">Iniciar sesión</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Contraseña (opcional)</string>
+    <string name="action_sign_in">Iniciar sesión o registrarse</string>
+    <string name="action_sign_in_short">Iniciar sesión</string>
+    <string name="error_invalid_email">La dirección de email no es válida</string>
+    <string name="error_invalid_password">La contraseña es demasiado corta</string>
+    <string name="error_incorrect_password">La contraseña no es correcta</string>
+    <string name="error_field_required">El campo es obligatorio</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
 </resources>
