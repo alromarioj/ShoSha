@@ -160,22 +160,24 @@ public class AdaptadorBD {
     }
 
     public long insertarItem(String id, String nombre, double precio, String idLista) {
-        bdatos.beginTransaction();
+        //    bdatos.beginTransaction();
         long res = 0;
-        try {
-            ContentValues valores = new ContentValues();
-            valores.put(ID, id);
-            valores.put(NOMBRE, nombre);
-            valores.put(ITM_PRECIO, precio);
-            valores.put(IDLISTA, idLista);
-            bdatos.delete(TB_ITEM, ID + " = '" + id + "'", null);
-            //res = bdatos.insert(TB_ITEM, null, valores);
-            bdatos.rawQuery("INSERT INTO item VALUES ('"+id+"', '"+nombre+"', '"+precio+"', '"+idLista+"')",null);
+    /*    try {*/
+        ContentValues valores = new ContentValues();
+        valores.put(ID, id);
+        valores.put(NOMBRE, nombre);
+        valores.put(ITM_PRECIO, precio);
+        valores.put(IDLISTA, idLista);
 
-            bdatos.setTransactionSuccessful();
+
+        bdatos.delete(TB_ITEM, ID + " = '" + id + "'", null);
+        res = bdatos.insertOrThrow(TB_ITEM, null, valores);
+        //bdatos.rawQuery("INSERT INTO item VALUES ('"+id+"', '"+nombre+"', '"+precio+"', '"+idLista+"')",null);
+
+  /*          bdatos.setTransactionSuccessful();
         } finally {
             bdatos.endTransaction();
-        }
+        }*/
 
         return res;
     }
@@ -207,42 +209,69 @@ public class AdaptadorBD {
 
 
     public List<Lista> obtenerListas(String idUsuario) {
-        /*List<Lista> x = new ArrayList<Lista>();
-        List<Usuario> y = new ArrayList<Usuario>();
-        y.add(new Usuario("1","1","1"));
-        y.add(new Usuario("2","2","2"));
-        x.add(new Lista("1","1",new Usuario("1","1","1"),true,y,null));
-        return x;*/
+
+        //Cursor de las listas del usuario idUsuario
         Cursor c = bdatos.query(false, TB_LISTA, null, "propietario='" + idUsuario + "'", null, null, null, null, null);
-        Cursor c2 = null;
+
+        Usuario u = this.obtenerUsuario(idUsuario);
+
         Lista l = null;
         List<Lista> aux = new ArrayList<Lista>();
-        List<Usuario> participantes;
-        while (c.moveToNext()) {
-            c2 = bdatos.query(false, TB_PARTICIPA, null, "idLista='" + c.getString(0) + "'", null, null, null, null, null);
-            participantes = new ArrayList<Usuario>();
-            while (c2.moveToNext()) {
-                participantes.add(this.obtenerUsuario(c.getString(1)));
-            }
-            c2.close();
-            l = new Lista(c.getString(0), c.getString(1), this.obtenerUsuario(idUsuario), c.getString(3).equals("1"), null, participantes);
-            l.setListaItems(this.obtenerItems(l.getId()));
-            System.out.println("          > " + l.toString());
-            aux.add(l);
+
+        if (c.moveToFirst()) {
+            do {
+                l = new Lista();
+                l.setId(c.getString(0));
+                l.setNombre(c.getString(1));
+                l.setEstado(c.getString(3).equals("1"));
+                String usrProp = c.getString(2);
+                if (usrProp.equals(idUsuario) && u != null) {
+                    l.setPropietario(u);
+                } else if (!usrProp.equals(idUsuario)) {
+                    l.setPropietario(this.obtenerUsuario(usrProp));
+                }
+
+                l.setListaItems(this.obtenerItems(l.getId()));
+
+                l.setParticipantes(this.getParticipantes(l.getId()));
+
+                aux.add(l);
+
+            } while (c.moveToNext());
         }
         c.close();
         return aux;
     }
 
     public List<Lista> obtenerListas(Usuario u) {
+        //Cursor de las listas del usuario idUsuario
         Cursor c = bdatos.query(false, TB_LISTA, null, "propietario='" + u.getId() + "'", null, null, null, null, null);
+
         Lista l = null;
         List<Lista> aux = new ArrayList<Lista>();
-        while (c.moveToNext()) {
-            l = new Lista(c.getString(0), c.getString(2), u, c.getString(4).equals("1"), this.obtenerItems(c.getString(0)), null);
-            l.setListaItems(this.obtenerItems(l.getId()));
-            aux.add(l);
+
+        if (c.moveToFirst()) {
+            do {
+                l = new Lista();
+                l.setId(c.getString(0));
+                l.setNombre(c.getString(1));
+                l.setEstado(c.getString(3).equals("1"));
+                String usrProp = c.getString(2);
+                if (usrProp.equals(u.getId())) {
+                    l.setPropietario(u);
+                } else {
+                    l.setPropietario(this.obtenerUsuario(usrProp));
+                }
+
+                l.setListaItems(this.obtenerItems(l.getId()));
+
+                l.setParticipantes(this.getParticipantes(l.getId()));
+
+                aux.add(l);
+
+            } while (c.moveToNext());
         }
+        c.close();
         return aux;
     }
 
@@ -260,48 +289,14 @@ public class AdaptadorBD {
         Cursor c = bdatos.query(false, TB_ITEM, null, "idLista='" + idLista + "'", null, null, null, null, null);
         Item i = null;
         List<Item> aux = new ArrayList<Item>();
-        System.out.println("*********************************************************** Antes del if de obtener items");
         if (c.moveToFirst()) {
             do {
                 i = new Item(c.getString(0), c.getString(1), c.getDouble(2));
                 aux.add(i);
-                System.out.println("*********************************************************** " + i.toString());
             } while (c.moveToNext());
         }
         c.close();
         return aux;
-    }
-
-    public Usuario getUsuario(String id) {
-        Cursor cursor = bdatos.rawQuery("SELECT * FROM " + TB_USUARIO + " WHERE id='" + id + "'", null);
-        Usuario us = null;
-        if (cursor.moveToFirst()) {
-            us = new Usuario(cursor.getString(0), cursor.getString(1), cursor.getString(2));
-        }
-        cursor.close();
-        return us;
-    }
-
-    public ArrayList<Lista> getListas(String usuario) {
-        Cursor cursor = bdatos.rawQuery("SELECT * FROM " + TB_LISTA + " WHERE propietario='" + usuario + "' AND estado = '1'", null);
-        ArrayList<Lista> listas = new ArrayList<>();
-        Lista l = null;
-
-        if (cursor.moveToFirst()) {
-            do {
-                l = new Lista(cursor.getString(0), cursor.getString(1), this.getUsuario(cursor.getString(2)), true, new ArrayList<Item>(), new ArrayList<Usuario>());
-                listas.add(l);
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        cursor = bdatos.rawQuery("SELECT * FROM " + TB_LISTA + " WHERE id IN(SELECT idLista FROM " + TB_PARTICIPA + " WHERE idUsuario = '" + usuario + "' AND activo = '1')", null);
-        if (cursor.moveToFirst()) {
-            do {
-                l = new Lista(cursor.getString(0), cursor.getString(1), this.getUsuario(cursor.getString(2)), true, new ArrayList<Item>(), new ArrayList<Usuario>());
-                listas.add(l);
-            } while (cursor.moveToNext());
-        }
-        return listas;
     }
 
     public List<Usuario> getParticipantes(String idLista) {
@@ -310,12 +305,10 @@ public class AdaptadorBD {
 
         List<Usuario> aux = new ArrayList<Usuario>();
 
-        System.out.println("++++++++++++++++++++++++++++++++ " + cursor.getCount() + " ##################################");
-
         if (cursor.moveToFirst()) {
             //Recorremos el cursor hasta que no haya más registros
             do {
-                aux.add(this.getUsuario(cursor.getString(cursor.getColumnIndex(PPA_IDUSR))));
+                aux.add(this.obtenerUsuario(cursor.getString(cursor.getColumnIndex(PPA_IDUSR))));
             } while (cursor.moveToNext());
         }
 

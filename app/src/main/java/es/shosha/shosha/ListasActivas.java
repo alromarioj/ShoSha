@@ -17,7 +17,6 @@ import java.util.List;
 
 import es.shosha.shosha.AdaptadorLista.AdapterLista;
 import es.shosha.shosha.dominio.Lista;
-import es.shosha.shosha.dominio.Usuario;
 import es.shosha.shosha.persistencia.ListaPers;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
@@ -34,8 +33,8 @@ public class ListasActivas extends AppCompatActivity {
 
         AdaptadorBD abd = new AdaptadorBD(getBaseContext());
         abd.open();
-        Usuario x = MyApplication.getUser();
-        listas = abd.getListas(MyApplication.getUser().getId());
+
+        listas = abd.obtenerListas(MyApplication.getUser().getId());
         Log.d("lis", listas.toString());
 
         setContentView(R.layout.activity_listas_activas);
@@ -141,7 +140,7 @@ public class ListasActivas extends AppCompatActivity {
         abd.open();
         new ListaPers(MyApplication.getAppContext(), null).execute("delete", id, MyApplication.getUser().getId());
         abd.eliminarLista(id, MyApplication.getUser());
-        listas = abd.getListas(MyApplication.getUser().getId());
+        listas = abd.obtenerListas(MyApplication.getUser().getId());
         setListas(listas);
         abd.close();
         Toast.makeText(this, "Eliminando lista " + id, Toast.LENGTH_SHORT).show();

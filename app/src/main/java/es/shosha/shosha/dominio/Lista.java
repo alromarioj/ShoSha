@@ -10,15 +10,21 @@ import java.util.List;
  * Created by Jesús Iráizoz on 28/02/2017.
  */
 @SuppressWarnings("serial")
-public class Lista implements Serializable{
+public class Lista implements Serializable {
     private String id;
     private String nombre;
     private Usuario propietario;
     private boolean estado;
     private List<Usuario> participantes;
-    private Drawable imagen=null;
+    private Drawable imagen = null;
     private List<Item> items;
 
+    /**
+     * @param id
+     * @param nombre
+     * @param propietario
+     * @param estado
+     */
     public Lista(String id, String nombre, Usuario propietario, boolean estado) {
         this.id = id;
         this.nombre = nombre;
@@ -27,6 +33,14 @@ public class Lista implements Serializable{
         this.items = new ArrayList<Item>();
     }
 
+    /**
+     * @param id
+     * @param nombre
+     * @param propietario
+     * @param estado
+     * @param items
+     * @param participantes
+     */
     public Lista(String id, String nombre, Usuario propietario, boolean estado, List<Item> items, List<Usuario> participantes) {
         this.id = id;
         this.nombre = nombre;
@@ -36,7 +50,15 @@ public class Lista implements Serializable{
         this.participantes = participantes;
     }
 
-    public Lista(String id, String nombre, Usuario propietario, boolean estado,List<Usuario> participantes, Drawable imagen) {
+    /**
+     * @param id
+     * @param nombre
+     * @param propietario
+     * @param estado
+     * @param participantes
+     * @param imagen
+     */
+    public Lista(String id, String nombre, Usuario propietario, boolean estado, List<Usuario> participantes, Drawable imagen) {
         this.id = id;
         this.nombre = nombre;
         this.propietario = propietario;
@@ -46,6 +68,9 @@ public class Lista implements Serializable{
         this.imagen = imagen;
     }
 
+    /**
+     *
+     */
     public Lista() {
         this.items = new ArrayList<Item>();
     }
@@ -98,6 +123,7 @@ public class Lista implements Serializable{
 
     /**
      * Obtiene el objeto <code>Item</code> contenido en la posición <code>index</code> de la lista de items.
+     *
      * @param index Posición del objeto en la lista
      * @return Objeto <code>Item</code> con posición <code>index</code>.
      */
@@ -123,11 +149,11 @@ public class Lista implements Serializable{
         return null;
     }
 
-    public void setListaItems(List<Item> lItem){
+    public void setListaItems(List<Item> lItem) {
         this.items = lItem;
     }
 
-    public List<Item> getListaItems(){
+    public List<Item> getListaItems() {
         return this.items;
     }
 
@@ -138,6 +164,7 @@ public class Lista implements Serializable{
     public Drawable getImagen() {
         return imagen;
     }
+
     public List<Item> getItems() {
         return items;
     }
