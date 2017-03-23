@@ -24,7 +24,7 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
  * Created by Jesús Iráizoz on 02/03/2017.
  */
 
-public class UsuarioPers extends AsyncTask<String, Void, Void> {
+public class UsuarioPers extends AsyncTask<String, Void, Usuario> {
     private final static String URL = "http://shosha.jiraizoz.es/getUsuario.php?";
     private final static String ATRIBUTO = "id=";
 
@@ -42,7 +42,7 @@ public class UsuarioPers extends AsyncTask<String, Void, Void> {
     }
 
     @Override
-    protected Void doInBackground(String... params) {
+    protected Usuario doInBackground(String... params) {
         String data = "";
         Usuario usu = null;
         if (params.length == 1) {
@@ -64,7 +64,7 @@ public class UsuarioPers extends AsyncTask<String, Void, Void> {
                 }
 
                 rd.close();
-                jsonParser(res);
+                usu = jsonParser(res);
 
                 if (count != null)
                     count.countDown();
@@ -78,10 +78,10 @@ public class UsuarioPers extends AsyncTask<String, Void, Void> {
                 e.printStackTrace();
             }
         }
-        return null;
+        return usu;
     }
 
-    private void jsonParser(String data) {
+    private Usuario jsonParser(String data) {
         Usuario u = null;
         try {
             JSONObject jso = new JSONObject(data);
@@ -96,28 +96,27 @@ public class UsuarioPers extends AsyncTask<String, Void, Void> {
                 System.out.println("#################################################");
                 System.out.println("#################################################\n");
 
-                MyApplication.setUser(u);
+            //    MyApplication.setUser(u);
 
-                System.out.println("################################################# " + u.hashCode());
-
-                insertarBD(u);
+                insertarBD(u, o.getLong("modificacion"));
 
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
+        return u;
     }
 
     private void lanzadorExcepcion() throws Exception {
         throw new Exception("Se ha enviado más de un parámetro en: UsuarioPers");
     }
 
-    private void insertarBD(Usuario u) {
+    private void insertarBD(Usuario u, long modif) {
         AdaptadorBD adap = new AdaptadorBD(this.contexto);
         adap.open();
         try {
-            adap.insertarUsuario(u.getId(), u.getNombre(), u.getEmail());
+            adap.insertarUsuario(u.getId(), u.getNombre(), u.getEmail(), modif);
         } finally {
             adap.close();
         }
