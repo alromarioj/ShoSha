@@ -2,12 +2,14 @@ package es.shosha.shosha.negocio;
 
 import android.content.Context;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Lista;
 import es.shosha.shosha.persistencia.ItemPers;
 import es.shosha.shosha.persistencia.ListaPers;
@@ -49,6 +51,7 @@ public class CargaDatos implements Runnable {
 
         //Si no coindicen las BD, se realiza la inserción
         if (bdLocal != bdRemota) {
+            //abd.insertarUltimaModificacion(new Date().getTime());
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
             System.out.println(">>>>>>>>>>>>>> Base de datos distinta >>>>>>>>>>>");
@@ -68,6 +71,12 @@ public class CargaDatos implements Runnable {
                 lp.executeOnExecutor(pool, this.idUsr);
 
                 count.await();
+
+                try {
+                    MyApplication.setUser(up.get());
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
 
                 ItemPers ip = new ItemPers(this.contexto);
 

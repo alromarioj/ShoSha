@@ -31,15 +31,19 @@ public class AdaptadorBD {
     private static final String TB_LISTA = "lista";
     private static final String TB_ITEM = "item";
     private static final String TB_PARTICIPA = "participa";
+    private static final String TB_CONTEXTO = "contexto";
     private static final String ID = "id";
     private static final String NOMBRE = "nombre";
     private static final String USR_EMAIL = "email";
+    private static final String USR_MODIF = "modificacion";
     private static final String LST_PROP = "propietario";
     private static final String LST_ESTADO = "estado";
     private static final String ITM_PRECIO = "precio";
     private static final String IDLISTA = "idLista";
     private static final String PPA_IDUSR = "idUsuario";
     private static final String PPA_ACTIVO = "activo";
+
+
 
     private static final String ID_LOG = "USO DE BD";
 
@@ -115,11 +119,45 @@ public class AdaptadorBD {
         return l;
     }
 
-    public void insertarUltimaModificacion(String v) {
+    public void modificarUltimaModificacion(long l, String idUsr) {
+        String sql = "UPDATE " + TB_USUARIO + " SET " + USR_MODIF + " = " + l + " WHERE " + ID + " = '" + idUsr + "'";
 
+        bdatos.beginTransaction();
+        try {
+            bdatos.rawQuery(sql,null);
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
     }
 
-    public long insertarUsuario(String id, String nombre, String email) {
+    public void insertarContextoUsuario(Usuario u){
+        bdatos.beginTransaction();
+        try {
+
+            ContentValues valores = new ContentValues();
+            valores.put(ID, u.getId());
+            bdatos.insert(TB_CONTEXTO, null, valores);
+
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+    }
+
+    public void insertarUltimaModificacion(long l, String idUsr) {
+        bdatos.beginTransaction();
+        long res;
+        try {
+            bdatos.rawQuery("INSERT or replace INTO " + TB_USUARIO + " (modificacion) VALUES(" + l + ") WHERE id='" + idUsr + "'", null);
+
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+    }
+
+    public long insertarUsuario(String id, String nombre, String email, long modif) {
         bdatos.beginTransaction();
         long res;
         try {
@@ -128,6 +166,7 @@ public class AdaptadorBD {
             valores.put(ID, id);
             valores.put(NOMBRE, nombre);
             valores.put(USR_EMAIL, email);
+            valores.put(USR_MODIF,modif);
             bdatos.delete(TB_USUARIO, ID + " = '" + id + "'", null);
             res = bdatos.insert(TB_USUARIO, null, valores);
 
