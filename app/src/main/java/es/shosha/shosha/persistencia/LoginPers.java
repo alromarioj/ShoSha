@@ -1,6 +1,5 @@
 package es.shosha.shosha.persistencia;
 
-import android.content.Context;
 import android.os.AsyncTask;
 
 import org.json.JSONArray;
@@ -13,31 +12,18 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
-import es.shosha.shosha.dominio.Lista;
 import es.shosha.shosha.dominio.Usuario;
-import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
-public class LoginPers extends AsyncTask<String, Void, Boolean> {
+public class LoginPers extends AsyncTask<String, Void, String> {
     private final static String URL_GET = "http://shosha.jiraizoz.es/loginUsuario.php?";
     private final static String ATRIBUTO_EMAIL = "email=";
     private final static String ATRIBUTO_PASS = "pass=";
-    private List<Lista> lListas = null;
-
-    private Context contexto;
-    private final CountDownLatch count;
-
-    public LoginPers(Context c, CountDownLatch cdl) {
-        this.contexto = c;
-        count = cdl;
-    }
 
     @Override
-    protected Boolean doInBackground(String... params) {
+    protected String doInBackground(String... params) {
         Usuario usuario = null;
-        Boolean iniciadoSesion = false;
+        String idUsuario = "";
 
         if (params.length == 2) {
             try {
@@ -55,13 +41,9 @@ public class LoginPers extends AsyncTask<String, Void, Boolean> {
                 rd.close();
 
                 usuario = jsonParser(res);
-                if(usuario == null){
-                    iniciadoSesion = false;
-                } else {
-
-                    iniciadoSesion = true;
+                if (usuario != null){
+                    idUsuario = usuario.getId();
                 }
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -72,11 +54,7 @@ public class LoginPers extends AsyncTask<String, Void, Boolean> {
                 e.printStackTrace();
             }
         }
-        return iniciadoSesion;
-    }
-
-    protected void onPostExecute(List<Lista> listas) {
-        this.lListas = listas;
+        return idUsuario;
     }
 
     private Usuario jsonParser(String data) {
@@ -98,16 +76,7 @@ public class LoginPers extends AsyncTask<String, Void, Boolean> {
     }
 
     private void lanzadorExcepcion() throws Exception {
-        throw new Exception("En ListaPers, error en los parámetros de ejecución.");
+        throw new Exception("En LoginPers, error en los parámetros de ejecución.");
     }
 
-    private void insertarBD(Lista l) {
-        AdaptadorBD adap = new AdaptadorBD(this.contexto);
-        adap.open();
-        try {
-            adap.insertarLista(l.getId(), l.getNombre(), l.getPropietario(), l.isEstado() ? "1" : "0");
-        } finally {
-            adap.close();
-        }
-    }
 }

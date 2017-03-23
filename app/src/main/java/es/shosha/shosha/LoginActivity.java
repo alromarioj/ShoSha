@@ -7,6 +7,7 @@ import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -28,12 +29,24 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import es.shosha.shosha.dominio.Usuario;
 import es.shosha.shosha.negocio.CargaDatos;
 
 import static android.Manifest.permission.READ_CONTACTS;
+import static es.shosha.shosha.R.id.email;
 
 /**
  * A login screen that offers login via email/password.
@@ -68,7 +81,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
+        mEmailView = (AutoCompleteTextView) findViewById(email);
         populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
@@ -198,7 +211,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
-        return password.length() > 4;
+        return password.length() > 0;
     }
 
     /**
@@ -295,10 +308,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    private class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
         private final String mEmail;
         private final String mPassword;
+        private String idUsuario = "";
 
         UserLoginTask(String email, String password) {
             mEmail = email;
@@ -307,25 +321,49 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
+            Usuario usuario = null;
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
+                java.net.URL urlObj = new URL("http://shosha.jiraizoz.es/loginUsuario.php?email="+ mEmail + "&pass=" + mPassword);
+                System.out.println("=============================");
+                System.out.println("http://shosha.jiraizoz.es/loginUsuario.php?email="+ URLEncoder.encode(mEmail, "UTF-8") + "&pass=" + URLEncoder.encode(mPassword, "UTF-8"));
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
+                HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
+
+                BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
+                String line = "", res = "";
+                while ((line = rd.readLine()) != null) {
+                    res += line;
+                    System.out.println("nueva linea: "+line);
                 }
+                rd.close();
+                System.out.println("=============================");
+                usuario = jsonParser(res);
+                if (usuario != null){
+                    idUsuario = usuario.getId();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
 
-            // TODO: register the new account here.
-            return true;
+            return usuario != null;
+        }
+
+        private Usuario jsonParser(String data) {
+
+            Usuario u = null;
+            try {
+                JSONObject jso = new JSONObject(data);
+                Integer success = jso.getInt("success");
+                System.out.println("LOGIN============ " + success);
+                JSONArray usuarios = jso.getJSONArray("usuario");
+                if (success == 1) {
+                    JSONObject usuario = usuarios.getJSONObject(0);
+                    u = new Usuario(usuario.getString("id"), usuario.getString("nombre"), usuario.getString("email"));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return u;
         }
 
         @Override
@@ -334,7 +372,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
-                new Thread(new CargaDatos("u2",MyApplication.getAppContext())).start();
+                SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
+                SharedPreferences.Editor editor = pref.edit();
+                editor.putString("idUsuario", idUsuario);
+                editor.apply();
+                new Thread(new CargaDatos(idUsuario,MyApplication.getAppContext())).start();
                 Intent i = new Intent(LoginActivity.this, Inicio.class);
                 startActivity(i);
             } else {
