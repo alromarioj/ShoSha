@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_lista_productos"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context="es.shosha.shosha.ListaProductos">
 
     <android.support.design.widget.AppBarLayout
@@ -20,8 +21,10 @@
             android:background="@android:color/white"
             android:gravity="center"
             app:popupTheme="@style/Base.AlertDialog.AppCompat.Light"
+            app:title=""
             />
     </android.support.design.widget.AppBarLayout>
+
     <include layout="@layout/content_lista_productos"/>
 
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

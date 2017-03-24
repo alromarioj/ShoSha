@@ -1,7 +1,8 @@
-package es.shosha.shosha.AdaptadorLista;
+package es.shosha.shosha.AdaptadorLista.Productos;
 
 import android.graphics.Color;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,16 +12,15 @@ import java.util.HashMap;
 import java.util.List;
 
 import es.shosha.shosha.dominio.Item;
-import es.shosha.shosha.dominio.Lista;
 
 /**
  * Created by inhernan on 23/03/2017.
  */
 
-public class TestAdapter extends RecyclerView.Adapter {
+public class ProductosAdapter extends RecyclerView.Adapter {
 
     private static final int PENDING_REMOVAL_TIMEOUT = 3000; // 3sec
-
+    private RecyclerViewOnItemClickListener oicl;
     List<Item> items;
     List<Item> itemsPendingRemoval;
     int lastInsertedIndex=0; // so we can add some more items for testing purposes
@@ -29,25 +29,23 @@ public class TestAdapter extends RecyclerView.Adapter {
     private Handler handler = new Handler(); // hanlder for running delayed runnables
     HashMap<Item, Runnable> pendingRunnables = new HashMap<>(); // map of items to pending runnables, so we can cancel a removal if need be
 
-    public TestAdapter(List<Item> productos) {
+    public ProductosAdapter(List<Item> productos,  @NonNull RecyclerViewOnItemClickListener oicl) {
         items = productos;
         itemsPendingRemoval = new ArrayList<>();
 
         System.out.println("______________________Productos: "+productos.size());
-
+        this.oicl=oicl;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new TestViewHolder(parent);
+        return new ProductosViewHolder(parent,oicl);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-
-        TestViewHolder viewHolder = (TestViewHolder)holder;
+        ProductosViewHolder viewHolder = (ProductosViewHolder)holder;
         final Item item = items.get(position);
-        System.out.println(item.getNombre());
 
         if (itemsPendingRemoval.contains(item)) {
             // we need to show the "undo" state of the row

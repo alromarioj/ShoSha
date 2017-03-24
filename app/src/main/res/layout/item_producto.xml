@@ -1,39 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/fondoClaro">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Precio"
-        android:id="@+id/precioP"
-        android:layout_below="@+id/nombreP"
-        android:textSize="12dp"/>
-
-    <TextView
-        android:id="@+id/nombreP"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:text="Tomate"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textSize="16dp" />
-    <Button
-        android:id="@+id/undo_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Deshacer"
-        android:textAllCaps="true"
-        android:layout_gravity="end|center_vertical"/>
-
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    >
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@android:color/secondary_text_light"
-        android:layout_gravity="bottom"
-        />
+        android:background="#9AC7C2"
+        android:layout_below="@+id/item"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/item"
+        android:padding="10dp"
+        android:background="@color/fondoClaro"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Precio"
+            android:id="@+id/precioP"
+            android:layout_below="@+id/nombreP"
+            android:textSize="12dp"/>
+
+        <TextView
+            android:id="@+id/nombreP"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:text="Tomate"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="16dp" />
+        <Button
+            android:id="@+id/undo_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Deshacer"
+            android:textAllCaps="true"
+            android:layout_gravity="end|center_vertical"/>
+
+    </RelativeLayout>
 
 </RelativeLayout>

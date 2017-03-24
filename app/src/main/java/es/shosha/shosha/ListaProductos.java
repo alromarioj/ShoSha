@@ -27,7 +27,8 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.shosha.shosha.AdaptadorLista.TestAdapter;
+import es.shosha.shosha.AdaptadorLista.Productos.ProductosAdapter;
+import es.shosha.shosha.AdaptadorLista.Productos.RecyclerViewOnItemClickListener;
 import es.shosha.shosha.dominio.Item;
 import es.shosha.shosha.dominio.Lista;
 
@@ -41,7 +42,7 @@ public class ListaProductos extends AppCompatActivity {
     RecyclerView mRecyclerView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+
         this.lista=(Lista)this.getIntent().getExtras().getSerializable("lista");//Se recoge la lista que se ha pasado desde ListasActivas
         productos=lista.getItems();
         productos.add(new Item("ref01","Tomate",1.5));
@@ -49,49 +50,9 @@ public class ListaProductos extends AppCompatActivity {
 
         setContentView(R.layout.activity_lista_productos);
 
-        //list = (ListView) findViewById(R.id.listaProductos);
         mRecyclerView= (RecyclerView) findViewById(R.id.recycler_view);
         setUpRecyclerView(productos);
 
-
-        /*crearListView();
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Item producto=adaptador.getItem(position);
-                AlertDialog.Builder builder1;
-                //Se crea el PopUp para añadir un nuevo producto
-                builder1=new AlertDialog.Builder(getBaseContext());
-                builder1.setTitle("Editar producto");
-
-                View viewInflated1 = LayoutInflater.from(getBaseContext()).inflate(R.layout.nuevo_producto, (ViewGroup) findViewById(android.R.id.content), false);
-                // Set up the input
-                final EditText input_np2 = (EditText) viewInflated1.findViewById(R.id.in_nombre_producto);
-                input_np2.setText(producto.getNombre());
-                final EditText input_pp = (EditText) viewInflated1.findViewById(R.id.in_precio_producto);
-                input_pp.setText(String.valueOf(producto.getPrecio()));
-
-                // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-                builder1.setView(viewInflated1);
-
-                // Set up the buttons
-                builder1.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        //Comprobar campos
-                        //Añadir producto
-                    }
-                });
-                builder1.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-                builder1.show();
-            }
-        });*/
         //Cambia el título de la página que muestra la lista de productos
         final Toolbar tb = (Toolbar) findViewById(R.id.toolbar2);
         tb.setTitle(lista.getNombre());
@@ -99,7 +60,41 @@ public class ListaProductos extends AppCompatActivity {
         if(getSupportActionBar()!=null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+        super.onCreate(savedInstanceState);
+    }
+    public void editarProducto(View view, int position){
+            Item producto=((ProductosAdapter)mRecyclerView.getAdapter()).getItem(position);
+            AlertDialog.Builder builder1;
+            //Se crea el PopUp para añadir un nuevo producto
+            builder1=new AlertDialog.Builder(this);
+            builder1.setTitle("Editar producto");
 
+            View viewInflated1 = LayoutInflater.from(getBaseContext()).inflate(R.layout.nuevo_producto, (ViewGroup) findViewById(android.R.id.content), false);
+            // Set up the input
+            final EditText input_np2 = (EditText) viewInflated1.findViewById(R.id.in_nombre_producto);
+            input_np2.setText(producto.getNombre());
+            final EditText input_pp = (EditText) viewInflated1.findViewById(R.id.in_precio_producto);
+            input_pp.setText(String.valueOf(producto.getPrecio()));
+
+            // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+            builder1.setView(viewInflated1);
+
+            // Set up the buttons
+            builder1.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    //Comprobar campos
+                    //Añadir producto
+                }
+            });
+            builder1.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            builder1.show();
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -138,8 +133,12 @@ public class ListaProductos extends AppCompatActivity {
                         //Se inserta un producto a la lista a partir de los datos introducidos
                         String precio=input_pp.getText().toString();
                         precio=(precio.isEmpty()?"0":precio);
-                        abd.insertarItem(String.valueOf(lista.getItems().size()),input_np1.getText().toString(),Double.valueOf(precio),lista.getId());
+                        Item i=new Item("ref"+lista.getItems().size(),input_np1.getText().toString(),Double.valueOf(precio));
+                        productos.add(i);
+                        abd.insertarItem(i.getId(),i.getNombre(),i.getPrecio(),lista.getId());
                         abd.close();
+                        //Avisa de que la lista ha cambiado
+                        mRecyclerView.getAdapter().notifyDataSetChanged();
                         dialog.dismiss();
                     }
                 });
@@ -157,12 +156,16 @@ public class ListaProductos extends AppCompatActivity {
     }
     private void setUpRecyclerView(List<Item> productos) {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setAdapter(new TestAdapter(productos));
-        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setAdapter(new ProductosAdapter(productos, new RecyclerViewOnItemClickListener() {
+            @Override
+            public void onClick(View v, int position) {
+                editarProducto(v,position);
+            }
+        }));
+        //mRecyclerView.setHasFixedSize(true);
         setUpItemTouchHelper();
         setUpAnimationDecoratorHelper();
     }
-
     /**
      * This is the standard support library way of implementing "swipe to delete" feature. You can do custom drawing in onChildDraw method
      * but whatever you draw will disappear once the swipe is over, and while the items are animating to their new position the recycler view
@@ -179,13 +182,12 @@ public class ListaProductos extends AppCompatActivity {
             boolean initiated;
 
             private void init() {
-                background = new ColorDrawable(Color.RED);
-                xMark = ContextCompat.getDrawable(ListaProductos.this, R.drawable.ic_clear_24dp);
+                background = new ColorDrawable(getResources().getColor(R.color.colorPrimary));
+                xMark = ContextCompat.getDrawable(ListaProductos.this, R.drawable.eliminar);
                 xMark.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
                 xMarkMargin = (int) ListaProductos.this.getResources().getDimension(R.dimen.fab_margin);
                 initiated = true;
             }
-
             // not important, we don't want drag & drop
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
@@ -195,7 +197,7 @@ public class ListaProductos extends AppCompatActivity {
             @Override
             public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
                 int position = viewHolder.getAdapterPosition();
-                TestAdapter testAdapter = (TestAdapter)recyclerView.getAdapter();
+                ProductosAdapter testAdapter = (ProductosAdapter)recyclerView.getAdapter();
                 if (testAdapter.isUndoOn() && testAdapter.isPendingRemoval(position)) {
                     return 0;
                 }
@@ -205,7 +207,7 @@ public class ListaProductos extends AppCompatActivity {
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 int swipedPosition = viewHolder.getAdapterPosition();
-                TestAdapter adapter = (TestAdapter)mRecyclerView.getAdapter();
+                ProductosAdapter adapter = (ProductosAdapter)mRecyclerView.getAdapter();
                 boolean undoOn = adapter.isUndoOn();
                 if (undoOn) {
                     adapter.pendingRemoval(swipedPosition);
@@ -213,7 +215,6 @@ public class ListaProductos extends AppCompatActivity {
                     adapter.remove(swipedPosition);
                 }
             }
-
             @Override
             public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
                 View itemView = viewHolder.itemView;
@@ -223,11 +224,9 @@ public class ListaProductos extends AppCompatActivity {
                     // not interested in those
                     return;
                 }
-
                 if (!initiated) {
                     init();
                 }
-
                 // draw red background
                 background.setBounds(itemView.getRight() + (int) dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
                 background.draw(c);
@@ -271,11 +270,9 @@ public class ListaProductos extends AppCompatActivity {
 
             @Override
             public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-
                 if (!initiated) {
                     init();
                 }
-
                 // only if animation is in progress
                 if (parent.getItemAnimator().isRunning()) {
 

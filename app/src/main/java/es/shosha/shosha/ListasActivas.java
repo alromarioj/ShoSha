@@ -60,7 +60,6 @@ public class ListasActivas extends AppCompatActivity {
     }
 
     public void setListas(List<Lista> listas) {
-        //ArrayAdapter<String> adaptador=new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,listas);
         final AdapterLista adaptador = new AdapterLista(this, listas);
         list.setAdapter(adaptador);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
