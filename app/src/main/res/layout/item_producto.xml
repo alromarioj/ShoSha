@@ -8,13 +8,14 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#9AC7C2"
+        android:background="@color/divisor"
         android:layout_below="@+id/item"/>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/item"
-        android:padding="10dp"
+        android:padding="5dp"
+        android:paddingLeft="10dp"
         android:background="@color/fondoClaro"
         >
         <TextView
