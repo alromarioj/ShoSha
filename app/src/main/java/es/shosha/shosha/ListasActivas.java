@@ -24,7 +24,6 @@ public class ListasActivas extends AppCompatActivity {
 
     private ListView list;
     private Lista listaClicada;
-    //private String[] listas={"Navidad", "Casa", "Cena 28/02/2017"};
     List<Lista> listas = new ArrayList<>();
 
     @Override
