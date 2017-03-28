@@ -242,8 +242,13 @@ public class AdaptadorBD {
 
     public List<Lista> obtenerListas(String idUsuario) {
 
+        String sql = "SELECT l.* FROM lista l LEFT JOIN participa p ON l.id=p.idLista WHERE l.propietario='" + idUsuario + "' OR p.idUsuario='" + idUsuario + "'";
+
         //Cursor de las listas del usuario idUsuario
-        Cursor c = bdatos.query(false, TB_LISTA, null, "propietario='" + idUsuario + "'", null, null, null, null, null);
+        //Cursor c = bdatos.query(false, TB_LISTA, null, "propietario='" + idUsuario + "'", null, null, null, null, null);
+        Cursor c = bdatos.rawQuery(sql,null);
+
+        System.out.println("asdfasdfasdf -> "+c.getCount());
 
         Usuario u = this.obtenerUsuario(idUsuario);
 
@@ -272,6 +277,7 @@ public class AdaptadorBD {
             } while (c.moveToNext());
         }
         c.close();
+
         return aux;
     }
 
@@ -355,7 +361,7 @@ public class AdaptadorBD {
             cv.put(NOMBRE, u.getNombre());
             cv.put(USR_EMAIL, u.getEmail());
 
-            bdatos.update(TB_USUARIO,cv,"id='?'", new String[]{u.getId()});
+            bdatos.update(TB_USUARIO, cv, "id='?'", new String[]{u.getId()});
 
             bdatos.setTransactionSuccessful();
         } finally {
