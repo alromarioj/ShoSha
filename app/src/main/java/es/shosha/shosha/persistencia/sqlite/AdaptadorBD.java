@@ -44,7 +44,6 @@ public class AdaptadorBD {
     private static final String PPA_ACTIVO = "activo";
 
 
-
     private static final String ID_LOG = "USO DE BD";
 
     private final Context contexto;
@@ -124,14 +123,14 @@ public class AdaptadorBD {
 
         bdatos.beginTransaction();
         try {
-            bdatos.rawQuery(sql,null);
+            bdatos.rawQuery(sql, null);
             bdatos.setTransactionSuccessful();
         } finally {
             bdatos.endTransaction();
         }
     }
 
-    public void insertarContextoUsuario(Usuario u){
+    public void insertarContextoUsuario(Usuario u) {
         bdatos.beginTransaction();
         try {
 
@@ -166,7 +165,7 @@ public class AdaptadorBD {
             valores.put(ID, id);
             valores.put(NOMBRE, nombre);
             valores.put(USR_EMAIL, email);
-            valores.put(USR_MODIF,modif);
+            valores.put(USR_MODIF, modif);
             bdatos.delete(TB_USUARIO, ID + " = '" + id + "'", null);
             res = bdatos.insert(TB_USUARIO, null, valores);
 
@@ -241,16 +240,15 @@ public class AdaptadorBD {
         return res;
     }
 
-/*    public Cursor leerTodos() {
-        //return bdatos.query(true,TB_USUARIO,null,null,null,null,null,null,"100");
-        return bdatos.rawQuery("SELECT * FROM usuario", null);
-    }*/
-
-
     public List<Lista> obtenerListas(String idUsuario) {
 
+        String sql = "SELECT l.* FROM lista l LEFT JOIN participa p ON l.id=p.idLista WHERE l.propietario='" + idUsuario + "' OR p.idUsuario='" + idUsuario + "'";
+
         //Cursor de las listas del usuario idUsuario
-        Cursor c = bdatos.query(false, TB_LISTA, null, "propietario='" + idUsuario + "'", null, null, null, null, null);
+        //Cursor c = bdatos.query(false, TB_LISTA, null, "propietario='" + idUsuario + "'", null, null, null, null, null);
+        Cursor c = bdatos.rawQuery(sql,null);
+
+        System.out.println("asdfasdfasdf -> "+c.getCount());
 
         Usuario u = this.obtenerUsuario(idUsuario);
 
@@ -279,6 +277,7 @@ public class AdaptadorBD {
             } while (c.moveToNext());
         }
         c.close();
+
         return aux;
     }
 
@@ -352,6 +351,22 @@ public class AdaptadorBD {
         }
 
         return aux;
+    }
+
+    public void updateUsuario(Usuario u) {
+        bdatos.beginTransaction();
+        try {
+
+            ContentValues cv = new ContentValues();
+            cv.put(NOMBRE, u.getNombre());
+            cv.put(USR_EMAIL, u.getEmail());
+
+            bdatos.update(TB_USUARIO, cv, "id='?'", new String[]{u.getId()});
+
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
     }
 
     public long eliminarLista(String id, Usuario usuario) {
