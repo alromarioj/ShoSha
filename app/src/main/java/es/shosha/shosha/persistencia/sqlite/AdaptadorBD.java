@@ -324,6 +324,7 @@ public class AdaptadorBD {
     }
 
     public List<Item> obtenerItems(String idLista) {
+
         Cursor c = bdatos.query(false, TB_ITEM, null, "idLista='" + idLista + "'", null, null, null, null, null);
         Item i = null;
         List<Item> aux = new ArrayList<Item>();
