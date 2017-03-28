@@ -109,6 +109,7 @@ public class ListasActivas extends AppCompatActivity {
         AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo) menuInfo;
         menu.setHeaderTitle("Opciones");
         menu.add(0, v.getId(), 0, "Eliminar");
+        menu.add(0, v.getId(),0, "Cambiar nombre");
         listaClicada = (Lista) lv.getItemAtPosition(acmi.position);
     }
 
@@ -118,7 +119,8 @@ public class ListasActivas extends AppCompatActivity {
      */
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        if (item.getTitle() == "Eliminar") {
+        String opcion=item.getTitle().toString();
+        if (opcion == "Eliminar") {
             //Se elimina la lista seleccionada de las listas del usuario
             String id=listaClicada.getId();
             AdaptadorBD abd = new AdaptadorBD(getBaseContext());
@@ -130,27 +132,13 @@ public class ListasActivas extends AppCompatActivity {
 
             abd.close();
             Toast.makeText(this, "Eliminando lista " + id, Toast.LENGTH_SHORT).show();
-        } else {
+        }
+        else if(opcion=="Cambiar nombre"){
+            //Mostrar popup para cambiar el nombre de la lista
+        }
+        else{
             return false;
         }
         return true;
-    }
-
-    /**
-     * Se definen las acciones que se realizan al pulsar la Accion1 en
-     * del Context Menu.
-     * En este caso, como ejemplo, damos un mensaje en pantalla
-     */
-    public void function1(String id) {
-        AdaptadorBD abd = new AdaptadorBD(getBaseContext());
-        abd.open();
-        new ListaPers(MyApplication.getAppContext(), null).execute("delete", id, MyApplication.getUser().getId());
-        abd.eliminarLista(id, MyApplication.getUser());
-        listas = abd.obtenerListas(MyApplication.getUser().getId());
-       // listas.rem
-        adaptador.notifyDataSetChanged();
-
-        abd.close();
-        Toast.makeText(this, "Eliminando lista " + id, Toast.LENGTH_SHORT).show();
     }
 }

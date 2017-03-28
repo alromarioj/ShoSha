@@ -32,8 +32,6 @@ public class ProductosAdapter extends RecyclerView.Adapter {
     public ProductosAdapter(List<Item> productos,  @NonNull RecyclerViewOnItemClickListener oicl) {
         items = productos;
         itemsPendingRemoval = new ArrayList<>();
-
-        System.out.println("______________________Productos: "+productos.size());
         this.oicl=oicl;
     }
 

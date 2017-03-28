@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import es.shosha.shosha.dominio.Item;
 import es.shosha.shosha.dominio.Lista;
 
 
+import es.shosha.shosha.persistencia.ListaPers;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 public class ListaProductos extends AppCompatActivity {
@@ -94,14 +96,14 @@ public class ListaProductos extends AppCompatActivity {
                     //Item i=new Item("ref"+lista.getItems().size(),input_np2.getText().toString(),Double.valueOf(precio));
                     producto.setNombre(input_np2.getText().toString());
                     producto.setPrecio(Double.valueOf(precio));
-                    //productos.add(i);
+
+                    //new ListaPers(MyApplication.getAppContext(), null).execute("update", id, MyApplication.getUser().getId());
                     abd.insertarItem(producto.getId(),producto.getNombre(),producto.getPrecio(),lista.getId());
                     abd.close();
+                    Toast.makeText(ListaProductos.this, "Editando producto " + producto.getNombre(), Toast.LENGTH_SHORT).show();
                     //Avisa de que la lista ha cambiado
                     mRecyclerView.getAdapter().notifyDataSetChanged();
                     dialog.dismiss();
-                    //Comprobar campos
-                    //Añadir producto
                 }
             });
             builder1.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -152,7 +154,10 @@ public class ListaProductos extends AppCompatActivity {
                         Item i=new Item("ref"+lista.getItems().size(),input_np1.getText().toString(),Double.valueOf(precio));
                         productos.add(i);
                         abd.insertarItem(i.getId(),i.getNombre(),i.getPrecio(),lista.getId());
+                        //Insertar con listaPers
+
                         abd.close();
+                        Toast.makeText(ListaProductos.this, "Añadiendo producto " + i.getNombre(), Toast.LENGTH_SHORT).show();
                         //Avisa de que la lista ha cambiado
                         mRecyclerView.getAdapter().notifyDataSetChanged();
                         dialog.dismiss();
@@ -228,7 +233,13 @@ public class ListaProductos extends AppCompatActivity {
                 if (undoOn) {
                     adapter.pendingRemoval(swipedPosition);
                 } else {
+                    AdaptadorBD abd = new AdaptadorBD(getBaseContext());
+                    abd.open();
+                    //Eliminar producto con el adaptador de la base de datos
+
                     adapter.remove(swipedPosition);
+                    abd.close();
+                    Toast.makeText(ListaProductos.this, "Eliminando producto ", Toast.LENGTH_SHORT).show();
                 }
             }
             @Override

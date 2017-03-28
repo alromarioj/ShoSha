@@ -199,17 +199,24 @@ public class AdaptadorBD {
 
     public long insertarItem(String id, String nombre, double precio, String idLista) {
         //    bdatos.beginTransaction();
-        long res = 0;
+
     /*    try {*/
-        ContentValues valores = new ContentValues();
-        valores.put(ID, id);
-        valores.put(NOMBRE, nombre);
-        valores.put(ITM_PRECIO, precio);
-        valores.put(IDLISTA, idLista);
+        bdatos.beginTransaction();
+        long res=0;
+        try {
+            ContentValues valores = new ContentValues();
+            valores.put(ID, id);
+            valores.put(NOMBRE, nombre);
+            valores.put(ITM_PRECIO, precio);
+            valores.put(IDLISTA, idLista);
 
 
-        bdatos.delete(TB_ITEM, ID + " = '" + id + "'", null);
-        res = bdatos.insertOrThrow(TB_ITEM, null, valores);
+            bdatos.delete(TB_ITEM, ID + " = '" + id + "'", null);
+            res = bdatos.insertOrThrow(TB_ITEM, null, valores);
+            bdatos.setTransactionSuccessful();
+        }finally {
+            bdatos.endTransaction();
+        }
         //bdatos.rawQuery("INSERT INTO item VALUES ('"+id+"', '"+nombre+"', '"+precio+"', '"+idLista+"')",null);
 
   /*          bdatos.setTransactionSuccessful();
