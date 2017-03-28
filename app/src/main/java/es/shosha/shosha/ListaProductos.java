@@ -38,15 +38,16 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 public class ListaProductos extends AppCompatActivity {
     private ListView list;
     private Lista lista;
-    private List<Item> productos=new ArrayList<>();
+    private List<Item> productos;//=new ArrayList<>();
     RecyclerView mRecyclerView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         this.lista=(Lista)this.getIntent().getExtras().getSerializable("lista");//Se recoge la lista que se ha pasado desde ListasActivas
         productos=lista.getItems();
-        productos.add(new Item("ref01","Tomate",1.5));
-        productos.add(new Item("ref02","Macarrones",2.06));
+        System.out.println("Número de productos: "+productos.size());
+       // productos.add(new Item("ref01","Tomate",1.5));
+        //productos.add(new Item("ref02","Macarrones",2.06));
 
         setContentView(R.layout.activity_lista_productos);
 
@@ -63,7 +64,7 @@ public class ListaProductos extends AppCompatActivity {
         super.onCreate(savedInstanceState);
     }
     public void editarProducto(View view, int position){
-            Item producto=((ProductosAdapter)mRecyclerView.getAdapter()).getItem(position);
+            final Item producto=((ProductosAdapter)mRecyclerView.getAdapter()).getItem(position);
             AlertDialog.Builder builder1;
             //Se crea el PopUp para añadir un nuevo producto
             builder1=new AlertDialog.Builder(this);
@@ -83,6 +84,21 @@ public class ListaProductos extends AppCompatActivity {
             builder1.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    //Asumiendo que el precio es >=0
+                    AdaptadorBD abd = new AdaptadorBD(getBaseContext());
+                    abd.open();
+                    //new ItemPers(MyApplication.getAppContext()).execute("insert", id, MyApplication.getUser().getId());
+                    //Se inserta un producto a la lista a partir de los datos introducidos
+                    String precio=input_pp.getText().toString();
+                    precio=(precio.isEmpty()?"0":precio);
+                    //Item i=new Item("ref"+lista.getItems().size(),input_np2.getText().toString(),Double.valueOf(precio));
+                    producto.setNombre(input_np2.getText().toString());
+                    producto.setPrecio(Double.valueOf(precio));
+                    //productos.add(i);
+                    abd.insertarItem(producto.getId(),producto.getNombre(),producto.getPrecio(),lista.getId());
+                    abd.close();
+                    //Avisa de que la lista ha cambiado
+                    mRecyclerView.getAdapter().notifyDataSetChanged();
                     dialog.dismiss();
                     //Comprobar campos
                     //Añadir producto
