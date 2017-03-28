@@ -25,6 +25,7 @@ public class ListasActivas extends AppCompatActivity {
     private ListView list;
     private Lista listaClicada;
     List<Lista> listas = new ArrayList<>();
+    AdapterLista adaptador;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,16 +51,13 @@ public class ListasActivas extends AppCompatActivity {
         } catch (ExecutionException e) {
             e.printStackTrace();
         }*/
-        // para cada una, la metemos al array listas
-        /*listas.add(new Lista("Navidad", "8 participantes"));
-        listas.add(new Lista("Casa", "4 participantes"));
-        listas.add(new Lista("Cena 28/02/2017", "10 participantes"));*/
+
         super.onCreate(savedInstanceState);
 
     }
 
     public void setListas(List<Lista> listas) {
-        final AdapterLista adaptador = new AdapterLista(this, listas);
+        adaptador = new AdapterLista(this, listas);
         list.setAdapter(adaptador);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -81,7 +79,7 @@ public class ListasActivas extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        //Mostrar menú para las listas activas?
+        //Mostrar menú para las listas activas
         getMenuInflater().inflate(R.menu.menu_listas_activas, menu);
         return true;
     }
@@ -121,7 +119,17 @@ public class ListasActivas extends AppCompatActivity {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         if (item.getTitle() == "Eliminar") {
-            function1(listaClicada.getId());
+            //Se elimina la lista seleccionada de las listas del usuario
+            String id=listaClicada.getId();
+            AdaptadorBD abd = new AdaptadorBD(getBaseContext());
+            abd.open();
+            new ListaPers(MyApplication.getAppContext(), null).execute("delete", id, MyApplication.getUser().getId());
+            abd.eliminarLista(id, MyApplication.getUser());
+            listas.remove(listaClicada);
+            adaptador.notifyDataSetChanged();
+
+            abd.close();
+            Toast.makeText(this, "Eliminando lista " + id, Toast.LENGTH_SHORT).show();
         } else {
             return false;
         }
@@ -139,7 +147,9 @@ public class ListasActivas extends AppCompatActivity {
         new ListaPers(MyApplication.getAppContext(), null).execute("delete", id, MyApplication.getUser().getId());
         abd.eliminarLista(id, MyApplication.getUser());
         listas = abd.obtenerListas(MyApplication.getUser().getId());
-        setListas(listas);
+       // listas.rem
+        adaptador.notifyDataSetChanged();
+
         abd.close();
         Toast.makeText(this, "Eliminando lista " + id, Toast.LENGTH_SHORT).show();
     }
