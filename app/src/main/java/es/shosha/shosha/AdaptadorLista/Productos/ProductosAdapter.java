@@ -50,6 +50,7 @@ public class ProductosAdapter extends RecyclerView.Adapter {
             viewHolder.itemView.setBackgroundColor(Color.LTGRAY);
             viewHolder.nombre.setVisibility(View.GONE);
             viewHolder.precio.setVisibility(View.GONE);
+            viewHolder.comprado.setVisibility(View.GONE);
             viewHolder.undoButton.setVisibility(View.VISIBLE);
             viewHolder.undoButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -68,6 +69,7 @@ public class ProductosAdapter extends RecyclerView.Adapter {
             viewHolder.itemView.setBackgroundColor(Color.WHITE);
             viewHolder.nombre.setVisibility(View.VISIBLE);
             viewHolder.precio.setVisibility(View.VISIBLE);
+            viewHolder.comprado.setVisibility(View.VISIBLE);
             viewHolder.nombre.setText(item.getNombre());
             viewHolder.precio.setText(item.getPrecio()+" €");
             viewHolder.undoButton.setVisibility(View.GONE);
