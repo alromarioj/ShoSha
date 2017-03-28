@@ -24,8 +24,8 @@ public class ListasActivas extends AppCompatActivity {
 
     private ListView list;
     private Lista listaClicada;
-    //private String[] listas={"Navidad", "Casa", "Cena 28/02/2017"};
     List<Lista> listas = new ArrayList<>();
+    AdapterLista adaptador;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,26 +51,22 @@ public class ListasActivas extends AppCompatActivity {
         } catch (ExecutionException e) {
             e.printStackTrace();
         }*/
-        // para cada una, la metemos al array listas
-        /*listas.add(new Lista("Navidad", "8 participantes"));
-        listas.add(new Lista("Casa", "4 participantes"));
-        listas.add(new Lista("Cena 28/02/2017", "10 participantes"));*/
+
         super.onCreate(savedInstanceState);
 
     }
 
     public void setListas(List<Lista> listas) {
-        //ArrayAdapter<String> adaptador=new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,listas);
-        final AdapterLista adaptador = new AdapterLista(this, listas);
+        adaptador = new AdapterLista(this, listas);
         list.setAdapter(adaptador);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent i = new Intent(ListasActivas.this, ListaProductos.class);
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("lista", adaptador.getItem(position));
-                i.putExtras(bundle);
-                startActivity(i);
+            Intent i = new Intent(ListasActivas.this, ListaProductos.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("lista", adaptador.getItem(position));
+            i.putExtras(bundle);
+            startActivity(i);
             }
         });
         // Registramos el menu contextual
@@ -83,7 +79,7 @@ public class ListasActivas extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        //Mostrar menú para las listas activas?
+        //Mostrar menú para las listas activas
         getMenuInflater().inflate(R.menu.menu_listas_activas, menu);
         return true;
     }
@@ -113,6 +109,7 @@ public class ListasActivas extends AppCompatActivity {
         AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo) menuInfo;
         menu.setHeaderTitle("Opciones");
         menu.add(0, v.getId(), 0, "Eliminar");
+        menu.add(0, v.getId(),0, "Cambiar nombre");
         listaClicada = (Lista) lv.getItemAtPosition(acmi.position);
     }
 
@@ -122,27 +119,26 @@ public class ListasActivas extends AppCompatActivity {
      */
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        if (item.getTitle() == "Eliminar") {
-            function1(listaClicada.getId());
-        } else {
+        String opcion=item.getTitle().toString();
+        if (opcion == "Eliminar") {
+            //Se elimina la lista seleccionada de las listas del usuario
+            String id=listaClicada.getId();
+            AdaptadorBD abd = new AdaptadorBD(getBaseContext());
+            abd.open();
+            new ListaPers(MyApplication.getAppContext(), null).execute("delete", id, MyApplication.getUser().getId());
+            abd.eliminarLista(id, MyApplication.getUser());
+            listas.remove(listaClicada);
+            adaptador.notifyDataSetChanged();
+
+            abd.close();
+            Toast.makeText(this, "Eliminando lista " + id, Toast.LENGTH_SHORT).show();
+        }
+        else if(opcion=="Cambiar nombre"){
+            //Mostrar popup para cambiar el nombre de la lista
+        }
+        else{
             return false;
         }
         return true;
-    }
-
-    /**
-     * Se definen las acciones que se realizan al pulsar la Accion1 en
-     * del Context Menu.
-     * En este caso, como ejemplo, damos un mensaje en pantalla
-     */
-    public void function1(String id) {
-        AdaptadorBD abd = new AdaptadorBD(getBaseContext());
-        abd.open();
-        new ListaPers(MyApplication.getAppContext(), null).execute("delete", id, MyApplication.getUser().getId());
-        abd.eliminarLista(id, MyApplication.getUser());
-        listas = abd.obtenerListas(MyApplication.getUser().getId());
-        setListas(listas);
-        abd.close();
-        Toast.makeText(this, "Eliminando lista " + id, Toast.LENGTH_SHORT).show();
     }
 }

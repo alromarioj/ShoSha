@@ -199,17 +199,24 @@ public class AdaptadorBD {
 
     public long insertarItem(String id, String nombre, double precio, String idLista) {
         //    bdatos.beginTransaction();
-        long res = 0;
+
     /*    try {*/
-        ContentValues valores = new ContentValues();
-        valores.put(ID, id);
-        valores.put(NOMBRE, nombre);
-        valores.put(ITM_PRECIO, precio);
-        valores.put(IDLISTA, idLista);
+        bdatos.beginTransaction();
+        long res=0;
+        try {
+            ContentValues valores = new ContentValues();
+            valores.put(ID, id);
+            valores.put(NOMBRE, nombre);
+            valores.put(ITM_PRECIO, precio);
+            valores.put(IDLISTA, idLista);
 
 
-        bdatos.delete(TB_ITEM, ID + " = '" + id + "'", null);
-        res = bdatos.insertOrThrow(TB_ITEM, null, valores);
+            bdatos.delete(TB_ITEM, ID + " = '" + id + "'", null);
+            res = bdatos.insertOrThrow(TB_ITEM, null, valores);
+            bdatos.setTransactionSuccessful();
+        }finally {
+            bdatos.endTransaction();
+        }
         //bdatos.rawQuery("INSERT INTO item VALUES ('"+id+"', '"+nombre+"', '"+precio+"', '"+idLista+"')",null);
 
   /*          bdatos.setTransactionSuccessful();
@@ -242,7 +249,7 @@ public class AdaptadorBD {
 
     public List<Lista> obtenerListas(String idUsuario) {
 
-        String sql = "SELECT l.* FROM lista l LEFT JOIN participa p ON l.id=p.idLista WHERE l.propietario='" + idUsuario + "' OR p.idUsuario='" + idUsuario + "'";
+        String sql = "SELECT l.* FROM lista l LEFT JOIN participa p ON l.id=p.idLista WHERE (l.propietario='" + idUsuario + "' AND l.estado=1) OR (p.idUsuario='" + idUsuario + "' AND p.activo=1)";
 
         //Cursor de las listas del usuario idUsuario
         //Cursor c = bdatos.query(false, TB_LISTA, null, "propietario='" + idUsuario + "'", null, null, null, null, null);
@@ -376,7 +383,7 @@ public class AdaptadorBD {
         try {
             Cursor cursor = bdatos.rawQuery("SELECT * FROM " + TB_LISTA + " WHERE " + ID + "='" + id + "'", null);
             if (cursor.moveToFirst()) {
-                if (cursor.getString(2).equals(usuario.getId())) {
+                if (cursor.getString(2).equals(usuario.getId())) { //Si el usuario es propietario
                     ContentValues valores = new ContentValues();
                     valores.put(LST_ESTADO, "0");
                     res = bdatos.update(TB_LISTA, valores, ID + "='" + id + "'", null);

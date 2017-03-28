@@ -85,6 +85,18 @@ public class Lista implements Serializable {
         return super.equals(obj);
     }
 
+    public List<Usuario> getParticipantes() {
+        return participantes;
+    }
+
+    public void setParticipantes(List<Usuario> participantes) {
+        this.participantes = participantes;
+    }
+
+    public void setImagen(Drawable imagen) {
+        this.imagen = imagen;
+    }
+
     public String getId() {
         return id;
     }
@@ -171,13 +183,5 @@ public class Lista implements Serializable {
 
     public void setItems(List<Item> items) {
         this.items = items;
-    }
-
-    public List<Usuario> getParticipantes() {
-        return participantes;
-    }
-
-    public void setParticipantes(List<Usuario> participantes) {
-        this.participantes = participantes;
     }
 }
