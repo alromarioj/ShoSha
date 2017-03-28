@@ -2,14 +2,15 @@ package es.shosha.shosha.negocio;
 
 import android.content.Context;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Lista;
-import es.shosha.shosha.dominio.Usuario;
 import es.shosha.shosha.persistencia.ItemPers;
 import es.shosha.shosha.persistencia.ListaPers;
 import es.shosha.shosha.persistencia.UsuarioPers;
@@ -50,6 +51,7 @@ public class CargaDatos implements Runnable {
 
         //Si no coindicen las BD, se realiza la inserción
         if (bdLocal != bdRemota) {
+            //abd.insertarUltimaModificacion(new Date().getTime());
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
             System.out.println(">>>>>>>>>>>>>> Base de datos distinta >>>>>>>>>>>");
@@ -68,17 +70,13 @@ public class CargaDatos implements Runnable {
                 ListaPers lp = new ListaPers(this.contexto, count);
                 lp.executeOnExecutor(pool, this.idUsr);
 
-                System.out.println(">>>>>>>>>>>>>> antes del await >>>>>>>>>>>");
-
                 count.await();
 
-                System.out.println(">>>>>>>>>>>>>> despues del await >>>>>>>>>>>");
-
-
-           /*     Usuario u = abd.obtenerUsuario(this.idUsr);
-
-                System.out.println(u.toString());*/
-
+                try {
+                    MyApplication.setUser(up.get());
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
 
                 ItemPers ip = new ItemPers(this.contexto);
 
@@ -87,7 +85,6 @@ public class CargaDatos implements Runnable {
 
                 String[] idListas = new String[lListas.size()];
                 for (int i = 0; i < lListas.size(); i++) {
-                    System.out.println(">>>>>>>>>>>>>>>>>        " + lListas.get(i).getId() + "               >>>>>>>>>>>>>>>>>");
                     idListas[i] = lListas.get(i).getId();
                 }
                 System.out.println(idListas);
@@ -96,13 +93,8 @@ public class CargaDatos implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         }
         abd.close();
 
     }
-
-
 }

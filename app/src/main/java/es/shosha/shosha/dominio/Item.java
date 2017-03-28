@@ -5,8 +5,8 @@ import java.io.Serializable;
 /**
  * Created by Jesús Iráizoz on 06/03/2017.
  */
-@SuppressWarnings("serial")
-public class Item implements Serializable{
+
+public class Item  implements Serializable{
     private String id;
     private String nombre;
     private double precio;

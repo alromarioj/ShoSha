@@ -2,7 +2,6 @@ package es.shosha.shosha.persistencia;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.SystemClock;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -52,7 +51,6 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
         String data = "";
         Usuario usu = null;
 
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ params ListaPers: " + params.length);
         if (params.length == 1) {
             try {
                 data = URLEncoder.encode(params[0], "UTF-8");
@@ -171,7 +169,6 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
 
                 int participantes = o.getInt("participantes");
 
-                System.out.println("\t\t\t%%%%%%%%%%%%%%%%%%%%%%%% " + participantes);
                 if (participantes > 0) {
                     try {
                         final CountDownLatch count = new CountDownLatch(1);
@@ -181,7 +178,6 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
                         pp.executeOnExecutor(pool, o.getString("id"));
 
                         count.await();
-                        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Salgo count participantes: ");
                         l.setParticipantes(abd.getParticipantes(o.getString("id")));
                     } catch (InterruptedException e) {
                         e.printStackTrace();
