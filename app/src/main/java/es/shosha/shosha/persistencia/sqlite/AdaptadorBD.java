@@ -242,7 +242,7 @@ public class AdaptadorBD {
 
     public List<Lista> obtenerListas(String idUsuario) {
 
-        String sql = "SELECT l.* FROM lista l LEFT JOIN participa p ON l.id=p.idLista WHERE l.propietario='" + idUsuario + "' OR p.idUsuario='" + idUsuario + "'";
+        String sql = "SELECT l.* FROM lista l LEFT JOIN participa p ON l.id=p.idLista WHERE p.activo=1 AND l.estado=1 AND l.propietario='" + idUsuario + "' OR p.idUsuario='" + idUsuario + "'";
 
         //Cursor de las listas del usuario idUsuario
         //Cursor c = bdatos.query(false, TB_LISTA, null, "propietario='" + idUsuario + "'", null, null, null, null, null);

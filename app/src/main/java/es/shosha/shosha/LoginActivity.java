@@ -7,6 +7,7 @@ import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -45,6 +46,7 @@ import es.shosha.shosha.dominio.Usuario;
 import es.shosha.shosha.negocio.CargaDatos;
 
 import static android.Manifest.permission.READ_CONTACTS;
+import static es.shosha.shosha.MyApplication.getAppContext;
 import static es.shosha.shosha.R.id.email;
 
 /**
@@ -77,6 +79,17 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SharedPreferences pref = getAppContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
+        String id = pref.getString("idUsuario", "");
+        if(!id.isEmpty()){
+            new Thread(new CargaDatos(id, getAppContext())).start();
+            SharedPreferences.Editor editor = pref.edit();
+            editor.putString("idUsuario", id);
+            editor.apply();
+            Intent i = new Intent(LoginActivity.this, Inicio.class);
+            startActivity(i);
+            this.finish();
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // Set up the login form.
@@ -371,7 +384,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
-                new Thread(new CargaDatos(idUsuario,MyApplication.getAppContext())).start();
+                new Thread(new CargaDatos(idUsuario, getAppContext())).start();
+                SharedPreferences pref = getAppContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
+                SharedPreferences.Editor editor = pref.edit();
+                editor.putString("idUsuario", idUsuario);
+                editor.apply();
                 Intent i = new Intent(LoginActivity.this, Inicio.class);
                 startActivity(i);
             } else {

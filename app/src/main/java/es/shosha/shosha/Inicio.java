@@ -1,6 +1,7 @@
 package es.shosha.shosha;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -10,6 +11,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+
+import static es.shosha.shosha.MyApplication.getAppContext;
 
 public class Inicio extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -49,12 +52,26 @@ public class Inicio extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_perfil) {
-            // Handle the camera action
-        } else if (id == R.id.nav_configuracion) {
+        switch (id){
+            case R.id.nav_perfil:
 
-        } else if (id == R.id.nav_ayuda) {
+                break;
+            case R.id.nav_configuracion:
 
+                break;
+            case R.id.nav_ayuda:
+
+                break;
+            case R.id.nav_cerrar:
+                SharedPreferences pref = getAppContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
+                SharedPreferences.Editor editor = pref.edit();
+                editor.putString("idUsuario", "");
+                editor.apply();
+                Intent intent = new Intent(this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+                break;
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
