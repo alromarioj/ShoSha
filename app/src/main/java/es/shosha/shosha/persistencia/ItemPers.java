@@ -28,7 +28,13 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
  */
 public class ItemPers extends AsyncTask<String, Void, Void> {
     private final static String URL = "http://shosha.jiraizoz.es/getItems.php?";
+    private final static String URL_ADD = "http://shosha.jiraizoz.es/addItem.php?";
+    private final static String URL_DEL = "http://shosha.jiraizoz.es/delItem.php?";
     private final static String ATRIBUTO = "lista=";
+    private final static String ID = "producto=";
+    private final static String NOMBRE = "nombre=";
+    private final static String PRECIO = "precio=";
+    private final static String CANTIDAD = "cantidad=";
 
     private Context contexto;
 
@@ -43,29 +49,34 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
         String data = "";
         Usuario usu = null;
         if (params.length > 0) {
-            for (String s : params) {
+            if(params[0].equals("insert")&&params.length==5){
+                insertMode(params[1],params[2],params[3],params[4]);
+            }
+            else{
+                for (String s : params) {
 
 
-                try {
-                    data = URLEncoder.encode(s, "UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-
-                try {
-                    java.net.URL urlObj = new URL(ItemPers.URL + ItemPers.ATRIBUTO + data);
-
-                    HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
-
-                    BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
-                    String line = "", res = "";
-                    while ((line = rd.readLine()) != null) {
-                        res += line;
+                    try {
+                        data = URLEncoder.encode(s, "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
                     }
-                    rd.close();
-                    jsonParser(res, s);
-                } catch (IOException e) {
-                    e.printStackTrace();
+
+                    try {
+                        java.net.URL urlObj = new URL(ItemPers.URL + ItemPers.ATRIBUTO + data);
+
+                        HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
+
+                        BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
+                        String line = "", res = "";
+                        while ((line = rd.readLine()) != null) {
+                            res += line;
+                        }
+                        rd.close();
+                        jsonParser(res, s);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         } else {
@@ -78,6 +89,81 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
 
         return null;
     }
+
+    /**
+     * Añade un producto a una lista
+     * @param params 0:idLista, 1:nombre, 2:precio, 3:cantidad
+     */
+    private void insertMode(String... params) {
+        String idLista = "",
+                nombre = "",
+                precio="",
+                cantidad="";
+        try {
+            idLista = URLEncoder.encode(params[0], "UTF-8");
+            nombre = URLEncoder.encode(params[1], "UTF-8");
+            precio = URLEncoder.encode(params[2], "UTF-8");
+            cantidad = URLEncoder.encode(params[3], "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            java.net.URL urlObj = new URL(ItemPers.URL_ADD + ItemPers.ATRIBUTO + idLista + "&" + ItemPers.NOMBRE + nombre+ "&" + ItemPers.PRECIO + precio+ "&" + ItemPers.CANTIDAD + cantidad);
+
+            HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
+
+            BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
+            String line = "", res = "";
+            while ((line = rd.readLine()) != null) {
+                res += line;
+            }
+
+            rd.close();
+
+            System.out.println("Insert response: " + res);
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    /**
+     * Borra un producto de una lista
+     * @param params 0:idLista, 1:nombre, 2:precio, 3:cantidad
+     */
+    private void deleteMode(String... params) {
+        String idLista = "",
+                producto = "";
+        try {
+            idLista = URLEncoder.encode(params[0], "UTF-8");
+            producto = URLEncoder.encode(params[1], "UTF-8");
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            java.net.URL urlObj = new URL(ItemPers.URL_DEL + ItemPers.ATRIBUTO + idLista + "&" + ItemPers.ID + producto);
+
+            HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
+
+            BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
+            String line = "", res = "";
+            while ((line = rd.readLine()) != null) {
+                res += line;
+            }
+
+            rd.close();
+
+            System.out.println("Delete response: " + res);
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private void lanzadorExcepcion() throws Exception {
         throw new Exception("Error en el envio de parámetros en: ItemPers");
