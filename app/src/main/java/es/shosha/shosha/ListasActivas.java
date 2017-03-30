@@ -122,10 +122,10 @@ public class ListasActivas extends AppCompatActivity {
         String opcion=item.getTitle().toString();
         if (opcion == "Eliminar") {
             //Se elimina la lista seleccionada de las listas del usuario
-            String id=listaClicada.getId();
+            int id=listaClicada.getId();
             AdaptadorBD abd = new AdaptadorBD(getBaseContext());
             abd.open();
-            new ListaPers(MyApplication.getAppContext(), null).execute("delete", id, MyApplication.getUser().getId());
+            new ListaPers(MyApplication.getAppContext(), null).execute("delete", String.valueOf(id), MyApplication.getUser().getStringId());
             abd.eliminarLista(id, MyApplication.getUser());
             listas.remove(listaClicada);
             adaptador.notifyDataSetChanged();

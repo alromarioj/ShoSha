@@ -7,25 +7,28 @@ import java.io.Serializable;
  */
 
 public class Usuario implements Serializable{
-    private String id;
+    private int id;
     private String nombre;
     private String email;
 
     public Usuario() {
     }
 
-    public Usuario(String id, String nombre, String email) {
+    public Usuario(int id, String nombre, String email) {
 
         this.id = id;
         this.nombre = nombre;
         this.email = email;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
+    public String getStringId(){
+        return String.valueOf(id);
+    }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 

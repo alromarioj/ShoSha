@@ -11,7 +11,7 @@ import java.util.List;
  */
 @SuppressWarnings("serial")
 public class Lista implements Serializable {
-    private String id;
+    private int id;
     private String nombre;
     private Usuario propietario;
     private boolean estado;
@@ -25,7 +25,7 @@ public class Lista implements Serializable {
      * @param propietario
      * @param estado
      */
-    public Lista(String id, String nombre, Usuario propietario, boolean estado) {
+    public Lista(int id, String nombre, Usuario propietario, boolean estado) {
         this.id = id;
         this.nombre = nombre;
         this.propietario = propietario;
@@ -41,7 +41,7 @@ public class Lista implements Serializable {
      * @param items
      * @param participantes
      */
-    public Lista(String id, String nombre, Usuario propietario, boolean estado, List<Item> items, List<Usuario> participantes) {
+    public Lista(int id, String nombre, Usuario propietario, boolean estado, List<Item> items, List<Usuario> participantes) {
         this.id = id;
         this.nombre = nombre;
         this.propietario = propietario;
@@ -58,7 +58,7 @@ public class Lista implements Serializable {
      * @param participantes
      * @param imagen
      */
-    public Lista(String id, String nombre, Usuario propietario, boolean estado, List<Usuario> participantes, Drawable imagen) {
+    public Lista(int id, String nombre, Usuario propietario, boolean estado, List<Usuario> participantes, Drawable imagen) {
         this.id = id;
         this.nombre = nombre;
         this.propietario = propietario;
@@ -97,11 +97,11 @@ public class Lista implements Serializable {
         this.imagen = imagen;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -153,7 +153,7 @@ public class Lista implements Serializable {
      */
     public Item getItem(String valor, boolean id) {
         for (Item i : this.items) {
-            if (id && i.getId().equals(valor))
+            if (id && i.getId() == Integer.valueOf(valor))
                 return i;
             else if (!id && i.getNombre().equals(valor))
                 return i;

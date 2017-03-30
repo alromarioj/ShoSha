@@ -20,7 +20,7 @@ public class Inicio extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        new Thread(new CargaDatos("u2",MyApplication.getAppContext())).start();
+        new Thread(new CargaDatos(2,MyApplication.getAppContext())).start();
 
         setContentView(R.layout.activity_inicio);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

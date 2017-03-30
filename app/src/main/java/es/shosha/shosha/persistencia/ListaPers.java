@@ -144,13 +144,13 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
                 JSONObject o = listas.getJSONObject(i);
 
                 l = new Lista();
-                l.setId(o.getString("id"));
+                l.setId(o.getInt("id"));
                 l.setNombre(o.getString("nombre"));
                 l.setEstado(o.getString("estado").equals("1"));
 
                 AdaptadorBD abd = new AdaptadorBD(this.contexto);
                 abd.open();
-                u = abd.obtenerUsuario(o.getString("propietario"));
+                u = abd.obtenerUsuario(o.getInt("propietario"));
                 if (u != null)
                     l.setPropietario(u);
                 else {
@@ -158,10 +158,10 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
                         final int N = 1;
                         final CountDownLatch count = new CountDownLatch(N);
                         ExecutorService pool = Executors.newFixedThreadPool(N);
-                        new UsuarioPers(this.contexto, count).executeOnExecutor(pool, o.getString("propietario"));
+                        new UsuarioPers(this.contexto, count).executeOnExecutor(pool, o.getInt("propietario"));
 
                         count.await();
-                        l.setPropietario(abd.obtenerUsuario(o.getString("propietario")));
+                        l.setPropietario(abd.obtenerUsuario(o.getInt("propietario")));
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -175,10 +175,10 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
                         ExecutorService pool = Executors.newFixedThreadPool(1);
 
                         ParticipaPers pp = new ParticipaPers(this.contexto, count);
-                        pp.executeOnExecutor(pool, o.getString("id"));
+                        pp.executeOnExecutor(pool, o.getInt("id"));
 
                         count.await();
-                        l.setParticipantes(abd.getParticipantes(o.getString("id")));
+                        l.setParticipantes(abd.getParticipantes(o.getInt("id")));
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

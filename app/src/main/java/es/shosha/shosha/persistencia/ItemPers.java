@@ -26,7 +26,7 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
  * Como parámetros se le pasan los ids de las listas
  * @author Jesús Iráizoz
  */
-public class ItemPers extends AsyncTask<String, Void, Void> {
+public class ItemPers extends AsyncTask<Integer, Void, Void> {
     private final static String URL = "http://shosha.jiraizoz.es/getItems.php?";
     private final static String ATRIBUTO = "lista=";
 
@@ -37,17 +37,17 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
     }
 
     @Override
-    protected Void doInBackground(String... params) {
+    protected Void doInBackground(Integer... params) {
         List<Item> lItems = null;
 
         String data = "";
         Usuario usu = null;
         if (params.length > 0) {
-            for (String s : params) {
+            for (int s : params) {
 
 
                 try {
-                    data = URLEncoder.encode(s, "UTF-8");
+                    data = URLEncoder.encode(String.valueOf(s), "UTF-8");
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
@@ -83,7 +83,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
         throw new Exception("Error en el envio de parámetros en: ItemPers");
     }
 
-    private void jsonParser(String data, String idLista) {
+    private void jsonParser(String data, int idLista) {
 
         try {
             JSONObject jso = new JSONObject(data);
@@ -93,7 +93,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
                     JSONObject o = listas.getJSONObject(i);
 
                     Item itm = new Item();
-                    itm.setId(o.getString("id"));
+                    itm.setId(o.getInt("id"));
                     itm.setNombre(o.getString("nombre"));
                     itm.setPrecio(o.getDouble("precio"));
 
@@ -108,7 +108,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
         }
     }
 
-    private void insertarBD(Item i, String idLista) {
+    private void insertarBD(Item i, int idLista) {
         AdaptadorBD adap = new AdaptadorBD(this.contexto);
         adap.open();
         try {
