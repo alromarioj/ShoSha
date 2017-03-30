@@ -49,8 +49,11 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
         String data = "";
         Usuario usu = null;
         if (params.length > 0) {
-            if(params[0].equals("insert")&&params.length==5){
+            if(params.length==5&&params[0].equals("insert")){
                 insertMode(params[1],params[2],params[3],params[4]);
+            }
+            else if(params.length==3&&params[0].equals("delete")){
+                deleteMode(params[1],params[2]);
             }
             else{
                 for (String s : params) {
@@ -96,15 +99,18 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
      */
     private void insertMode(String... params) {
         String idLista = "",
-                nombre = "",
-                precio="",
-                cantidad="";
+                nombre = "";
+        double precio=0;
+        int cantidad=1;
         try {
             idLista = URLEncoder.encode(params[0], "UTF-8");
             nombre = URLEncoder.encode(params[1], "UTF-8");
-            precio = URLEncoder.encode(params[2], "UTF-8");
-            cantidad = URLEncoder.encode(params[3], "UTF-8");
+            precio = Double.valueOf(params[2]);
+            cantidad = Integer.valueOf(params[3]);
         } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        catch(NumberFormatException e){
             e.printStackTrace();
         }
 
