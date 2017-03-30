@@ -25,7 +25,7 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
  * Created by Jesús Iráizoz on 13/03/2017.
  */
 
-public class ParticipaPers extends AsyncTask<String,Void,Void> {
+public class ParticipaPers extends AsyncTask<Integer, Void, Void> {
     private final static String URL = "http://shosha.jiraizoz.es/getParticipaciones.php?";
     private final static String ATRIBUTO = "lista=";
 
@@ -38,12 +38,12 @@ public class ParticipaPers extends AsyncTask<String,Void,Void> {
     }
 
     @Override
-    protected Void doInBackground(String... params) {
+    protected Void doInBackground(Integer... params) {
         String data = "";
         Usuario usu = null;
         if (params.length == 1) {
             try {
-                data = URLEncoder.encode(params[0], "UTF-8");
+                data = URLEncoder.encode(params[0].toString(), "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
@@ -85,17 +85,17 @@ public class ParticipaPers extends AsyncTask<String,Void,Void> {
             JSONArray listas = jso.getJSONArray("participa");
             for (int i = 0; i < listas.length(); i++) {
                 JSONObject o = listas.getJSONObject(i);
-                String idUsr = o.getString("idUsuario");
+                Integer idUsr = o.getInt("idUsuario");
 
                 AdaptadorBD abd = new AdaptadorBD(this.contexto);
                 abd.open();
                 u = abd.obtenerUsuario(idUsr);
-                if (u == null){
+                if (u == null) {
                     try {
                         final int N = 1;
                         final CountDownLatch cdl = new CountDownLatch(N);
                         ExecutorService pool = Executors.newFixedThreadPool(N);
-                        new UsuarioPers(this.contexto, cdl).executeOnExecutor(pool,idUsr);
+                        new UsuarioPers(this.contexto, cdl).executeOnExecutor(pool, idUsr);
 
                         cdl.await();
                         u = abd.obtenerUsuario(idUsr);
@@ -104,7 +104,7 @@ public class ParticipaPers extends AsyncTask<String,Void,Void> {
                     }
                 }
 
-                insertarBD(u.getId(),o.getString("idLista"),o.getString("activo"));
+                insertarBD(u.getId(), o.getInt("idLista"), o.getString("activo"));
 
             }
         } catch (JSONException e) {
@@ -117,11 +117,11 @@ public class ParticipaPers extends AsyncTask<String,Void,Void> {
         throw new Exception("Se ha enviado más de un parámetro en: ParticipaPers");
     }
 
-    private void insertarBD(String... params) {
+    private void insertarBD(int idUsr, int idLista, String activo) {
         AdaptadorBD adap = new AdaptadorBD(this.contexto);
         adap.open();
         try {
-            adap.insertarParticipa(params[0],params[1],params[2].equals("1"));
+            adap.insertarParticipa(idUsr, idLista, activo.equals("1"));
         } finally {
             adap.close();
         }

@@ -152,7 +152,7 @@ public class ListaProductos extends AppCompatActivity {
                         //Se inserta un producto a la lista a partir de los datos introducidos
                         String precio=input_pp.getText().toString();
                         precio=(precio.isEmpty()?"0":precio);
-                        Item i=new Item("ref"+lista.getItems().size(),input_np1.getText().toString(),Double.valueOf(precio));
+                        Item i=new Item(lista.getItems().size(),input_np1.getText().toString(),Double.valueOf(precio));
                         productos.add(i);
                         abd.insertarItem(i.getId(),i.getNombre(),i.getPrecio(),lista.getId());
                         //Insertar con listaPers

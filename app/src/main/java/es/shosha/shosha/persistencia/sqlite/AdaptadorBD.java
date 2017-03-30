@@ -109,16 +109,16 @@ public class AdaptadorBD {
         auxBD.close();
     }
 
-    public long getUltimaModificacion(String idUsr) {
+    /*public long getUltimaModificacion(String idUsr) {
         Cursor c = bdatos.rawQuery("SELECT modificacion FROM usuario WHERE id='" + idUsr + "'", null);
         long l = -1L;
         if (c.moveToFirst())
             l = c.getLong(0);
         c.close();
         return l;
-    }
+    }*/
 
-    public void modificarUltimaModificacion(long l, String idUsr) {
+  /*  public void modificarUltimaModificacion(long l, String idUsr) {
         String sql = "UPDATE " + TB_USUARIO + " SET " + USR_MODIF + " = " + l + " WHERE " + ID + " = '" + idUsr + "'";
 
         bdatos.beginTransaction();
@@ -128,9 +128,9 @@ public class AdaptadorBD {
         } finally {
             bdatos.endTransaction();
         }
-    }
+    }*/
 
-    public void insertarContextoUsuario(Usuario u) {
+  /*  public void insertarContextoUsuario(Usuario u) {
         bdatos.beginTransaction();
         try {
 
@@ -142,9 +142,9 @@ public class AdaptadorBD {
         } finally {
             bdatos.endTransaction();
         }
-    }
+    }*/
 
-    public void insertarUltimaModificacion(long l, String idUsr) {
+ /*   public void insertarUltimaModificacion(long l, String idUsr) {
         bdatos.beginTransaction();
         long res;
         try {
@@ -154,9 +154,9 @@ public class AdaptadorBD {
         } finally {
             bdatos.endTransaction();
         }
-    }
+    }*/
 
-    public long insertarUsuario(String id, String nombre, String email) {
+    public long insertarUsuario(int id, String nombre, String email) {
         bdatos.beginTransaction();
         long res;
         try {
@@ -165,7 +165,7 @@ public class AdaptadorBD {
             valores.put(ID, id);
             valores.put(NOMBRE, nombre);
             valores.put(USR_EMAIL, email);
-            bdatos.delete(TB_USUARIO, ID + " = '" + id + "'", null);
+            bdatos.delete(TB_USUARIO, ID + " = " + id, null);
             res = bdatos.insert(TB_USUARIO, null, valores);
 
             bdatos.setTransactionSuccessful();
@@ -176,7 +176,7 @@ public class AdaptadorBD {
         return res;
     }
 
-    public long insertarLista(String id, String nombre, Usuario propietario, String estado) {
+    public long insertarLista(int id, String nombre, Usuario propietario, String estado) {
         bdatos.beginTransaction();
         long res;
         try {
@@ -185,7 +185,7 @@ public class AdaptadorBD {
             valores.put(NOMBRE, nombre);
             valores.put(LST_PROP, propietario.getId());
             valores.put(LST_ESTADO, estado);
-            bdatos.delete(TB_LISTA, ID + " = '" + id + "'", null);
+            bdatos.delete(TB_LISTA, ID + " = " + id, null);
             res = bdatos.insert(TB_LISTA, null, valores);
 
             bdatos.setTransactionSuccessful();
@@ -196,7 +196,7 @@ public class AdaptadorBD {
         return res;
     }
 
-    public long insertarItem(String id, String nombre, double precio, String idLista) {
+    public long insertarItem(int id, String nombre, double precio, int idLista) {
         //    bdatos.beginTransaction();
 
     /*    try {*/
@@ -210,7 +210,7 @@ public class AdaptadorBD {
             valores.put(IDLISTA, idLista);
 
 
-            bdatos.delete(TB_ITEM, ID + " = '" + id + "'", null);
+            bdatos.delete(TB_ITEM, ID + " = " + id, null);
             res = bdatos.insertOrThrow(TB_ITEM, null, valores);
             bdatos.setTransactionSuccessful();
         }finally {
@@ -226,7 +226,7 @@ public class AdaptadorBD {
         return res;
     }
 
-    public long insertarParticipa(String idUsr, String idLista, boolean activo) {
+    public long insertarParticipa(int idUsr, int idLista, boolean activo) {
         bdatos.beginTransaction();
         long res;
         try {
@@ -235,7 +235,7 @@ public class AdaptadorBD {
             valores.put(IDLISTA, idLista);
             valores.put(PPA_IDUSR, idUsr);
             valores.put(PPA_ACTIVO, activo ? 1 : 0);
-            bdatos.delete(TB_PARTICIPA, IDLISTA + " = '" + idLista + "' AND " + PPA_IDUSR + " = '" + idUsr + "'", null);
+            bdatos.delete(TB_PARTICIPA, IDLISTA + " = " + idLista + " AND " + PPA_IDUSR + " = " + idUsr, null);
             res = bdatos.insert(TB_PARTICIPA, null, valores);
 
             bdatos.setTransactionSuccessful();
@@ -246,15 +246,13 @@ public class AdaptadorBD {
         return res;
     }
 
-    public List<Lista> obtenerListas(String idUsuario) {
+    public List<Lista> obtenerListas(int idUsuario) {
 
-        String sql = "SELECT l.* FROM lista l LEFT JOIN participa p ON l.id=p.idLista WHERE (l.propietario='" + idUsuario + "' AND l.estado=1) OR (p.idUsuario='" + idUsuario + "' AND p.activo=1)";
+        String sql = "SELECT l.* FROM lista l LEFT JOIN participa p ON l.id=p.idLista WHERE (l.propietario=" + idUsuario + " AND l.estado=1) OR (p.idUsuario=" + idUsuario + " AND p.activo=1)";
 
         //Cursor de las listas del usuario idUsuario
         //Cursor c = bdatos.query(false, TB_LISTA, null, "propietario='" + idUsuario + "'", null, null, null, null, null);
         Cursor c = bdatos.rawQuery(sql,null);
-
-        System.out.println("asdfasdfasdf -> "+c.getCount());
 
         Usuario u = this.obtenerUsuario(idUsuario);
 
@@ -264,13 +262,13 @@ public class AdaptadorBD {
         if (c.moveToFirst()) {
             do {
                 l = new Lista();
-                l.setId(c.getString(0));
+                l.setId(c.getInt(0));
                 l.setNombre(c.getString(1));
                 l.setEstado(c.getString(3).equals("1"));
-                String usrProp = c.getString(2);
-                if (usrProp.equals(idUsuario) && u != null) {
+                int usrProp = c.getInt(2);
+                if (usrProp == idUsuario && u != null) {
                     l.setPropietario(u);
-                } else if (!usrProp.equals(idUsuario)) {
+                } else if (usrProp != idUsuario) {
                     l.setPropietario(this.obtenerUsuario(usrProp));
                 }
 
@@ -289,7 +287,7 @@ public class AdaptadorBD {
 
     public List<Lista> obtenerListas(Usuario u) {
         //Cursor de las listas del usuario idUsuario
-        Cursor c = bdatos.query(false, TB_LISTA, null, "propietario='" + u.getId() + "'", null, null, null, null, null);
+        Cursor c = bdatos.query(false, TB_LISTA, null, "propietario=" + u.getId(), null, null, null, null, null);
 
         Lista l = null;
         List<Lista> aux = new ArrayList<Lista>();
@@ -297,11 +295,11 @@ public class AdaptadorBD {
         if (c.moveToFirst()) {
             do {
                 l = new Lista();
-                l.setId(c.getString(0));
+                l.setId(c.getInt(0));
                 l.setNombre(c.getString(1));
                 l.setEstado(c.getString(3).equals("1"));
-                String usrProp = c.getString(2);
-                if (usrProp.equals(u.getId())) {
+                int usrProp = c.getInt(2);
+                if (usrProp==u.getId()) {
                     l.setPropietario(u);
                 } else {
                     l.setPropietario(this.obtenerUsuario(usrProp));
@@ -319,23 +317,24 @@ public class AdaptadorBD {
         return aux;
     }
 
-    public Usuario obtenerUsuario(String id) {
-        Cursor c = bdatos.query(false, TB_USUARIO, null, "id='" + id + "'", null, null, null, null, null);
+    public Usuario obtenerUsuario(int id) {
+        Cursor c = bdatos.query(false, TB_USUARIO, null, "id=" + id, null, null, null, null, null);
         Usuario u = null;
 
         while (c.moveToNext()) {
-            u = new Usuario(c.getString(0), c.getString(1), c.getString(3));
+            u = new Usuario(c.getInt(0), c.getString(1), c.getString(2));
         }
         return u;
     }
 
-    public List<Item> obtenerItems(String idLista) {
-        Cursor c = bdatos.query(false, TB_ITEM, null, "idLista='" + idLista + "'", null, null, null, null, null);
+    public List<Item> obtenerItems(int idLista) {
+
+        Cursor c = bdatos.query(false, TB_ITEM, null, "idLista=" + idLista, null, null, null, null, null);
         Item i = null;
         List<Item> aux = new ArrayList<Item>();
         if (c.moveToFirst()) {
             do {
-                i = new Item(c.getString(0), c.getString(1), c.getDouble(2));
+                i = new Item(c.getInt(0), c.getString(1), c.getDouble(2));
                 aux.add(i);
             } while (c.moveToNext());
         }
@@ -343,16 +342,16 @@ public class AdaptadorBD {
         return aux;
     }
 
-    public List<Usuario> getParticipantes(String idLista) {
+    public List<Usuario> getParticipantes(int idLista) {
         //Cursor cursor = bdatos.rawQuery("SELECT * FROM " + TB_PARTICIPA + " WHERE " + IDLISTA + "='" + idLista + "'", null);
-        Cursor cursor = bdatos.query(false, TB_PARTICIPA, null, IDLISTA + "=?", new String[]{idLista}, null, null, null, null);
+        Cursor cursor = bdatos.query(false, TB_PARTICIPA, null, IDLISTA + "=?", new String[]{String.valueOf(idLista)}, null, null, null, null);
 
         List<Usuario> aux = new ArrayList<Usuario>();
 
         if (cursor.moveToFirst()) {
             //Recorremos el cursor hasta que no haya más registros
             do {
-                aux.add(this.obtenerUsuario(cursor.getString(cursor.getColumnIndex(PPA_IDUSR))));
+                aux.add(this.obtenerUsuario(cursor.getInt(cursor.getColumnIndex(PPA_IDUSR))));
             } while (cursor.moveToNext());
         }
 
@@ -367,7 +366,7 @@ public class AdaptadorBD {
             cv.put(NOMBRE, u.getNombre());
             cv.put(USR_EMAIL, u.getEmail());
 
-            bdatos.update(TB_USUARIO, cv, "id='?'", new String[]{u.getId()});
+            bdatos.update(TB_USUARIO, cv, "id=?", new String[]{String.valueOf(u.getId())});
 
             bdatos.setTransactionSuccessful();
         } finally {
@@ -375,20 +374,20 @@ public class AdaptadorBD {
         }
     }
 
-    public long eliminarLista(String id, Usuario usuario) {
+    public long eliminarLista(int id, Usuario usuario) {
         bdatos.beginTransaction();
         long res = -1;
         try {
-            Cursor cursor = bdatos.rawQuery("SELECT * FROM " + TB_LISTA + " WHERE " + ID + "='" + id + "'", null);
+            Cursor cursor = bdatos.rawQuery("SELECT * FROM " + TB_LISTA + " WHERE " + ID + "=" + id, null);
             if (cursor.moveToFirst()) {
-                if (cursor.getString(2).equals(usuario.getId())) { //Si el usuario es propietario
+                if (cursor.getInt(2)==(usuario.getId())) { //Si el usuario es propietario
                     ContentValues valores = new ContentValues();
                     valores.put(LST_ESTADO, "0");
-                    res = bdatos.update(TB_LISTA, valores, ID + "='" + id + "'", null);
+                    res = bdatos.update(TB_LISTA, valores, ID + "=" + id, null);
                 } else {
                     ContentValues valores = new ContentValues();
                     valores.put(PPA_ACTIVO, "0");
-                    res = bdatos.update(TB_PARTICIPA, valores, IDLISTA + "='" + id + "' AND " + PPA_IDUSR + " = '" + usuario.getId() + "'", null);
+                    res = bdatos.update(TB_PARTICIPA, valores, IDLISTA + "=" + id + " AND " + PPA_IDUSR + " = " + usuario.getId(), null);
                 }
                 bdatos.setTransactionSuccessful();
             }
@@ -398,20 +397,20 @@ public class AdaptadorBD {
         return res;
     }
 
-    public long eliminarLista(String id, String idUsuario) {
+    public long eliminarLista(int id, int idUsuario) {
         bdatos.beginTransaction();
         long res = -1;
         try {
-            Cursor cursor = bdatos.rawQuery("SELECT * FROM " + TB_LISTA + " WHERE " + ID + "='" + id + "'", null);
+            Cursor cursor = bdatos.rawQuery("SELECT * FROM " + TB_LISTA + " WHERE " + ID + "=" + id, null);
             if (cursor.moveToFirst()) {
-                if (cursor.getString(2).equals(idUsuario)) {
+                if (cursor.getInt(2)== idUsuario) {
                     ContentValues valores = new ContentValues();
                     valores.put(LST_ESTADO, "0");
-                    res = bdatos.update(TB_LISTA, valores, ID + "='" + id + "'", null);
+                    res = bdatos.update(TB_LISTA, valores, ID + "=" + id, null);
                 } else {
                     ContentValues valores = new ContentValues();
                     valores.put(PPA_ACTIVO, "0");
-                    res = bdatos.update(TB_PARTICIPA, valores, IDLISTA + "='" + id + "' AND " + PPA_IDUSR + " = '" + idUsuario + "'", null);
+                    res = bdatos.update(TB_PARTICIPA, valores, IDLISTA + "=" + id + " AND " + PPA_IDUSR + " = " + idUsuario, null);
                 }
                 bdatos.setTransactionSuccessful();
             }

@@ -21,6 +21,7 @@ public class MyApplication extends Application {
         if (user == null) {
 
             SharedPreferences pref = getAppContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
+            SharedPreferences.Editor editor = pref.edit();
             String id = pref.getString("idUsuario", "");
 
             AdaptadorBD abd = new AdaptadorBD(getAppContext());
@@ -36,10 +37,9 @@ public class MyApplication extends Application {
         MyApplication.user = user;
         SharedPreferences pref = getAppContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
         SharedPreferences.Editor editor = pref.edit();
-        editor.putString("idUsuario", user.getId());
+        editor.putInt("idUsuario", user.getId());
         editor.apply();
     }
-
 
     public void onCreate() {
         super.onCreate();
