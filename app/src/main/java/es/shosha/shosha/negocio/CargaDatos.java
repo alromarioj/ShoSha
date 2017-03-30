@@ -35,22 +35,10 @@ public class CargaDatos implements Runnable {
         //Comprobamos primero si se han realizado cambios en la BD remota
         AdaptadorBD abd = new AdaptadorBD(this.contexto);
         abd.open();
-        long bdLocal = abd.getUltimaModificacion(this.idUsr);
-        VersionPers vp = new VersionPers();
-        vp.execute(this.idUsr);
-        Long lVp = null;
-        long bdRemota = 1L;
-        try {
-            lVp = vp.get();
-            bdRemota = lVp.longValue();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+
 
         //Si no coindicen las BD, se realiza la inserción
-        if (bdLocal != bdRemota) {
+
             //abd.insertarUltimaModificacion(new Date().getTime());
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
@@ -93,7 +81,7 @@ public class CargaDatos implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }
+
         abd.close();
 
     }

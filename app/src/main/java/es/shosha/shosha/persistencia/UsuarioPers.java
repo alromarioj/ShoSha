@@ -98,7 +98,7 @@ public class UsuarioPers extends AsyncTask<String, Void, Usuario> {
 
             //    MyApplication.setUser(u);
 
-                insertarBD(u, o.getLong("modificacion"));
+                insertarBD(u);
 
             }
         } catch (JSONException e) {
@@ -112,11 +112,11 @@ public class UsuarioPers extends AsyncTask<String, Void, Usuario> {
         throw new Exception("Se ha enviado más de un parámetro en: UsuarioPers");
     }
 
-    private void insertarBD(Usuario u, long modif) {
+    private void insertarBD(Usuario u) {
         AdaptadorBD adap = new AdaptadorBD(this.contexto);
         adap.open();
         try {
-            adap.insertarUsuario(u.getId(), u.getNombre(), u.getEmail(), modif);
+            adap.insertarUsuario(u.getId(), u.getNombre(), u.getEmail());
         } finally {
             adap.close();
         }

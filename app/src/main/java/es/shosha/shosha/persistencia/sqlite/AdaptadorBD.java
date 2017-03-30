@@ -156,7 +156,7 @@ public class AdaptadorBD {
         }
     }
 
-    public long insertarUsuario(String id, String nombre, String email, long modif) {
+    public long insertarUsuario(String id, String nombre, String email) {
         bdatos.beginTransaction();
         long res;
         try {
@@ -165,7 +165,6 @@ public class AdaptadorBD {
             valores.put(ID, id);
             valores.put(NOMBRE, nombre);
             valores.put(USR_EMAIL, email);
-            valores.put(USR_MODIF, modif);
             bdatos.delete(TB_USUARIO, ID + " = '" + id + "'", null);
             res = bdatos.insert(TB_USUARIO, null, valores);
 

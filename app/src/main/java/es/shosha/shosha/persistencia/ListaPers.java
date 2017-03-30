@@ -132,6 +132,36 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
             e.printStackTrace();
         }
     }
+    private void updateMode(String... params) {
+        String idLista = "", idUsr = "";
+        try {
+            idLista = URLEncoder.encode(params[0], "UTF-8");
+            idUsr = URLEncoder.encode(params[1], "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            java.net.URL urlObj = new URL(ListaPers.URL_DEL + ListaPers.ATRIBUTO_LISTA + idLista + "&" + ListaPers.ATRIBUTO_USR + idUsr);
+
+            HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
+
+            BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
+            String line = "", res = "";
+            while ((line = rd.readLine()) != null) {
+                res += line;
+            }
+
+            rd.close();
+
+            System.out.println("Delete response: " + res);
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private List<Lista> jsonParser(String data) {
 
