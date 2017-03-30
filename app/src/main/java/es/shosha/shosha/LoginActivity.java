@@ -80,11 +80,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         SharedPreferences pref = getAppContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
-        String id = pref.getString("idUsuario", "");
-        if(!id.isEmpty()){
+        int id = pref.getInt("idUsuario", 0);
+        if(id!=0){
             new Thread(new CargaDatos(id, getAppContext())).start();
             SharedPreferences.Editor editor = pref.edit();
-            editor.putString("idUsuario", id);
+            editor.putInt("idUsuario", id);
             editor.apply();
             Intent i = new Intent(LoginActivity.this, Inicio.class);
             startActivity(i);
@@ -324,7 +324,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         private final String mEmail;
         private final String mPassword;
-        private String idUsuario = "";
+        private int idUsuario = 0;
 
         UserLoginTask(String email, String password) {
             mEmail = email;
@@ -370,7 +370,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 JSONArray usuarios = jso.getJSONArray("usuario");
                 if (success == 1) {
                     JSONObject usuario = usuarios.getJSONObject(0);
-                    u = new Usuario(usuario.getString("id"), usuario.getString("nombre"), usuario.getString("email"));
+                    u = new Usuario(usuario.getInt("id"), usuario.getString("nombre"), usuario.getString("email"));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -387,7 +387,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 new Thread(new CargaDatos(idUsuario, getAppContext())).start();
                 SharedPreferences pref = getAppContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
                 SharedPreferences.Editor editor = pref.edit();
-                editor.putString("idUsuario", idUsuario);
+                editor.putInt("idUsuario", idUsuario);
                 editor.apply();
                 Intent i = new Intent(LoginActivity.this, Inicio.class);
                 startActivity(i);

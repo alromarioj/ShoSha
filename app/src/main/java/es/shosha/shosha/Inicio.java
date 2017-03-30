@@ -12,6 +12,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
+import es.shosha.shosha.negocio.CargaDatos;
+
 import static es.shosha.shosha.MyApplication.getAppContext;
 
 public class Inicio extends AppCompatActivity
@@ -20,6 +22,7 @@ public class Inicio extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        new Thread(new CargaDatos(2,MyApplication.getAppContext())).start();
 
         setContentView(R.layout.activity_inicio);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

@@ -156,7 +156,7 @@ public class ListaProductos extends AppCompatActivity {
                         productos.add(i);
                         abd.insertarItem(i.getId(),i.getNombre(),i.getPrecio(),lista.getId());
                         //Insertar con listaPers
-                        new ItemPers(MyApplication.getAppContext()).execute("insert", lista.getId(), i.getNombre(),String.valueOf(i.getPrecio()),"1");
+                        new ItemPers(MyApplication.getAppContext()).execute("insert", String.valueOf(lista.getId()), i.getNombre(),String.valueOf(i.getPrecio()),"1");
                         abd.close();
                         Toast.makeText(ListaProductos.this, "Añadiendo producto " + i.getNombre(), Toast.LENGTH_SHORT).show();
                         //Avisa de que la lista ha cambiado

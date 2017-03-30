@@ -76,7 +76,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
                             res += line;
                         }
                         rd.close();
-                        jsonParser(res, s);
+                        jsonParser(res, Integer.valueOf(s));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -175,7 +175,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
         throw new Exception("Error en el envio de parámetros en: ItemPers");
     }
 
-    private void jsonParser(String data, String idLista) {
+    private void jsonParser(String data, int idLista) {
 
         try {
             JSONObject jso = new JSONObject(data);
@@ -185,7 +185,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
                     JSONObject o = listas.getJSONObject(i);
 
                     Item itm = new Item();
-                    itm.setId(o.getString("id"));
+                    itm.setId(o.getInt("id"));
                     itm.setNombre(o.getString("nombre"));
                     itm.setPrecio(o.getDouble("precio"));
 
@@ -200,7 +200,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
         }
     }
 
-    private void insertarBD(Item i, String idLista) {
+    private void insertarBD(Item i, int idLista) {
         AdaptadorBD adap = new AdaptadorBD(this.contexto);
         adap.open();
         try {
