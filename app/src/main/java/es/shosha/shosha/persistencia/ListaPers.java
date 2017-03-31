@@ -54,6 +54,7 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
             switch (params.length){
                 case 1:
                     try {
+                        data = URLEncoder.encode(params[0], "UTF-8");
                         java.net.URL urlObj = new URL(ListaPers.URL_GET + ListaPers.ATRIBUTO_USR + data);
 
                         HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
@@ -68,14 +69,13 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
                         if (count != null)
                             count.countDown();
 
-                    } catch (IOException e) {
+                    }catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
-                    try {
-                        data = URLEncoder.encode(params[0], "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
+                    catch (IOException e) {
                         e.printStackTrace();
                     }
+
                     break;
                 case 3:
                     if (params[0].equals("delete")) {
