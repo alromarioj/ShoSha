@@ -37,7 +37,7 @@ public class CargaDatos implements Runnable {
         VersionPers vp = new VersionPers();
         vp.execute(this.idUsr);
         Long lVp = null;
-        long bdRemota = 1L;
+        long bdRemota = 0L;
         try {
             lVp = vp.get();
             bdRemota = lVp.longValue();
@@ -81,9 +81,9 @@ public class CargaDatos implements Runnable {
 
             List<Lista> lListas = abd.obtenerListas(this.idUsr);
 
-            Integer[] idListas = new Integer[lListas.size()];
+            String[] idListas = new String[lListas.size()];
             for (int i = 0; i < lListas.size(); i++) {
-                idListas[i] = lListas.get(i).getId();
+                idListas[i] = String.valueOf(lListas.get(i).getId());
             }
             System.out.println(idListas);
             ip.execute(idListas);

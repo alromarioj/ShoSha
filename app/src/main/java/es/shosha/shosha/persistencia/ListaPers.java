@@ -32,8 +32,10 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
     private final static String URL_GET = "http://shosha.jiraizoz.es/getListas.php?";
     private final static String URL_DEL = "http://shosha.jiraizoz.es/delLista.php?";
+    private final static String URL_UPD = "http://shosha.jiraizoz.es/updateLista.php?";
     private final static String ATRIBUTO_USR = "usuario=";
     private final static String ATRIBUTO_LISTA = "lista=";
+    private final static String NOMBRE_LISTA = "nombre=";
     private List<Lista> lListas = null;
 
     private Context contexto;
@@ -47,48 +49,67 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
     @Override
     protected List<Lista> doInBackground(String... params) {
         List<Lista> lListas = null;
-
         String data = "";
         Usuario usu = null;
+            switch (params.length){
+                case 1:
+                    try {
+                        data = URLEncoder.encode(params[0], "UTF-8");
+                        java.net.URL urlObj = new URL(ListaPers.URL_GET + ListaPers.ATRIBUTO_USR + data);
 
-        if (params.length == 1) {
-            try {
-                data = URLEncoder.encode(params[0], "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+                        HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
+
+                        BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
+                        String line = "", res = "";
+                        while ((line = rd.readLine()) != null) {
+                            res += line;
+                        }
+                        rd.close();
+                        lListas = jsonParser(res);
+                        if (count != null)
+                            count.countDown();
+
+                    }catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    break;
+                case 3:
+                    if (params[0].equals("delete")) {
+                        //lista y usuario
+                        deleteMode(params[1], params[2]);
+                    }
+                    else {
+                        try {
+                            lanzadorExcepcion();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
+                case 4:
+                    if (params[0].equals("update")) {
+                        //lista y usuario
+                        updateMode(params[1], params[2],params[3]);
+                    }
+                    else {
+                        try {
+                            lanzadorExcepcion();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
+                default:
+                    try {
+                        lanzadorExcepcion();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
             }
-
-            try {
-                java.net.URL urlObj = new URL(ListaPers.URL_GET + ListaPers.ATRIBUTO_USR + data);
-
-                HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
-
-                BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
-                String line = "", res = "";
-                while ((line = rd.readLine()) != null) {
-                    res += line;
-                }
-
-                rd.close();
-
-                lListas = jsonParser(res);
-
-                if (count != null)
-                    count.countDown();
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else if (params.length == 3 && params[0].equals("delete")) {
-            //lista y usuario
-            deleteMode(params[1], params[2]);
-        } else {
-            try {
-                lanzadorExcepcion();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
 
         this.lListas = lListas;
         return lListas;
@@ -132,6 +153,44 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Cambiar el nombre de una lista
+     * @param params 0:idLista, 1:idUsuario, 2:nombreLista
+     */
+    private void updateMode(String... params) {
+        String idLista = "",
+                idUsr = "",
+                nombre="";
+        try {
+            idLista = URLEncoder.encode(params[0], "UTF-8");
+            idUsr = URLEncoder.encode(params[1], "UTF-8");
+            nombre = URLEncoder.encode(params[2], "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            java.net.URL urlObj = new URL(ListaPers.URL_DEL + ListaPers.ATRIBUTO_LISTA + idLista + "&" + ListaPers.ATRIBUTO_USR + idUsr+"&"+ListaPers.NOMBRE_LISTA+nombre);
+
+            HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
+
+            BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
+            String line = "", res = "";
+            while ((line = rd.readLine()) != null) {
+                res += line;
+            }
+
+            rd.close();
+
+            System.out.println("Update response: " + res);
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private List<Lista> jsonParser(String data) {
 
