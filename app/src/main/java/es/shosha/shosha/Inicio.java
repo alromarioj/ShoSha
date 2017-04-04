@@ -67,7 +67,8 @@ public class Inicio extends AppCompatActivity
                 editor.putInt("idUsuario", -1);
                 editor.apply();
                 Intent intent = new Intent(this, LoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                finish();
                 startActivity(intent);
                 break;
         }
