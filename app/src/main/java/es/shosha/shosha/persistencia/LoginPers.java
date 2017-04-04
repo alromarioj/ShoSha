@@ -15,15 +15,15 @@ import java.net.URLEncoder;
 
 import es.shosha.shosha.dominio.Usuario;
 
-public class LoginPers extends AsyncTask<String, Void, String> {
+public class LoginPers extends AsyncTask<String, Void, Integer> {
     private final static String URL_GET = "http://shosha.jiraizoz.es/loginUsuario.php?";
     private final static String ATRIBUTO_EMAIL = "email=";
     private final static String ATRIBUTO_PASS = "pass=";
 
     @Override
-    protected String doInBackground(String... params) {
+    protected Integer doInBackground(String... params) {
         Usuario usuario = null;
-        String idUsuario = "";
+        int idUsuario = 0;
 
         if (params.length == 2) {
             try {
@@ -67,7 +67,7 @@ public class LoginPers extends AsyncTask<String, Void, String> {
             JSONArray usuarios = jso.getJSONArray("usuario");
             if (success == 1) {
                 JSONObject usuario = usuarios.getJSONObject(0);
-                u = new Usuario(usuario.getString("id"), usuario.getString("nombre"), usuario.getString("email"));
+                u = new Usuario(usuario.getInt("id"), usuario.getString("nombre"), usuario.getString("email"));
             }
         } catch (JSONException e) {
             e.printStackTrace();
