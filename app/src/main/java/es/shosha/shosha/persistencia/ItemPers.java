@@ -116,7 +116,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
 
         try {
             java.net.URL urlObj = new URL(ItemPers.URL_ADD + ItemPers.ATRIBUTO + idLista + "&" + ItemPers.NOMBRE + nombre+ "&" + ItemPers.PRECIO + precio+ "&" + ItemPers.CANTIDAD + cantidad);
-
+            System.out.println(urlObj.toString());
             HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
 
             BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
@@ -126,9 +126,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
             }
 
             rd.close();
-
             System.out.println("Insert response: " + res);
-
 
         } catch (IOException e) {
             e.printStackTrace();

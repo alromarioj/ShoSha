@@ -101,6 +101,9 @@ public class ListaProductos extends AppCompatActivity {
                     //new ListaPers(MyApplication.getAppContext(), null).execute("update", id, MyApplication.getUser().getId());
                     abd.insertarItem(producto.getId(),producto.getNombre(),producto.getPrecio(),lista.getId());
                     abd.close();
+                    //Editar el producto en BD remota
+                    //new ItemPers(MyApplication.getAppContext()).execute("update", String.valueOf(lista.getId()), i.getNombre(),String.valueOf(i.getPrecio()),"1");
+
                     Toast.makeText(ListaProductos.this, "Editando producto " + producto.getNombre(), Toast.LENGTH_SHORT).show();
                     //Avisa de que la lista ha cambiado
                     mRecyclerView.getAdapter().notifyDataSetChanged();
@@ -152,10 +155,14 @@ public class ListaProductos extends AppCompatActivity {
                         //Se inserta un producto a la lista a partir de los datos introducidos
                         String precio=input_pp.getText().toString();
                         precio=(precio.isEmpty()?"0":precio);
+
                         Item i=new Item(lista.getItems().size(),input_np1.getText().toString(),Double.valueOf(precio));
+
                         productos.add(i);
+                        //Insertar en BD local
                         abd.insertarItem(i.getId(),i.getNombre(),i.getPrecio(),lista.getId());
-                        //Insertar con listaPers
+                        //Insertar en BD remota
+                        System.out.println(i.getNombre());
                         new ItemPers(MyApplication.getAppContext()).execute("insert", String.valueOf(lista.getId()), i.getNombre(),String.valueOf(i.getPrecio()),"1");
                         abd.close();
                         Toast.makeText(ListaProductos.this, "Añadiendo producto " + i.getNombre(), Toast.LENGTH_SHORT).show();
@@ -237,8 +244,12 @@ public class ListaProductos extends AppCompatActivity {
                     AdaptadorBD abd = new AdaptadorBD(getBaseContext());
                     abd.open();
                     //Eliminar producto con el adaptador de la base de datos
-
+                    Item producto=((ProductosAdapter)mRecyclerView.getAdapter()).getItem(swipedPosition);
                     adapter.remove(swipedPosition);
+                    //Eliminar producto de BD local
+                    //Eliminar de BD remota
+                    //new ItemPers(MyApplication.getAppContext()).execute("delete", String.valueOf(lista.getId()), producto.getId());
+
                     abd.close();
                     Toast.makeText(ListaProductos.this, "Eliminando producto ", Toast.LENGTH_SHORT).show();
                 }

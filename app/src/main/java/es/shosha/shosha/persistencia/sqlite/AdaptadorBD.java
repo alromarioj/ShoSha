@@ -277,7 +277,6 @@ public class AdaptadorBD {
                 l.setParticipantes(this.getParticipantes(l.getId()));
 
                 aux.add(l);
-
             } while (c.moveToNext());
         }
         c.close();

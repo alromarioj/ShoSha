@@ -61,7 +61,6 @@ public class CargaDatos implements Runnable {
             final CountDownLatch count = new CountDownLatch(N);
             ExecutorService pool = Executors.newFixedThreadPool(N);
 
-
             UsuarioPers up = new UsuarioPers(this.contexto, count);
             up.executeOnExecutor(pool, this.idUsr);
 
@@ -77,15 +76,12 @@ public class CargaDatos implements Runnable {
             }
 
             ItemPers ip = new ItemPers(this.contexto);
-
-
             List<Lista> lListas = abd.obtenerListas(this.idUsr);
 
             String[] idListas = new String[lListas.size()];
             for (int i = 0; i < lListas.size(); i++) {
                 idListas[i] = String.valueOf(lListas.get(i).getId());
             }
-            System.out.println(idListas);
             ip.execute(idListas);
 
         } catch (InterruptedException e) {
