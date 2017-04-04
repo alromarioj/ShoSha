@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import es.shosha.shosha.dominio.Item;
 import es.shosha.shosha.dominio.Lista;
@@ -31,7 +32,7 @@ public class AdaptadorBD {
     private static final String TB_LISTA = "lista";
     private static final String TB_ITEM = "item";
     private static final String TB_PARTICIPA = "participa";
-    private static final String TB_CONTEXTO = "contexto";
+    private static final String TB_CHK = "checksums";
     private static final String ID = "id";
     private static final String NOMBRE = "nombre";
     private static final String USR_EMAIL = "email";
@@ -356,6 +357,21 @@ public class AdaptadorBD {
         }
 
         return aux;
+    }
+
+    public Map<String,Double> obtenerChecksum(){
+        Map<String,Double> mapa=null;
+
+        Cursor c = bdatos.query(false,TB_CHK,null,null,null,null,null,null,null);
+
+        if (c.moveToFirst()) {
+            do {
+                mapa.put(c.getString(0),c.getDouble(1));
+            } while (c.moveToNext());
+        }
+        c.close();
+
+        return mapa;
     }
 
     public void updateUsuario(Usuario u) {

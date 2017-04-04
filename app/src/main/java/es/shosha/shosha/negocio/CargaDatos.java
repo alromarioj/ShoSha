@@ -3,6 +3,7 @@ package es.shosha.shosha.negocio;
 import android.content.Context;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -10,6 +11,7 @@ import java.util.concurrent.Executors;
 
 import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Lista;
+import es.shosha.shosha.persistencia.ChecksumPers;
 import es.shosha.shosha.persistencia.ItemPers;
 import es.shosha.shosha.persistencia.ListaPers;
 import es.shosha.shosha.persistencia.UsuarioPers;
@@ -31,8 +33,26 @@ public class CargaDatos implements Runnable {
     @Override
     public void run() {
         //Comprobamos primero si se han realizado cambios en la BD remota
+        //Para ello, comprobamos checksums
         AdaptadorBD abd = new AdaptadorBD(this.contexto);
         abd.open();
+
+        ChecksumPers cp = new ChecksumPers();
+        cp.execute();
+
+        boolean actualizar = true;
+        try {
+            Map<String, Double> mapa = cp.get();
+
+            actualizar = CompruebaChecksum.actualizaDatos(mapa);
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+
     /*    long bdLocal = abd.getUltimaModificacion(this.idUsr);
         VersionPers vp = new VersionPers();
         vp.execute(this.idUsr);
@@ -45,53 +65,53 @@ public class CargaDatos implements Runnable {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
-        }
+        }*/
 
         //Si no coindicen las BD, se realiza la inserción
-        if (bdLocal != bdRemota) {*/
-        //abd.insertarUltimaModificacion(new Date().getTime());
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        System.out.println(">>>>>>>>>>>>>> Base de datos distinta >>>>>>>>>>>");
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
-
-        try {
-            final int N = 2;
-            final CountDownLatch count = new CountDownLatch(N);
-            ExecutorService pool = Executors.newFixedThreadPool(N);
-
-
-            UsuarioPers up = new UsuarioPers(this.contexto, count);
-            up.executeOnExecutor(pool, this.idUsr);
-
-            ListaPers lp = new ListaPers(this.contexto, count);
-            lp.executeOnExecutor(pool, String.valueOf(this.idUsr));
-
-            count.await();
+        if (actualizar) {
+            //abd.insertarUltimaModificacion(new Date().getTime());
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            System.out.println(">>>>>>>>>>>>>> Base de datos distinta >>>>>>>>>>>");
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
 
             try {
-                MyApplication.setUser(up.get());
-            } catch (ExecutionException e) {
+                final int N = 2;
+                final CountDownLatch count = new CountDownLatch(N);
+                ExecutorService pool = Executors.newFixedThreadPool(N);
+
+
+                UsuarioPers up = new UsuarioPers(this.contexto, count);
+                up.executeOnExecutor(pool, this.idUsr);
+
+                ListaPers lp = new ListaPers(this.contexto, count);
+                lp.executeOnExecutor(pool, String.valueOf(this.idUsr));
+
+                count.await();
+
+                try {
+                    MyApplication.setUser(up.get());
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+
+                ItemPers ip = new ItemPers(this.contexto);
+
+
+                List<Lista> lListas = abd.obtenerListas(this.idUsr);
+
+                String[] idListas = new String[lListas.size()];
+                for (int i = 0; i < lListas.size(); i++) {
+                    idListas[i] = String.valueOf(lListas.get(i).getId());
+                }
+                System.out.println(idListas);
+                ip.execute(idListas);
+
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-            ItemPers ip = new ItemPers(this.contexto);
-
-
-            List<Lista> lListas = abd.obtenerListas(this.idUsr);
-
-            String[] idListas = new String[lListas.size()];
-            for (int i = 0; i < lListas.size(); i++) {
-                idListas[i] = String.valueOf(lListas.get(i).getId());
-            }
-            System.out.println(idListas);
-            ip.execute(idListas);
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
-        //     }
         abd.close();
 
     }
