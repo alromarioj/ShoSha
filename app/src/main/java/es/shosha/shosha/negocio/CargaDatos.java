@@ -37,7 +37,7 @@ public class CargaDatos implements Runnable {
         VersionPers vp = new VersionPers();
         vp.execute(this.idUsr);
         Long lVp = null;
-        long bdRemota = 0L;
+        long bdRemota = 1L;
         try {
             lVp = vp.get();
             bdRemota = lVp.longValue();
