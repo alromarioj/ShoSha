@@ -40,11 +40,13 @@ public class CargaDatos implements Runnable {
         ChecksumPers cp = new ChecksumPers();
         cp.execute();
 
+        Map<String, Double> mapaRemoto = null;
+
         boolean actualizar = true;
         try {
-            Map<String, Double> mapa = cp.get();
+            mapaRemoto = cp.get();
 
-            actualizar = CompruebaChecksum.actualizaDatos(mapa);
+            actualizar = CompruebaChecksum.actualizaDatos(mapaRemoto);
 
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -75,6 +77,8 @@ public class CargaDatos implements Runnable {
             System.out.println(">>>>>>>>>>>>>> Base de datos distinta >>>>>>>>>>>");
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
+
+            abd.insertarChecksum(mapaRemoto);
 
             try {
                 final int N = 2;

@@ -10,22 +10,23 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
  */
 
 public class CompruebaChecksum {
-    private CompruebaChecksum(){}
+    private CompruebaChecksum() {
+    }
 
-    public static boolean actualizaDatos(Map<String,Double> mapaRemoto){
+    public static boolean actualizaDatos(Map<String, Double> mapaRemoto) {
 
         AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
         abd.open();
-        Map<String,Double> mapaLocal = abd.obtenerChecksum();
+        Map<String, Double> mapaLocal = abd.obtenerChecksum();
         abd.close();
 
-        for(Double d : mapaRemoto.values()){
+        if (mapaLocal == null || (mapaLocal.size() <= 0 && mapaRemoto.size() <= 0))
+            return true;
+
+        for (Double d : mapaRemoto.values()) {
             if (!mapaLocal.containsValue(d))
                 return true;
         }
-
-        if(mapaLocal.size() <= 0 && mapaRemoto.size()<=0)
-            return true;
 
         return false;
     }
