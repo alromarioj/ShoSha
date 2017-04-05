@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Lista;
 import es.shosha.shosha.persistencia.ChecksumPers;
+import es.shosha.shosha.dominio.Usuario;
 import es.shosha.shosha.persistencia.ItemPers;
 import es.shosha.shosha.persistencia.ListaPers;
 import es.shosha.shosha.persistencia.UsuarioPers;
@@ -94,11 +95,12 @@ public class CargaDatos implements Runnable {
 
                 count.await();
 
-                try {
-                    MyApplication.setUser(up.get());
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
+            try {
+                Usuario x = up.get();
+                MyApplication.setUser(x);
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
 
                 ItemPers ip = new ItemPers(this.contexto);
 

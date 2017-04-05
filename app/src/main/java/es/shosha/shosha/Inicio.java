@@ -66,12 +66,12 @@ public class Inicio extends AppCompatActivity
             case R.id.nav_cerrar:
                 SharedPreferences pref = getAppContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
                 SharedPreferences.Editor editor = pref.edit();
-                editor.putString("idUsuario", "");
+                editor.putInt("idUsuario", -1);
                 editor.apply();
                 Intent intent = new Intent(this, LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
                 finish();
+                startActivity(intent);
                 break;
         }
 

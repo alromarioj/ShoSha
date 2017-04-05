@@ -79,16 +79,17 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SharedPreferences pref = getAppContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
+        SharedPreferences pref = getSharedPreferences("MyPref", 0); // 0 - for private mode
         int id = pref.getInt("idUsuario", -1);
-        if (id > 0) {
+        if(id>0){
             new Thread(new CargaDatos(id, getAppContext())).start();
             SharedPreferences.Editor editor = pref.edit();
             editor.putInt("idUsuario", id);
             editor.apply();
             Intent i = new Intent(LoginActivity.this, Inicio.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            finish();
             startActivity(i);
-            this.finish();
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
@@ -390,6 +391,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 editor.putInt("idUsuario", idUsuario);
                 editor.apply();
                 Intent i = new Intent(LoginActivity.this, Inicio.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                finish();
                 startActivity(i);
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
