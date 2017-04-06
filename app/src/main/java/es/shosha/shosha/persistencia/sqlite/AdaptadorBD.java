@@ -291,6 +291,30 @@ public class AdaptadorBD {
         c.close();
         return aux;
     }
+    public Lista obtenerLista(int idLista, int idUsuario) {
+
+        String sql = "SELECT l.* FROM lista l LEFT JOIN participa p ON l.id=p.idLista WHERE l.id="+idLista+" AND ((l.propietario=" + idUsuario + " AND l.estado=1) OR (p.idUsuario=" + idUsuario + " AND p.activo=1)) ";
+        Cursor c = bdatos.rawQuery(sql, null);
+        Usuario u = this.obtenerUsuario(idUsuario);
+        Lista l = null;
+        if (c.moveToFirst()) {
+            l = new Lista();
+            l.setId(c.getInt(0));
+            l.setNombre(c.getString(1));
+            l.setEstado(c.getString(3).equals("1"));
+            int usrProp = c.getInt(2);
+            if (usrProp == idUsuario && u != null) {
+                l.setPropietario(u);
+            } else if (usrProp != idUsuario) {
+                l.setPropietario(this.obtenerUsuario(usrProp));
+            }
+            l.setListaItems(this.obtenerItems(l.getId()));
+            l.setParticipantes(this.getParticipantes(l.getId()));
+        }
+
+        c.close();
+        return l;
+    }
 
     public Usuario obtenerUsuario(int id) {
         Cursor c = bdatos.query(false, TB_USUARIO, null, "id=" + id, null, null, null, null, null);
