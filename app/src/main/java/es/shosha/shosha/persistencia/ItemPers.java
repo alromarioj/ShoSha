@@ -115,10 +115,8 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
         catch(NumberFormatException e){
             e.printStackTrace();
         }
-
         try {
             java.net.URL urlObj = new URL(ItemPers.URL_ADD + ItemPers.ATRIBUTO + idLista + "&" + ItemPers.NOMBRE + nombre+ "&" + ItemPers.PRECIO + precio+ "&" + ItemPers.CANTIDAD + cantidad);
-            System.out.println(urlObj.toString());
             HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
 
             BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));

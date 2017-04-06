@@ -190,7 +190,7 @@ public class ListaProductos extends AppCompatActivity {
             public void onClick(View v, int position) {
                 editarProducto(v,position);
             }
-        }));
+        },getBaseContext(),lista.getId()));
         //mRecyclerView.setHasFixedSize(true);
         setUpItemTouchHelper();
         setUpAnimationDecoratorHelper();
@@ -241,17 +241,8 @@ public class ListaProductos extends AppCompatActivity {
                 if (undoOn) {
                     adapter.pendingRemoval(swipedPosition);
                 } else {
-                    AdaptadorBD abd = new AdaptadorBD(getBaseContext());
-                    abd.open();
                     //Eliminar producto con el adaptador de la base de datos
-                    Item producto=((ProductosAdapter)mRecyclerView.getAdapter()).getItem(swipedPosition);
                     adapter.remove(swipedPosition);
-                    //Eliminar producto de BD local
-                    //Eliminar de BD remota
-                    //new ItemPers(MyApplication.getAppContext()).execute("delete", String.valueOf(lista.getId()), producto.getId());
-
-                    abd.close();
-                    Toast.makeText(ListaProductos.this, "Eliminando producto ", Toast.LENGTH_SHORT).show();
                 }
             }
             @Override

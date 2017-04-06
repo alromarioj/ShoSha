@@ -453,4 +453,20 @@ public class AdaptadorBD {
         }
         return res;
     }
+    public long eliminarItem(int lista, int item) {
+        bdatos.beginTransaction();
+        long res = -1;
+        try {
+            String sql="SELECT * FROM " + TB_LISTA + " l join "+TB_ITEM+" i on l."+ID+"=i."+IDLISTA+" WHERE l." + ID + "=" + lista+" AND l."+LST_ESTADO+"=1 AND i."+ID+"="+item;
+            Cursor cursor = bdatos.rawQuery(sql, null);
+            if (cursor.moveToFirst()) {
+                res=bdatos.delete(TB_ITEM,ID+"="+item,null);
+                System.out.println("Respuesta eliminar item en local: "+res);
+                bdatos.setTransactionSuccessful();
+            }
+        } finally {
+            bdatos.endTransaction();
+        }
+        return res;
+    }
 }
