@@ -12,7 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
-import es.shosha.shosha.negocio.CargaDatos;
+import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 import static es.shosha.shosha.MyApplication.getAppContext;
 
@@ -22,7 +22,7 @@ public class Inicio extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    //    new Thread(new CargaDatos(2,MyApplication.getAppContext())).start();
+        //    new Thread(new CargaDatos(2,MyApplication.getAppContext())).start();
 
         setContentView(R.layout.activity_inicio);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -53,7 +53,7 @@ public class Inicio extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        switch (id){
+        switch (id) {
             case R.id.nav_perfil:
 
                 break;
@@ -68,6 +68,10 @@ public class Inicio extends AppCompatActivity
                 SharedPreferences.Editor editor = pref.edit();
                 editor.putInt("idUsuario", -1);
                 editor.apply();
+                AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
+                abd.open();
+                abd.vaciarBaseDatos();
+                abd.close();
                 Intent intent = new Intent(this, LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 finish();
@@ -85,6 +89,7 @@ public class Inicio extends AppCompatActivity
         Intent i = new Intent(this, ListasActivas.class);
         startActivity(i);
     }
+
     public void mostrarAnadirLista(View view) {
         //Ejecuta la actividad de listas activas
         Intent i = new Intent(this, AnadirLista.class);

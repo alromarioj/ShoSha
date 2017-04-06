@@ -81,7 +81,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     protected void onCreate(Bundle savedInstanceState) {
         SharedPreferences pref = getSharedPreferences("MyPref", 0); // 0 - for private mode
         int id = pref.getInt("idUsuario", -1);
-        if(id>0){
+        if (id > 0) {
             new Thread(new CargaDatos(id, getAppContext())).start();
             SharedPreferences.Editor editor = pref.edit();
             editor.putInt("idUsuario", id);
