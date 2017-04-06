@@ -6,10 +6,10 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -19,23 +19,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-
-import java.util.ArrayList;
 import java.util.List;
 
 import es.shosha.shosha.AdaptadorLista.Productos.ProductosAdapter;
 import es.shosha.shosha.AdaptadorLista.Productos.RecyclerViewOnItemClickListener;
 import es.shosha.shosha.dominio.Item;
 import es.shosha.shosha.dominio.Lista;
-
-
 import es.shosha.shosha.persistencia.ItemPers;
-import es.shosha.shosha.persistencia.ListaPers;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 public class ListaProductos extends AppCompatActivity {
@@ -46,7 +40,10 @@ public class ListaProductos extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        this.lista=(Lista)this.getIntent().getExtras().getSerializable("lista");//Se recoge la lista que se ha pasado desde ListasActivas
+        AdaptadorBD abd = new AdaptadorBD(getBaseContext());
+        abd.open();
+        this.lista = abd.obtenerLista(this.getIntent().getExtras().getInt("idLista"), MyApplication.getUser().getId());//Se recoge la lista que se ha pasado desde ListasActivas
+        abd.close();
         productos=lista.getItems();
         System.out.println("Número de productos: "+productos.size());
        // productos.add(new Item("ref01","Tomate",1.5));

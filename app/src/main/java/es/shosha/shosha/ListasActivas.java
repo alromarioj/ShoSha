@@ -56,17 +56,17 @@ public class ListasActivas extends AppCompatActivity {
 
     }
 
-    public void setListas(List<Lista> listas) {
-        adaptador = new AdapterLista(this, listas);
+    public void setListas(List<Lista> listas2) {
+        adaptador = new AdapterLista(this, listas2);
         list.setAdapter(adaptador);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Intent i = new Intent(ListasActivas.this, ListaProductos.class);
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("lista", adaptador.getItem(position));
-            i.putExtras(bundle);
-            startActivity(i);
+                Intent i = new Intent(ListasActivas.this, ListaProductos.class);
+                Bundle bundle = new Bundle();
+                bundle.putInt("idLista",adaptador.getItem(position).getId());
+                i.putExtras(bundle);
+                startActivity(i);
             }
         });
         // Registramos el menu contextual
@@ -109,7 +109,7 @@ public class ListasActivas extends AppCompatActivity {
         AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo) menuInfo;
         menu.setHeaderTitle("Opciones");
         menu.add(0, v.getId(), 0, "Eliminar");
-        menu.add(0, v.getId(),0, "Cambiar nombre");
+        menu.add(0, v.getId(), 0, "Cambiar nombre");
         listaClicada = (Lista) lv.getItemAtPosition(acmi.position);
     }
 
@@ -119,10 +119,10 @@ public class ListasActivas extends AppCompatActivity {
      */
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        String opcion=item.getTitle().toString();
+        String opcion = item.getTitle().toString();
         if (opcion == "Eliminar") {
             //Se elimina la lista seleccionada de las listas del usuario
-            int id=listaClicada.getId();
+            int id = listaClicada.getId();
             AdaptadorBD abd = new AdaptadorBD(getBaseContext());
             abd.open();
             new ListaPers(MyApplication.getAppContext(), null).execute("delete", String.valueOf(id), MyApplication.getUser().getStringId());
@@ -132,11 +132,9 @@ public class ListasActivas extends AppCompatActivity {
 
             abd.close();
             Toast.makeText(this, "Eliminando lista " + id, Toast.LENGTH_SHORT).show();
-        }
-        else if(opcion=="Cambiar nombre"){
+        } else if (opcion == "Cambiar nombre") {
             //Mostrar popup para cambiar el nombre de la lista
-        }
-        else{
+        } else {
             return false;
         }
         return true;
