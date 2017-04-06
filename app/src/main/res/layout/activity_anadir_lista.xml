@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_anadir_lista"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AnadirLista"
+    android:background="@color/colorPrimary"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingBottom="10dp"
+    android:paddingEnd="10dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingStart="10dp"
+    android:paddingTop="10dp"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/bt_nuevaLista"
+            style="@android:style/Widget.Button"
+            android:layout_width="150dp"
+            android:layout_height="170dp"
+
+            android:layout_margin="10dp"
+            android:background="@android:color/background_light"
+            android:drawableTop="@mipmap/ic_camera"
+            android:paddingTop="15dp"
+            android:text="@string/OCR"
+            android:textSize="12sp"></Button>
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="100dp"
+            android:layout_height="170dp"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:text="@string/lista_camara"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/bt_unirseLista"
+            style="@android:style/Widget.Button"
+            android:layout_width="150dp"
+            android:layout_height="170dp"
+            android:layout_margin="10dp"
+            android:background="@android:color/background_light"
+            android:drawableTop="@mipmap/ic_manual"
+            android:paddingTop="15dp"
+            android:text="@string/manual"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="100dp"
+            android:layout_height="170dp"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:text="@string/crea_lista_cero"
+            android:textColor="@color/black"
+            android:textSize="14dp" />
+
+    </TableRow>
+</TableLayout>
+

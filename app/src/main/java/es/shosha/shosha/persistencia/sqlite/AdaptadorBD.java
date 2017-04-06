@@ -12,6 +12,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
+import es.shosha.shosha.dominio.Item;
+import es.shosha.shosha.dominio.Lista;
+import es.shosha.shosha.dominio.Usuario;
 
 /**
  * Created by Jesús Iráizoz on 06/03/2017.
@@ -24,15 +30,19 @@ public class AdaptadorBD {
     private static final String TB_USUARIO = "usuario";
     private static final String TB_LISTA = "lista";
     private static final String TB_ITEM = "item";
+    private static final String TB_PARTICIPA = "participa";
+    private static final String TB_CONTEXTO = "contexto";
     private static final String ID = "id";
     private static final String NOMBRE = "nombre";
     private static final String USR_EMAIL = "email";
+    private static final String USR_MODIF = "modificacion";
     private static final String LST_PROP = "propietario";
     private static final String LST_ESTADO = "estado";
     private static final String ITM_PRECIO = "precio";
     private static final String IDLISTA = "idLista";
     private static final String PPA_IDUSR = "idUsuario";
     private static final String PPA_ACTIVO = "activo";
+
 
     private static final String ID_LOG = "USO DE BD";
 
@@ -59,18 +69,11 @@ public class AdaptadorBD {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-
-            //new ArchivoBD(this.cntx);
-
-
             try {
-                //FileInputStream fis = new FileInputStream(new File("D:\\Dropbox\\UNI\\16-17\\IM\\ShoSha\\app\\src\\main\\assets\\ShoSha.sql"));
                 InputStream is = cntx.getAssets().open("ShoSha.sql");
-
                 BufferedReader br = new BufferedReader(new InputStreamReader(is));
                 String leido = "", sql = "";
                 while ((leido = br.readLine()) != null) {
-                    //      System.out.println(" > " + leido);
                     if (!leido.endsWith(";")) {
                         sql += leido;
                     } else {
@@ -88,9 +91,12 @@ public class AdaptadorBD {
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            Log.w(ID_LOG, "Acualiza la versión: " + oldVersion + " a la versión: " + newVersion);
-            db.execSQL("DROP TABLE IF EXISTS " + TB_USUARIO);
-            onCreate(db);
+            Log.w(ID_LOG, "Actualiza la versión: " + oldVersion + " a la versión: " + newVersion);
+            db.execSQL("DROP TABLE IF EXISTS " + TB_USUARIO + ";"
+                    + "DROP TABLE IF EXISTS " + TB_PARTICIPA + ";"
+                    + "DROP TABLE IF EXISTS " + TB_LISTA + ";"
+                    + "DROP TABLE IF EXISTS " + TB_ITEM + ";");
+            this.onCreate(db);
         }
     }
 
@@ -103,14 +109,63 @@ public class AdaptadorBD {
         auxBD.close();
     }
 
-    public long insertarUsuario(String id, String nombre, String email) {
+    /*public long getUltimaModificacion(String idUsr) {
+        Cursor c = bdatos.rawQuery("SELECT modificacion FROM usuario WHERE id='" + idUsr + "'", null);
+        long l = -1L;
+        if (c.moveToFirst())
+            l = c.getLong(0);
+        c.close();
+        return l;
+    }*/
+
+  /*  public void modificarUltimaModificacion(long l, String idUsr) {
+        String sql = "UPDATE " + TB_USUARIO + " SET " + USR_MODIF + " = " + l + " WHERE " + ID + " = '" + idUsr + "'";
+
+        bdatos.beginTransaction();
+        try {
+            bdatos.rawQuery(sql, null);
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+    }*/
+
+  /*  public void insertarContextoUsuario(Usuario u) {
+        bdatos.beginTransaction();
+        try {
+
+            ContentValues valores = new ContentValues();
+            valores.put(ID, u.getId());
+            bdatos.insert(TB_CONTEXTO, null, valores);
+
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+    }*/
+
+ /*   public void insertarUltimaModificacion(long l, String idUsr) {
         bdatos.beginTransaction();
         long res;
         try {
+            bdatos.rawQuery("INSERT or replace INTO " + TB_USUARIO + " (modificacion) VALUES(" + l + ") WHERE id='" + idUsr + "'", null);
+
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+    }*/
+
+    public long insertarUsuario(int id, String nombre, String email) {
+        bdatos.beginTransaction();
+        long res;
+        try {
+
             ContentValues valores = new ContentValues();
             valores.put(ID, id);
             valores.put(NOMBRE, nombre);
             valores.put(USR_EMAIL, email);
+            bdatos.delete(TB_USUARIO, ID + " = " + id, null);
             res = bdatos.insert(TB_USUARIO, null, valores);
 
             bdatos.setTransactionSuccessful();
@@ -121,15 +176,16 @@ public class AdaptadorBD {
         return res;
     }
 
-    public long insertarLista(String id, String nombre, String propietario, String estado) {
+    public long insertarLista(int id, String nombre, Usuario propietario, String estado) {
         bdatos.beginTransaction();
         long res;
         try {
             ContentValues valores = new ContentValues();
             valores.put(ID, id);
             valores.put(NOMBRE, nombre);
-            valores.put(LST_PROP, propietario);
+            valores.put(LST_PROP, propietario.getId());
             valores.put(LST_ESTADO, estado);
+            bdatos.delete(TB_LISTA, ID + " = " + id, null);
             res = bdatos.insert(TB_LISTA, null, valores);
 
             bdatos.setTransactionSuccessful();
@@ -140,26 +196,37 @@ public class AdaptadorBD {
         return res;
     }
 
-    public long insertarItem(String id, String nombre, double precio, String idLista) {
+    public long insertarItem(int id, String nombre, double precio, int idLista) {
+        //    bdatos.beginTransaction();
+
+    /*    try {*/
         bdatos.beginTransaction();
-        long res;
+        long res=0;
         try {
             ContentValues valores = new ContentValues();
             valores.put(ID, id);
             valores.put(NOMBRE, nombre);
             valores.put(ITM_PRECIO, precio);
             valores.put(IDLISTA, idLista);
-            res = bdatos.insert(TB_ITEM, null, valores);
 
+
+            bdatos.delete(TB_ITEM, ID + " = " + id, null);
+            res = bdatos.insertOrThrow(TB_ITEM, null, valores);
             bdatos.setTransactionSuccessful();
-        } finally {
+        }finally {
             bdatos.endTransaction();
         }
+        //bdatos.rawQuery("INSERT INTO item VALUES ('"+id+"', '"+nombre+"', '"+precio+"', '"+idLista+"')",null);
+
+  /*          bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }*/
 
         return res;
     }
 
-    public long insertarParticipa(String idUsr, String idLista, boolean activo) {
+    public long insertarParticipa(int idUsr, int idLista, boolean activo) {
         bdatos.beginTransaction();
         long res;
         try {
@@ -168,7 +235,8 @@ public class AdaptadorBD {
             valores.put(IDLISTA, idLista);
             valores.put(PPA_IDUSR, idUsr);
             valores.put(PPA_ACTIVO, activo ? 1 : 0);
-            res = bdatos.insert(TB_ITEM, null, valores);
+            bdatos.delete(TB_PARTICIPA, IDLISTA + " = " + idLista + " AND " + PPA_IDUSR + " = " + idUsr, null);
+            res = bdatos.insert(TB_PARTICIPA, null, valores);
 
             bdatos.setTransactionSuccessful();
         } finally {
@@ -178,8 +246,177 @@ public class AdaptadorBD {
         return res;
     }
 
-    public Cursor leerTodos() {
-        //return bdatos.query(true,TB_USUARIO,null,null,null,null,null,null,"100");
-        return bdatos.rawQuery("SELECT * FROM usuario", null);
+    public List<Lista> obtenerListas(int idUsuario) {
+
+        String sql = "SELECT l.* FROM lista l LEFT JOIN participa p ON l.id=p.idLista WHERE (l.propietario=" + idUsuario + " AND l.estado=1) OR (p.idUsuario=" + idUsuario + " AND p.activo=1)";
+
+        //Cursor de las listas del usuario idUsuario
+        //Cursor c = bdatos.query(false, TB_LISTA, null, "propietario='" + idUsuario + "'", null, null, null, null, null);
+        Cursor c = bdatos.rawQuery(sql,null);
+
+        Usuario u = this.obtenerUsuario(idUsuario);
+
+        Lista l = null;
+        List<Lista> aux = new ArrayList<Lista>();
+
+        if (c.moveToFirst()) {
+            do {
+                l = new Lista();
+                l.setId(c.getInt(0));
+                l.setNombre(c.getString(1));
+                l.setEstado(c.getString(3).equals("1"));
+                int usrProp = c.getInt(2);
+                if (usrProp == idUsuario && u != null) {
+                    l.setPropietario(u);
+                } else if (usrProp != idUsuario) {
+                    l.setPropietario(this.obtenerUsuario(usrProp));
+                }
+
+                l.setListaItems(this.obtenerItems(l.getId()));
+
+                l.setParticipantes(this.getParticipantes(l.getId()));
+
+                aux.add(l);
+
+            } while (c.moveToNext());
+        }
+        c.close();
+
+        return aux;
+    }
+
+    public List<Lista> obtenerListas(Usuario u) {
+        //Cursor de las listas del usuario idUsuario
+        Cursor c = bdatos.query(false, TB_LISTA, null, "propietario=" + u.getId(), null, null, null, null, null);
+
+        Lista l = null;
+        List<Lista> aux = new ArrayList<Lista>();
+
+        if (c.moveToFirst()) {
+            do {
+                l = new Lista();
+                l.setId(c.getInt(0));
+                l.setNombre(c.getString(1));
+                l.setEstado(c.getString(3).equals("1"));
+                int usrProp = c.getInt(2);
+                if (usrProp==u.getId()) {
+                    l.setPropietario(u);
+                } else {
+                    l.setPropietario(this.obtenerUsuario(usrProp));
+                }
+
+                l.setListaItems(this.obtenerItems(l.getId()));
+
+                l.setParticipantes(this.getParticipantes(l.getId()));
+
+                aux.add(l);
+
+            } while (c.moveToNext());
+        }
+        c.close();
+        return aux;
+    }
+
+    public Usuario obtenerUsuario(int id) {
+        Cursor c = bdatos.query(false, TB_USUARIO, null, "id=" + id, null, null, null, null, null);
+        Usuario u = null;
+
+        while (c.moveToNext()) {
+            u = new Usuario(c.getInt(0), c.getString(1), c.getString(2));
+        }
+        return u;
+    }
+
+    public List<Item> obtenerItems(int idLista) {
+
+        Cursor c = bdatos.query(false, TB_ITEM, null, "idLista=" + idLista, null, null, null, null, null);
+        Item i = null;
+        List<Item> aux = new ArrayList<Item>();
+        if (c.moveToFirst()) {
+            do {
+                i = new Item(c.getInt(0), c.getString(1), c.getDouble(2));
+                aux.add(i);
+            } while (c.moveToNext());
+        }
+        c.close();
+        return aux;
+    }
+
+    public List<Usuario> getParticipantes(int idLista) {
+        //Cursor cursor = bdatos.rawQuery("SELECT * FROM " + TB_PARTICIPA + " WHERE " + IDLISTA + "='" + idLista + "'", null);
+        Cursor cursor = bdatos.query(false, TB_PARTICIPA, null, IDLISTA + "=?", new String[]{String.valueOf(idLista)}, null, null, null, null);
+
+        List<Usuario> aux = new ArrayList<Usuario>();
+
+        if (cursor.moveToFirst()) {
+            //Recorremos el cursor hasta que no haya más registros
+            do {
+                aux.add(this.obtenerUsuario(cursor.getInt(cursor.getColumnIndex(PPA_IDUSR))));
+            } while (cursor.moveToNext());
+        }
+
+        return aux;
+    }
+
+    public void updateUsuario(Usuario u) {
+        bdatos.beginTransaction();
+        try {
+
+            ContentValues cv = new ContentValues();
+            cv.put(NOMBRE, u.getNombre());
+            cv.put(USR_EMAIL, u.getEmail());
+
+            bdatos.update(TB_USUARIO, cv, "id=?", new String[]{String.valueOf(u.getId())});
+
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+    }
+
+    public long eliminarLista(int id, Usuario usuario) {
+        bdatos.beginTransaction();
+        long res = -1;
+        try {
+            Cursor cursor = bdatos.rawQuery("SELECT * FROM " + TB_LISTA + " WHERE " + ID + "=" + id, null);
+            if (cursor.moveToFirst()) {
+                if (cursor.getInt(2)==(usuario.getId())) { //Si el usuario es propietario
+                    ContentValues valores = new ContentValues();
+                    valores.put(LST_ESTADO, "0");
+                    res = bdatos.update(TB_LISTA, valores, ID + "=" + id, null);
+                } else {
+                    ContentValues valores = new ContentValues();
+                    valores.put(PPA_ACTIVO, "0");
+                    res = bdatos.update(TB_PARTICIPA, valores, IDLISTA + "=" + id + " AND " + PPA_IDUSR + " = " + usuario.getId(), null);
+                }
+                bdatos.setTransactionSuccessful();
+            }
+        } finally {
+            bdatos.endTransaction();
+        }
+        return res;
+    }
+
+    public long eliminarLista(int id, int idUsuario) {
+        bdatos.beginTransaction();
+        long res = -1;
+        try {
+            Cursor cursor = bdatos.rawQuery("SELECT * FROM " + TB_LISTA + " WHERE " + ID + "=" + id, null);
+            if (cursor.moveToFirst()) {
+                if (cursor.getInt(2)== idUsuario) {
+                    ContentValues valores = new ContentValues();
+                    valores.put(LST_ESTADO, "0");
+                    res = bdatos.update(TB_LISTA, valores, ID + "=" + id, null);
+                } else {
+                    ContentValues valores = new ContentValues();
+                    valores.put(PPA_ACTIVO, "0");
+                    res = bdatos.update(TB_PARTICIPA, valores, IDLISTA + "=" + id + " AND " + PPA_IDUSR + " = " + idUsuario, null);
+                }
+                bdatos.setTransactionSuccessful();
+            }
+        } finally {
+            bdatos.endTransaction();
+        }
+        return res;
     }
 }

@@ -1,28 +1,30 @@
 package es.shosha.shosha.dominio;
 
+import java.io.Serializable;
+
 /**
  * Created by Jesús Iráizoz on 06/03/2017.
  */
 
-public class Item {
-    private String id;
+public class Item  implements Serializable{
+    private int id;
     private String nombre;
     private double precio;
 
     public Item() {
     }
 
-    public Item(String id, String nombre, double precio) {
+    public Item(int id, String nombre, double precio) {
         this.id = id;
         this.nombre = nombre;
         this.precio = precio;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -40,5 +42,14 @@ public class Item {
 
     public void setPrecio(double precio) {
         this.precio = precio;
+    }
+
+    @Override
+    public String toString() {
+        return "Item{" +
+                "id='" + id + '\'' +
+                ", nombre='" + nombre + '\'' +
+                ", precio=" + precio +
+                '}';
     }
 }

@@ -1,20 +1,31 @@
 package es.shosha.shosha.dominio;
 
+import android.graphics.drawable.Drawable;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Jesús Iráizoz on 28/02/2017.
  */
-
-public class Lista {
-    private String id;
+@SuppressWarnings("serial")
+public class Lista implements Serializable {
+    private int id;
     private String nombre;
     private Usuario propietario;
     private boolean estado;
+    private List<Usuario> participantes;
+    private Drawable imagen = null;
     private List<Item> items;
 
-    public Lista(String id, String nombre, Usuario propietario, boolean estado) {
+    /**
+     * @param id
+     * @param nombre
+     * @param propietario
+     * @param estado
+     */
+    public Lista(int id, String nombre, Usuario propietario, boolean estado) {
         this.id = id;
         this.nombre = nombre;
         this.propietario = propietario;
@@ -22,6 +33,44 @@ public class Lista {
         this.items = new ArrayList<Item>();
     }
 
+    /**
+     * @param id
+     * @param nombre
+     * @param propietario
+     * @param estado
+     * @param items
+     * @param participantes
+     */
+    public Lista(int id, String nombre, Usuario propietario, boolean estado, List<Item> items, List<Usuario> participantes) {
+        this.id = id;
+        this.nombre = nombre;
+        this.propietario = propietario;
+        this.estado = estado;
+        this.items = items;
+        this.participantes = participantes;
+    }
+
+    /**
+     * @param id
+     * @param nombre
+     * @param propietario
+     * @param estado
+     * @param participantes
+     * @param imagen
+     */
+    public Lista(int id, String nombre, Usuario propietario, boolean estado, List<Usuario> participantes, Drawable imagen) {
+        this.id = id;
+        this.nombre = nombre;
+        this.propietario = propietario;
+        this.estado = estado;
+        this.items = new ArrayList<Item>();
+        this.participantes = participantes;
+        this.imagen = imagen;
+    }
+
+    /**
+     *
+     */
     public Lista() {
         this.items = new ArrayList<Item>();
     }
@@ -36,11 +85,23 @@ public class Lista {
         return super.equals(obj);
     }
 
-    public String getId() {
+    public List<Usuario> getParticipantes() {
+        return participantes;
+    }
+
+    public void setParticipantes(List<Usuario> participantes) {
+        this.participantes = participantes;
+    }
+
+    public void setImagen(Drawable imagen) {
+        this.imagen = imagen;
+    }
+
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -72,6 +133,12 @@ public class Lista {
         this.items.add(i);
     }
 
+    /**
+     * Obtiene el objeto <code>Item</code> contenido en la posición <code>index</code> de la lista de items.
+     *
+     * @param index Posición del objeto en la lista
+     * @return Objeto <code>Item</code> con posición <code>index</code>.
+     */
     public Item getItem(int index) {
         return this.items.get(index);
     }
@@ -86,11 +153,35 @@ public class Lista {
      */
     public Item getItem(String valor, boolean id) {
         for (Item i : this.items) {
-            if (id && i.getId().equals(valor))
+            if (id && i.getId() == Integer.valueOf(valor))
                 return i;
             else if (!id && i.getNombre().equals(valor))
                 return i;
         }
         return null;
+    }
+
+    public void setListaItems(List<Item> lItem) {
+        this.items = lItem;
+    }
+
+    public List<Item> getListaItems() {
+        return this.items;
+    }
+
+    public int getNumParticipantes() {
+        return this.participantes.size();
+    }
+
+    public Drawable getImagen() {
+        return imagen;
+    }
+
+    public List<Item> getItems() {
+        return items;
+    }
+
+    public void setItems(List<Item> items) {
+        this.items = items;
     }
 }

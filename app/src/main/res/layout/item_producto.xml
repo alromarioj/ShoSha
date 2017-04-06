@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    >
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divisor"
+        android:layout_below="@+id/item"
+        android:id="@+id/view" />
+
+    <CheckedTextView
+        android:id="@+id/checkedTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CheckedTextView" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/item"
+        android:padding="5dp"
+        android:paddingLeft="10dp"
+        android:background="@color/fondoClaro"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Precio"
+            android:id="@+id/precioP"
+            android:layout_below="@+id/nombreP"
+            android:textSize="12dp"/>
+
+        <TextView
+            android:id="@+id/nombreP"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:text="Tomate"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="16dp" />
+
+        <Button
+            android:id="@+id/undo_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Deshacer"
+            android:textAllCaps="true"
+            android:layout_gravity="end|center_vertical"/>
+
+    </RelativeLayout>
+
+    <CheckBox
+        android:id="@+id/comprado"
+        style="@style/Widget.AppCompat.CompoundButton.CheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/view"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:button="@drawable/cb_selector"
+        android:paddingRight="10dp"
+        android:layout_marginRight="5dp"
+        />
+
+</RelativeLayout>
