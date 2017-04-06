@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.util.concurrent.CountDownLatch;
 
 import es.shosha.shosha.dominio.Usuario;
+import es.shosha.shosha.negocio.NegocioChecksum;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 /**
@@ -77,6 +78,9 @@ public class UsuarioPers extends AsyncTask<Integer,Void,Usuario> {
                 e.printStackTrace();
             }
         }
+
+        NegocioChecksum.setChecksum("usuario");
+
         return usu;
     }
 
