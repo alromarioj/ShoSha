@@ -169,18 +169,10 @@ public class AdaptadorBD {
 
             long l = bdatos.replace(TB_ITEM,null,valores);
 
-      //      bdatos.delete(TB_ITEM, ID + " = " + id, null);
-       //     res = bdatos.insertOrThrow(TB_ITEM, null, valores);
             bdatos.setTransactionSuccessful();
         } finally {
             bdatos.endTransaction();
         }
-        //bdatos.rawQuery("INSERT INTO item VALUES ('"+id+"', '"+nombre+"', '"+precio+"', '"+idLista+"')",null);
-
-  /*          bdatos.setTransactionSuccessful();
-        } finally {
-            bdatos.endTransaction();
-        }*/
 
         return res;
     }
