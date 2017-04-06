@@ -167,9 +167,10 @@ public class AdaptadorBD {
             valores.put(ITM_PRECIO, precio);
             valores.put(IDLISTA, idLista);
 
+            long l = bdatos.replace(TB_ITEM,null,valores);
 
-            bdatos.delete(TB_ITEM, ID + " = " + id, null);
-            res = bdatos.insertOrThrow(TB_ITEM, null, valores);
+      //      bdatos.delete(TB_ITEM, ID + " = " + id, null);
+       //     res = bdatos.insertOrThrow(TB_ITEM, null, valores);
             bdatos.setTransactionSuccessful();
         } finally {
             bdatos.endTransaction();
