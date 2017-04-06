@@ -81,7 +81,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     protected void onCreate(Bundle savedInstanceState) {
         SharedPreferences pref = getSharedPreferences("MyPref", 0); // 0 - for private mode
         int id = pref.getInt("idUsuario", -1);
-        if(id>0){
+        if (id > 0) {
             new Thread(new CargaDatos(id, getAppContext())).start();
             SharedPreferences.Editor editor = pref.edit();
             editor.putInt("idUsuario", id);
@@ -336,9 +336,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         protected Boolean doInBackground(Void... params) {
             Usuario usuario = null;
             try {
-                java.net.URL urlObj = new URL("http://shosha.jiraizoz.es/loginUsuario.php?email="+ mEmail + "&pass=" + mPassword);
+                java.net.URL urlObj = new URL("http://shosha.jiraizoz.es/loginUsuario.php?email=" + mEmail + "&pass=" + mPassword);
                 System.out.println("=============================");
-                System.out.println("http://shosha.jiraizoz.es/loginUsuario.php?email="+ URLEncoder.encode(mEmail, "UTF-8") + "&pass=" + URLEncoder.encode(mPassword, "UTF-8"));
+                System.out.println("http://shosha.jiraizoz.es/loginUsuario.php?email=" + URLEncoder.encode(mEmail, "UTF-8") + "&pass=" + URLEncoder.encode(mPassword, "UTF-8"));
 
                 HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
 
@@ -346,12 +346,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 String line = "", res = "";
                 while ((line = rd.readLine()) != null) {
                     res += line;
-                    System.out.println("nueva linea: "+line);
+                    System.out.println("nueva linea: " + line);
                 }
                 rd.close();
                 System.out.println("=============================");
                 usuario = jsonParser(res);
-                if (usuario != null){
+                if (usuario != null) {
                     idUsuario = usuario.getId();
                 }
             } catch (IOException e) {

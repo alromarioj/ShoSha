@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Lista;
 import es.shosha.shosha.persistencia.ChecksumPers;
+import es.shosha.shosha.dominio.Usuario;
 import es.shosha.shosha.persistencia.ItemPers;
 import es.shosha.shosha.persistencia.ListaPers;
 import es.shosha.shosha.persistencia.UsuarioPers;
@@ -54,21 +55,6 @@ public class CargaDatos implements Runnable {
             e.printStackTrace();
         }
 
-
-    /*    long bdLocal = abd.getUltimaModificacion(this.idUsr);
-        VersionPers vp = new VersionPers();
-        vp.execute(this.idUsr);
-        Long lVp = null;
-        long bdRemota = 0L;
-        try {
-            lVp = vp.get();
-            bdRemota = lVp.longValue();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }*/
-
         //Si no coindicen las BD, se realiza la inserción
         if (actualizar) {
             //abd.insertarUltimaModificacion(new Date().getTime());
@@ -93,7 +79,6 @@ public class CargaDatos implements Runnable {
                 lp.executeOnExecutor(pool, String.valueOf(this.idUsr));
 
                 count.await();
-
                 try {
                     MyApplication.setUser(up.get());
                 } catch (ExecutionException e) {

@@ -12,6 +12,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
+import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
+
 import es.shosha.shosha.negocio.CargaDatos;
 
 import static es.shosha.shosha.MyApplication.getAppContext;
@@ -22,7 +24,7 @@ public class Inicio extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    //    new Thread(new CargaDatos(2,MyApplication.getAppContext())).start();
+        //    new Thread(new CargaDatos(2,MyApplication.getAppContext())).start();
 
         setContentView(R.layout.activity_inicio);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -66,12 +68,16 @@ public class Inicio extends AppCompatActivity
             case R.id.nav_cerrar:
                 SharedPreferences pref = getAppContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
                 SharedPreferences.Editor editor = pref.edit();
-                editor.putString("idUsuario", "");
+                editor.putInt("idUsuario", -1);
                 editor.apply();
+                AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
+                abd.open();
+                abd.vaciarBaseDatos();
+                abd.close();
                 Intent intent = new Intent(this, LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
                 finish();
+                startActivity(intent);
                 break;
         }
 

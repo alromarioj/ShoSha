@@ -46,6 +46,7 @@ public class AdaptadorBD {
     private static final String PPA_ACTIVO = "activo";
     private static final String CHK_TABLA = "tabla";
     private static final String CHK_CRC = "crc";
+    private static final String SQL_TRNCTE = "DELETE FROM ";
 
 
     private static final String ID_LOG = "USO DE BD";
@@ -113,53 +114,6 @@ public class AdaptadorBD {
         auxBD.close();
     }
 
-    /*public long getUltimaModificacion(String idUsr) {
-        Cursor c = bdatos.rawQuery("SELECT modificacion FROM usuario WHERE id='" + idUsr + "'", null);
-        long l = -1L;
-        if (c.moveToFirst())
-            l = c.getLong(0);
-        c.close();
-        return l;
-    }*/
-
-  /*  public void modificarUltimaModificacion(long l, String idUsr) {
-        String sql = "UPDATE " + TB_USUARIO + " SET " + USR_MODIF + " = " + l + " WHERE " + ID + " = '" + idUsr + "'";
-
-        bdatos.beginTransaction();
-        try {
-            bdatos.rawQuery(sql, null);
-            bdatos.setTransactionSuccessful();
-        } finally {
-            bdatos.endTransaction();
-        }
-    }*/
-
-  /*  public void insertarContextoUsuario(Usuario u) {
-        bdatos.beginTransaction();
-        try {
-
-            ContentValues valores = new ContentValues();
-            valores.put(ID, u.getId());
-            bdatos.insert(TB_CONTEXTO, null, valores);
-
-            bdatos.setTransactionSuccessful();
-        } finally {
-            bdatos.endTransaction();
-        }
-    }*/
-
- /*   public void insertarUltimaModificacion(long l, String idUsr) {
-        bdatos.beginTransaction();
-        long res;
-        try {
-            bdatos.rawQuery("INSERT or replace INTO " + TB_USUARIO + " (modificacion) VALUES(" + l + ") WHERE id='" + idUsr + "'", null);
-
-            bdatos.setTransactionSuccessful();
-        } finally {
-            bdatos.endTransaction();
-        }
-    }*/
-
     public long insertarUsuario(int id, String nombre, String email) {
         bdatos.beginTransaction();
         long res;
@@ -213,9 +167,10 @@ public class AdaptadorBD {
             valores.put(ITM_PRECIO, precio);
             valores.put(IDLISTA, idLista);
 
+            long l = bdatos.replace(TB_ITEM,null,valores);
 
-            bdatos.delete(TB_ITEM, ID + " = " + id, null);
-            res = bdatos.insertOrThrow(TB_ITEM, null, valores);
+      //      bdatos.delete(TB_ITEM, ID + " = " + id, null);
+       //     res = bdatos.insertOrThrow(TB_ITEM, null, valores);
             bdatos.setTransactionSuccessful();
         } finally {
             bdatos.endTransaction();
@@ -297,6 +252,7 @@ public class AdaptadorBD {
                 l.setParticipantes(this.getParticipantes(l.getId()));
 
                 aux.add(l);
+
             } while (c.moveToNext());
         }
         c.close();
@@ -464,6 +420,28 @@ public class AdaptadorBD {
                 System.out.println("Respuesta eliminar item en local: "+res);
                 bdatos.setTransactionSuccessful();
             }
+        } finally {
+            bdatos.endTransaction();
+        }
+        return res;
+    }
+
+    public boolean vaciarBaseDatos() {
+        bdatos.beginTransaction();
+        boolean res = true;
+
+        try {
+            bdatos.delete(TB_PARTICIPA, null, null);
+            bdatos.delete(TB_ITEM, null, null);
+            bdatos.delete(TB_LISTA, null, null);
+            bdatos.delete(TB_USUARIO, null, null);
+            int i = bdatos.delete(TB_CHK, null, null);
+
+            bdatos.setTransactionSuccessful();
+        } catch (Exception e) {
+            System.out.println("/!\\ --> Error vaciado tabla");
+            System.out.println("/!\\     Traza: " + e.getStackTrace().toString());
+            res = true;
         } finally {
             bdatos.endTransaction();
         }
