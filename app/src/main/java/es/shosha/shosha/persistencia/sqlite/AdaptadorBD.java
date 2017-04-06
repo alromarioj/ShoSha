@@ -14,6 +14,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import es.shosha.shosha.dominio.Item;
 import es.shosha.shosha.dominio.Lista;
@@ -31,7 +33,7 @@ public class AdaptadorBD {
     private static final String TB_LISTA = "lista";
     private static final String TB_ITEM = "item";
     private static final String TB_PARTICIPA = "participa";
-    private static final String TB_CONTEXTO = "contexto";
+    private static final String TB_CHK = "checksums";
     private static final String ID = "id";
     private static final String NOMBRE = "nombre";
     private static final String USR_EMAIL = "email";
@@ -42,6 +44,8 @@ public class AdaptadorBD {
     private static final String IDLISTA = "idLista";
     private static final String PPA_IDUSR = "idUsuario";
     private static final String PPA_ACTIVO = "activo";
+    private static final String CHK_TABLA = "tabla";
+    private static final String CHK_CRC = "crc";
 
 
     private static final String ID_LOG = "USO DE BD";
@@ -201,7 +205,7 @@ public class AdaptadorBD {
 
     /*    try {*/
         bdatos.beginTransaction();
-        long res=0;
+        long res = 0;
         try {
             ContentValues valores = new ContentValues();
             valores.put(ID, id);
@@ -213,7 +217,7 @@ public class AdaptadorBD {
             bdatos.delete(TB_ITEM, ID + " = " + id, null);
             res = bdatos.insertOrThrow(TB_ITEM, null, valores);
             bdatos.setTransactionSuccessful();
-        }finally {
+        } finally {
             bdatos.endTransaction();
         }
         //bdatos.rawQuery("INSERT INTO item VALUES ('"+id+"', '"+nombre+"', '"+precio+"', '"+idLista+"')",null);
@@ -246,13 +250,29 @@ public class AdaptadorBD {
         return res;
     }
 
+    public void insertarChecksum(Map<String, Double> mapaRemoto) {
+        bdatos.beginTransaction();
+        try {
+            ContentValues valores = new ContentValues();
+
+            for (String k : mapaRemoto.keySet()) {
+                valores.put(CHK_TABLA, k);
+                valores.put(CHK_CRC, mapaRemoto.get(k));
+                bdatos.replace(TB_CHK, null, valores);
+            }
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+    }
+
     public List<Lista> obtenerListas(int idUsuario) {
 
-        String sql = "SELECT l.* FROM lista l LEFT JOIN participa p ON l.id=p.idLista WHERE (l.propietario=" + idUsuario + " AND l.estado=1) OR (p.idUsuario=" + idUsuario + " AND p.activo=1)";
+        String sql = "SELECT distinct l.* FROM lista l LEFT JOIN participa p ON l.id=p.idLista WHERE (l.propietario=" + idUsuario + " AND l.estado=1) OR (p.idUsuario=" + idUsuario + " AND p.activo=1)";
 
         //Cursor de las listas del usuario idUsuario
         //Cursor c = bdatos.query(false, TB_LISTA, null, "propietario='" + idUsuario + "'", null, null, null, null, null);
-        Cursor c = bdatos.rawQuery(sql,null);
+        Cursor c = bdatos.rawQuery(sql, null);
 
         Usuario u = this.obtenerUsuario(idUsuario);
 
@@ -298,7 +318,7 @@ public class AdaptadorBD {
                 l.setNombre(c.getString(1));
                 l.setEstado(c.getString(3).equals("1"));
                 int usrProp = c.getInt(2);
-                if (usrProp==u.getId()) {
+                if (usrProp == u.getId()) {
                     l.setPropietario(u);
                 } else {
                     l.setPropietario(this.obtenerUsuario(usrProp));
@@ -357,6 +377,21 @@ public class AdaptadorBD {
         return aux;
     }
 
+    public Map<String, Double> obtenerChecksum() {
+        Map<String, Double> mapa = new TreeMap<>();
+
+        Cursor c = bdatos.query(false, TB_CHK, null, null, null, null, null, null, null);
+
+        if (c.moveToFirst()) {
+            do {
+                mapa.put(c.getString(0), c.getDouble(1));
+            } while (c.moveToNext());
+        }
+        c.close();
+
+        return mapa;
+    }
+
     public void updateUsuario(Usuario u) {
         bdatos.beginTransaction();
         try {
@@ -379,7 +414,7 @@ public class AdaptadorBD {
         try {
             Cursor cursor = bdatos.rawQuery("SELECT * FROM " + TB_LISTA + " WHERE " + ID + "=" + id, null);
             if (cursor.moveToFirst()) {
-                if (cursor.getInt(2)==(usuario.getId())) { //Si el usuario es propietario
+                if (cursor.getInt(2) == (usuario.getId())) { //Si el usuario es propietario
                     ContentValues valores = new ContentValues();
                     valores.put(LST_ESTADO, "0");
                     res = bdatos.update(TB_LISTA, valores, ID + "=" + id, null);
@@ -402,7 +437,7 @@ public class AdaptadorBD {
         try {
             Cursor cursor = bdatos.rawQuery("SELECT * FROM " + TB_LISTA + " WHERE " + ID + "=" + id, null);
             if (cursor.moveToFirst()) {
-                if (cursor.getInt(2)== idUsuario) {
+                if (cursor.getInt(2) == idUsuario) {
                     ContentValues valores = new ContentValues();
                     valores.put(LST_ESTADO, "0");
                     res = bdatos.update(TB_LISTA, valores, ID + "=" + id, null);

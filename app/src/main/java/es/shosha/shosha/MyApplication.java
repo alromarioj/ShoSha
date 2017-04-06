@@ -22,11 +22,10 @@ public class MyApplication extends Application {
 
             SharedPreferences pref = getAppContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
             SharedPreferences.Editor editor = pref.edit();
-            int id = pref.getInt("idUsuario", 0);
+            int id = pref.getInt("idUsuario", -1);
 
             AdaptadorBD abd = new AdaptadorBD(getAppContext());
             abd.open();
-            System.out.println("ASDASDFASDFASDFASDFASFASDFASDFASDFASD     "+id);
             setUser(abd.obtenerUsuario(id));
             abd.close();
         }
