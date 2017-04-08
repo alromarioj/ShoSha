@@ -120,20 +120,21 @@ public class ListasActivas extends AppCompatActivity {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         String opcion = item.getTitle().toString();
+        int id = listaClicada.getId();
+        String idu=MyApplication.getUser().getStringId();
         if (opcion == "Eliminar") {
             //Se elimina la lista seleccionada de las listas del usuario
-            int id = listaClicada.getId();
             AdaptadorBD abd = new AdaptadorBD(getBaseContext());
             abd.open();
-            new ListaPers(MyApplication.getAppContext(), null).execute("delete", String.valueOf(id), MyApplication.getUser().getStringId());
+            new ListaPers(MyApplication.getAppContext(), null).execute("delete", String.valueOf(id), idu);
             abd.eliminarLista(id, MyApplication.getUser());
             listas.remove(listaClicada);
             adaptador.notifyDataSetChanged();
-
             abd.close();
             Toast.makeText(this, "Eliminando lista " + id, Toast.LENGTH_SHORT).show();
         } else if (opcion == "Cambiar nombre") {
             //Mostrar popup para cambiar el nombre de la lista
+            //new ListaPers(MyApplication.getAppContext(),null).execute("update",String.valueOf(id),idu,)
         } else {
             return false;
         }

@@ -99,7 +99,7 @@ public class ListaProductos extends AppCompatActivity {
                     abd.insertarItem(producto.getId(),producto.getNombre(),producto.getPrecio(),lista.getId());
                     abd.close();
                     //Editar el producto en BD remota
-                    //new ItemPers(MyApplication.getAppContext()).execute("update", String.valueOf(lista.getId()), i.getNombre(),String.valueOf(i.getPrecio()),"1");
+                    new ItemPers(MyApplication.getAppContext()).execute("update", String.valueOf(lista.getId()),String.valueOf(producto.getId()), producto.getNombre(),String.valueOf(producto.getPrecio()),"1");
 
                     Toast.makeText(ListaProductos.this, "Editando producto " + producto.getNombre(), Toast.LENGTH_SHORT).show();
                     //Avisa de que la lista ha cambiado
@@ -157,7 +157,6 @@ public class ListaProductos extends AppCompatActivity {
                         //Insertar en BD local
                         abd.insertarItem(i.getId(),i.getNombre(),i.getPrecio(),lista.getId());
                         //Insertar en BD remota
-                        System.out.println(i.getNombre());
                         new ItemPers(MyApplication.getAppContext()).execute("insert", String.valueOf(lista.getId()), i.getNombre(),String.valueOf(i.getPrecio()),"1");
                         abd.close();
                         Toast.makeText(ListaProductos.this, "Añadiendo producto " + i.getNombre(), Toast.LENGTH_SHORT).show();

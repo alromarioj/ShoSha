@@ -52,7 +52,6 @@ public class NegocioChecksum {
         boolean actualizar = true;
         try {
             mapaRemoto = cp.get();
-
             actualizar = NegocioChecksum.actualizaDatos(mapaRemoto);
 
         } catch (InterruptedException e) {

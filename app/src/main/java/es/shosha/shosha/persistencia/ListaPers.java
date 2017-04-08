@@ -163,8 +163,8 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
      * @param params 0:idLista, 1:idUsuario, 2:nombreLista
      */
     private void updateMode(String... params) {
-        String idLista = "",
-                idUsr = "",
+        String idLista = "-1",
+                idUsr = "-1",
                 nombre="";
         try {
             idLista = URLEncoder.encode(params[0], "UTF-8");
