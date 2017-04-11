@@ -283,6 +283,30 @@ public class AdaptadorBD {
         c.close();
         return aux;
     }
+    public Lista obtenerLista(int idLista, int idUsuario) {
+
+        String sql = "SELECT l.* FROM lista l LEFT JOIN participa p ON l.id=p.idLista WHERE l.id="+idLista+" AND ((l.propietario=" + idUsuario + " AND l.estado=1) OR (p.idUsuario=" + idUsuario + " AND p.activo=1)) ";
+        Cursor c = bdatos.rawQuery(sql, null);
+        Usuario u = this.obtenerUsuario(idUsuario);
+        Lista l = null;
+        if (c.moveToFirst()) {
+            l = new Lista();
+            l.setId(c.getInt(0));
+            l.setNombre(c.getString(1));
+            l.setEstado(c.getString(3).equals("1"));
+            int usrProp = c.getInt(2);
+            if (usrProp == idUsuario && u != null) {
+                l.setPropietario(u);
+            } else if (usrProp != idUsuario) {
+                l.setPropietario(this.obtenerUsuario(usrProp));
+            }
+            l.setListaItems(this.obtenerItems(l.getId()));
+            l.setParticipantes(this.getParticipantes(l.getId()));
+        }
+
+        c.close();
+        return l;
+    }
 
     public Usuario obtenerUsuario(int id) {
         Cursor c = bdatos.query(false, TB_USUARIO, null, "id=" + id, null, null, null, null, null);
@@ -394,6 +418,22 @@ public class AdaptadorBD {
                     valores.put(PPA_ACTIVO, "0");
                     res = bdatos.update(TB_PARTICIPA, valores, IDLISTA + "=" + id + " AND " + PPA_IDUSR + " = " + idUsuario, null);
                 }
+                bdatos.setTransactionSuccessful();
+            }
+        } finally {
+            bdatos.endTransaction();
+        }
+        return res;
+    }
+    public long eliminarItem(int lista, int item) {
+        bdatos.beginTransaction();
+        long res = -1;
+        try {
+            String sql="SELECT * FROM " + TB_LISTA + " l join "+TB_ITEM+" i on l."+ID+"=i."+IDLISTA+" WHERE l." + ID + "=" + lista+" AND l."+LST_ESTADO+"=1 AND i."+ID+"="+item;
+            Cursor cursor = bdatos.rawQuery(sql, null);
+            if (cursor.moveToFirst()) {
+                res=bdatos.delete(TB_ITEM,ID+"="+item,null);
+                System.out.println("Respuesta eliminar item en local: "+res);
                 bdatos.setTransactionSuccessful();
             }
         } finally {

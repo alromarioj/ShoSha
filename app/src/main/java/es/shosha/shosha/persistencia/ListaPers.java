@@ -66,7 +66,9 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
                             res += line;
                         }
                         rd.close();
+
                         lListas = jsonParser(res);
+
                         if (count != null)
                             count.countDown();
 
@@ -173,7 +175,7 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
         }
 
         try {
-            java.net.URL urlObj = new URL(ListaPers.URL_DEL + ListaPers.ATRIBUTO_LISTA + idLista + "&" + ListaPers.ATRIBUTO_USR + idUsr+"&"+ListaPers.NOMBRE_LISTA+nombre);
+            java.net.URL urlObj = new URL(ListaPers.URL_UPD + ListaPers.ATRIBUTO_LISTA + idLista + "&" + ListaPers.ATRIBUTO_USR + idUsr+"&"+ListaPers.NOMBRE_LISTA+nombre);
 
             HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
 

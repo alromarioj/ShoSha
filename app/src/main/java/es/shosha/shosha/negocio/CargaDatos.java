@@ -82,13 +82,11 @@ public class CargaDatos implements Runnable {
                 lp.executeOnExecutor(pool, String.valueOf(this.idUsr));
 
                 count.await();
-
-            try {
-                Usuario x = up.get();
-                MyApplication.setUser(x);
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
+                try {
+                    MyApplication.setUser(up.get());
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
 
                 ItemPers ip = new ItemPers(this.contexto);
 
