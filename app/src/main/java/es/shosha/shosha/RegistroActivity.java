@@ -49,10 +49,7 @@ import static android.Manifest.permission.READ_CONTACTS;
 import static es.shosha.shosha.MyApplication.getAppContext;
 import static es.shosha.shosha.R.id.email;
 
-/**
- * A login screen that offers login via email/password.
- */
-public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
+public class RegistroActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -72,21 +69,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        SharedPreferences pref = getSharedPreferences("MyPref", 0); // 0 - for private mode
-        int id = pref.getInt("idUsuario", -1);
-        if (id > 0) {
-            new Thread(new CargaDatos(id, getAppContext())).start();
-            SharedPreferences.Editor editor = pref.edit();
-            editor.putInt("idUsuario", id);
-            editor.apply();
-            Intent i = new Intent(LoginActivity.this, Inicio.class);
-            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            finish();
-            startActivity(i);
-        }
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_registro);
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(email);
         populateAutoComplete();
@@ -111,15 +95,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         });
 
-        Button registro = (Button) findViewById(R.id.email_sign_up_button);
-        registro.setOnClickListener(new OnClickListener() {
-            public void onClick(View view) {
-                Intent myIntent = new Intent(view.getContext(), RegistroActivity.class);
-                startActivity(myIntent);
-            }
-        });
-
-        mLoginFormView = findViewById(R.id.email_login_form);
+        mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
     }
 
@@ -140,7 +116,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
         if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
             Snackbar.make(mEmailView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(android.R.string.ok, new View.OnClickListener() {
+                    .setAction(android.R.string.ok, new OnClickListener() {
                         @Override
                         @TargetApi(Build.VERSION_CODES.M)
                         public void onClick(View v) {
@@ -302,7 +278,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(LoginActivity.this,
+                new ArrayAdapter<>(RegistroActivity.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
         mEmailView.setAdapter(adapter);
@@ -338,7 +314,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         protected Boolean doInBackground(Void... params) {
             Usuario usuario = null;
             try {
-                java.net.URL urlObj = new URL("http://shosha.jiraizoz.es/loginUsuario.php?email=" + mEmail + "&pass=" + mPassword);
+                URL urlObj = new URL("http://shosha.jiraizoz.es/loginUsuario.php?email=" + mEmail + "&pass=" + mPassword);
                 System.out.println("=============================");
                 System.out.println("http://shosha.jiraizoz.es/loginUsuario.php?email=" + URLEncoder.encode(mEmail, "UTF-8") + "&pass=" + URLEncoder.encode(mPassword, "UTF-8"));
 
@@ -392,7 +368,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 SharedPreferences.Editor editor = pref.edit();
                 editor.putInt("idUsuario", idUsuario);
                 editor.apply();
-                Intent i = new Intent(LoginActivity.this, Inicio.class);
+                Intent i = new Intent(RegistroActivity.this, Inicio.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 finish();
                 startActivity(i);
