@@ -52,7 +52,8 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
         List<Item> lItems = null;
 
         String data = "";
-        Usuario usu = null;
+
+        System.out.println("****************************************************************** "+ params[0]);
         if (params.length > 0) {
             if (params.length == 5 && params[0].equals("insert")) {
                 insertMode(params[1], params[2], params[3], params[4]);
@@ -144,11 +145,14 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
     /**
      * Borra un producto de una lista
      *
-     * @param params 0:idLista, 1:nombre, 2:precio, 3:cantidad
+     * @param params 0:idLista, 1:producto
      */
     private void deleteMode(String... params) {
         String idLista = "",
                 producto = "";
+        System.out.println("------------------------> Entrada en deleteMode");
+        System.out.println("------------------------> Entrada en deleteMode");
+        System.out.println("------------------------> Entrada en deleteMode");
         try {
             idLista = URLEncoder.encode(params[0], "UTF-8");
             producto = URLEncoder.encode(params[1], "UTF-8");
@@ -156,6 +160,9 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+        System.out.println("------------------------> Va a borrar");
+        System.out.println("------------------------> Va a borrar");
+        System.out.println("------------------------> Va a borrar");
 
         try {
             java.net.URL urlObj = new URL(ItemPers.URL_DEL + ItemPers.ATRIBUTO + idLista + "&" + ItemPers.ID + producto);
@@ -169,6 +176,14 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
             }
 
             rd.close();
+            System.out.println("------------------------> Borrado, va a local");
+            System.out.println("------------------------> Borrado, va a local");
+            System.out.println("------------------------> Borrado, va a local");
+
+            AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
+            abd.open();
+            abd.eliminarItem(idLista,producto);
+            abd.close();
 
             System.out.println("Delete response: " + res);
 
@@ -196,6 +211,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
                     itm.setId(o.getInt("id"));
                     itm.setNombre(o.getString("nombre"));
                     itm.setPrecio(o.getDouble("precio"));
+                    itm.setIdLista(o.getInt("idLista"));
 
 
                     insertarBD(itm, idLista);

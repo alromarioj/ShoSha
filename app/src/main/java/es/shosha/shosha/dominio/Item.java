@@ -10,14 +10,23 @@ public class Item  implements Serializable{
     private int id;
     private String nombre;
     private double precio;
+    private int idLista;
 
     public Item() {
     }
 
+    @Deprecated
     public Item(int id, String nombre, double precio) {
         this.id = id;
         this.nombre = nombre;
         this.precio = precio;
+    }
+
+    public Item(int id, String nombre, double precio,int idLista) {
+        this.id = id;
+        this.nombre = nombre;
+        this.precio = precio;
+        this.idLista=idLista;
     }
 
     public int getId() {
@@ -51,5 +60,13 @@ public class Item  implements Serializable{
                 ", nombre='" + nombre + '\'' +
                 ", precio=" + precio +
                 '}';
+    }
+
+    public int getIdLista() {
+        return idLista;
+    }
+
+    public void setIdLista(int idLista) {
+        this.idLista = idLista;
     }
 }

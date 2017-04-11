@@ -167,7 +167,7 @@ public class AdaptadorBD {
             valores.put(ITM_PRECIO, precio);
             valores.put(IDLISTA, idLista);
 
-            long l = bdatos.replace(TB_ITEM,null,valores);
+            long l = bdatos.replace(TB_ITEM, null, valores);
 
             bdatos.setTransactionSuccessful();
         } finally {
@@ -301,7 +301,7 @@ public class AdaptadorBD {
         List<Item> aux = new ArrayList<Item>();
         if (c.moveToFirst()) {
             do {
-                i = new Item(c.getInt(0), c.getString(1), c.getDouble(2));
+                i = new Item(c.getInt(0), c.getString(1), c.getDouble(2), idLista);
                 aux.add(i);
             } while (c.moveToNext());
         }
@@ -394,6 +394,21 @@ public class AdaptadorBD {
                     valores.put(PPA_ACTIVO, "0");
                     res = bdatos.update(TB_PARTICIPA, valores, IDLISTA + "=" + id + " AND " + PPA_IDUSR + " = " + idUsuario, null);
                 }
+                bdatos.setTransactionSuccessful();
+            }
+        } finally {
+            bdatos.endTransaction();
+        }
+        return res;
+    }
+
+    public long eliminarItem(String idLista, String idItem) {
+
+        bdatos.beginTransaction();
+        long res = -1;
+        try {
+            if (Integer.valueOf(idLista) > 0 && Integer.valueOf(idItem) > 0) {
+                res = bdatos.delete(TB_ITEM, "id=? AND idLista=?", new String[]{idItem, idLista});
                 bdatos.setTransactionSuccessful();
             }
         } finally {
