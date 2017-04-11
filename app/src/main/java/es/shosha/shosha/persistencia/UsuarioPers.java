@@ -1,7 +1,6 @@
 package es.shosha.shosha.persistencia;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.os.AsyncTask;
 
 import org.json.JSONArray;
@@ -15,31 +14,40 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.concurrent.CountDownLatch;
 
 import es.shosha.shosha.dominio.Usuario;
+import es.shosha.shosha.negocio.NegocioChecksum;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 /**
  * Created by Jesús Iráizoz on 02/03/2017.
  */
 
-public class UsuarioPers extends AsyncTask<String, Void, Usuario> {
+public class UsuarioPers extends AsyncTask<Integer,Void,Usuario> {
     private final static String URL = "http://shosha.jiraizoz.es/getUsuario.php?";
     private final static String ATRIBUTO = "id=";
 
     private Context contexto;
+    private final CountDownLatch count;
 
-    public UsuarioPers(Context c) {
+    public UsuarioPers(Context contexto) {
+        this.contexto = contexto;
+        count = null;
+    }
+
+    public UsuarioPers(Context c, CountDownLatch cdl) {
         this.contexto = c;
+        count = cdl;
     }
 
     @Override
-    protected Usuario doInBackground(String... params) {
+    protected Usuario doInBackground(Integer... params) {
         String data = "";
         Usuario usu = null;
         if (params.length == 1) {
             try {
-                data = URLEncoder.encode(params[0], "UTF-8");
+                data = URLEncoder.encode(params[0].toString(), "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
@@ -57,6 +65,9 @@ public class UsuarioPers extends AsyncTask<String, Void, Usuario> {
 
                 rd.close();
                 usu = jsonParser(res);
+
+                if (count != null)
+                    count.countDown();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -67,6 +78,9 @@ public class UsuarioPers extends AsyncTask<String, Void, Usuario> {
                 e.printStackTrace();
             }
         }
+
+        NegocioChecksum.setChecksum("usuario");
+
         return usu;
     }
 
@@ -78,7 +92,14 @@ public class UsuarioPers extends AsyncTask<String, Void, Usuario> {
             for (int i = 0; i < listas.length(); i++) {
                 JSONObject o = listas.getJSONObject(i);
 
-                u = new Usuario(o.getString("id"), o.getString("nombre"), o.getString("email"));
+                u = new Usuario(o.getInt("id"), o.getString("nombre"), o.getString("email"));
+                System.out.println("#################################################");
+                System.out.println("#################################################");
+                System.out.println(u.toString());
+                System.out.println("#################################################");
+                System.out.println("#################################################\n");
+
+            //    MyApplication.setUser(u);
 
                 insertarBD(u);
 
@@ -86,9 +107,8 @@ public class UsuarioPers extends AsyncTask<String, Void, Usuario> {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         return u;
-
-
     }
 
     private void lanzadorExcepcion() throws Exception {

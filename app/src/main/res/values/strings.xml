@@ -4,10 +4,32 @@
     <string name="unirse">Unirse a una Lista</string>
     <string name="listas">Listas Activas</string>
     <string name="nueva_lista">Nueva Lista</string>
+    <string name="nuevo_producto">Nuevo Producto</string>
+    <string name="editar_producto">Editar Producto</string>
+    <string name="eliminar_producto">Eliminar Producto</string>
     <string name="buscar_receta">Buscar Receta</string>
     <string name="perfil">Mi perfil</string>
     <string name="config">Configuración</string>
     <string name="ayuda">Ayuda</string>
+    <string name="cerrarsesion">Cerrar sesión</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="lista_camara">Escanea una lista con la cámara</string>
+    <string name="OCR">Escaneo OCR</string>
+    <string name="manual">Manual</string>
+    <string name="crea_lista_cero">Crea tú mismo la lista desde cero</string>
+    <string name="title_activity_login">Iniciar sesión</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Contraseña (opcional)</string>
+    <string name="action_sign_in">Iniciar sesión o registrarse</string>
+    <string name="action_sign_in_short">Iniciar sesión</string>
+    <string name="error_invalid_email">La dirección de email no es válida</string>
+    <string name="error_invalid_password">La contraseña es demasiado corta</string>
+    <string name="error_incorrect_password">La contraseña no es correcta</string>
+    <string name="error_field_required">El campo es obligatorio</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
 </resources>
