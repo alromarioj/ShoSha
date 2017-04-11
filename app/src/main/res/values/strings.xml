@@ -5,6 +5,7 @@
     <string name="listas">Listas Activas</string>
     <string name="nueva_lista">Nueva Lista</string>
     <string name="nuevo_producto">Nuevo Producto</string>
+    <string name="add_participante">Añadir participante</string>
     <string name="editar_producto">Editar Producto</string>
     <string name="eliminar_producto">Eliminar Producto</string>
     <string name="buscar_receta">Buscar Receta</string>

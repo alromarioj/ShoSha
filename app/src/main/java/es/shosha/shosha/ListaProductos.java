@@ -1,6 +1,7 @@
 package es.shosha.shosha;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -129,6 +130,10 @@ public class ListaProductos extends AppCompatActivity {
         switch(item.getItemId()){
             case android.R.id.home:
                 onBackPressed();
+                return true;
+            case R.id.anadir_participante:
+                //Intent i = new Intent(this, Contactos.class);
+                //startActivity(i);
                 return true;
             case R.id.anadir_producto:
                 //Se crea el PopUp para añadir un nuevo producto
