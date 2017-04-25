@@ -61,7 +61,7 @@
             android:layout_margin="10dp"
             android:background="@android:color/background_light"
             android:drawableTop="@mipmap/ic_manual"
-            android:onClick="mostrarAnadirLista"
+            android:onClick="mostrarListaManual"
             android:paddingTop="15dp"
             android:text="@string/manual"
             android:textSize="12sp" />

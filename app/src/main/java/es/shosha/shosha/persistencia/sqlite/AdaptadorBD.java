@@ -169,18 +169,10 @@ public class AdaptadorBD {
 
             long l = bdatos.replace(TB_ITEM,null,valores);
 
-      //      bdatos.delete(TB_ITEM, ID + " = " + id, null);
-       //     res = bdatos.insertOrThrow(TB_ITEM, null, valores);
             bdatos.setTransactionSuccessful();
         } finally {
             bdatos.endTransaction();
         }
-        //bdatos.rawQuery("INSERT INTO item VALUES ('"+id+"', '"+nombre+"', '"+precio+"', '"+idLista+"')",null);
-
-  /*          bdatos.setTransactionSuccessful();
-        } finally {
-            bdatos.endTransaction();
-        }*/
 
         return res;
     }
@@ -293,7 +285,7 @@ public class AdaptadorBD {
     }
     public Lista obtenerLista(int idLista, int idUsuario) {
 
-        String sql = "SELECT l.* FROM lista l LEFT JOIN participa p ON l.id=p.idLista WHERE l.id="+idLista+" AND ((l.propietario=" + idUsuario + " AND l.estado=1) OR (p.idUsuario=" + idUsuario + " AND p.activo=1)) ";
+        String sql = "SELECT DISTINCT l.* FROM lista l LEFT JOIN participa p ON l.id=p.idLista WHERE l.id="+idLista+" AND ((l.propietario=" + idUsuario + " AND l.estado=1) OR (p.idUsuario=" + idUsuario + " AND p.activo=1))";
         Cursor c = bdatos.rawQuery(sql, null);
         Usuario u = this.obtenerUsuario(idUsuario);
         Lista l = null;

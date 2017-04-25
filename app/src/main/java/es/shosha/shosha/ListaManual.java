@@ -1,18 +1,16 @@
 package es.shosha.shosha;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 
-public class AnadirLista extends AppCompatActivity {
+public class ListaManual extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_anadir_lista);
+        setContentView(R.layout.activity_lista_manual);
         //Aparece el botón de atrás
         if(getSupportActionBar()!=null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -20,17 +18,12 @@ public class AnadirLista extends AppCompatActivity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-    public void mostrarListaManual(View v){
-        //Ejecuta la actividad para crear una lista manualmente
-        Intent i = new Intent(this, ListaManual.class);
-        startActivity(i);
     }
 }

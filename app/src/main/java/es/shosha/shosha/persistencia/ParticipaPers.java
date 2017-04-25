@@ -19,6 +19,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import es.shosha.shosha.dominio.Usuario;
+import es.shosha.shosha.negocio.NegocioChecksum;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 /**
@@ -75,6 +76,7 @@ public class ParticipaPers extends AsyncTask<Integer, Void, Void> {
                 e.printStackTrace();
             }
         }
+        NegocioChecksum.setChecksum("participa");
         return null;
     }
 

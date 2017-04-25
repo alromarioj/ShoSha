@@ -21,6 +21,7 @@ import java.util.concurrent.Executors;
 
 import es.shosha.shosha.dominio.Lista;
 import es.shosha.shosha.dominio.Usuario;
+import es.shosha.shosha.negocio.NegocioChecksum;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 /**
@@ -112,6 +113,7 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
                         e.printStackTrace();
                     }
             }
+        NegocioChecksum.setChecksum("lista");
 
         this.lListas = lListas;
         return lListas;
@@ -161,8 +163,8 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
      * @param params 0:idLista, 1:idUsuario, 2:nombreLista
      */
     private void updateMode(String... params) {
-        String idLista = "",
-                idUsr = "",
+        String idLista = "-1",
+                idUsr = "-1",
                 nombre="";
         try {
             idLista = URLEncoder.encode(params[0], "UTF-8");

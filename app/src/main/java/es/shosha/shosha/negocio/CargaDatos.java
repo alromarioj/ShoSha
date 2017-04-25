@@ -35,10 +35,14 @@ public class CargaDatos implements Runnable {
     public void run() {
         //Comprobamos primero si se han realizado cambios en la BD remota
         //Para ello, comprobamos checksums
+
         AdaptadorBD abd = new AdaptadorBD(this.contexto);
         abd.open();
 
-        ChecksumPers cp = new ChecksumPers();
+        boolean actualizar = true;
+        actualizar = NegocioChecksum.setChecksum();
+
+        /*ChecksumPers cp = new ChecksumPers();
         cp.execute();
 
         Map<String, Double> mapaRemoto = null;
@@ -47,24 +51,23 @@ public class CargaDatos implements Runnable {
         try {
             mapaRemoto = cp.get();
 
-            actualizar = CompruebaChecksum.actualizaDatos(mapaRemoto);
+            actualizar = NegocioChecksum.actualizaDatos(mapaRemoto);
 
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
-        }
+        }*/
 
         //Si no coindicen las BD, se realiza la inserción
         if (actualizar) {
-            //abd.insertarUltimaModificacion(new Date().getTime());
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
             System.out.println(">>>>>>>>>>>>>> Base de datos distinta >>>>>>>>>>>");
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
 
-            abd.insertarChecksum(mapaRemoto);
+        //    abd.insertarChecksum(mapaRemoto);
 
             try {
                 final int N = 2;
