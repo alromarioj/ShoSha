@@ -94,6 +94,10 @@ public class ListasActivas extends AppCompatActivity {
                 Intent i = new Intent(this, AnadirLista.class);
                 startActivity(i);
                 return true;
+            case R.id.escanear_QR:
+                Intent i1 = new Intent(this, LectorQR.class);
+                startActivity(i1);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -140,5 +144,10 @@ public class ListasActivas extends AppCompatActivity {
             return false;
         }
         return true;
+    }
+    public void mostrarAnadirLista(View view) {
+        //Ejecuta la actividad de listas activas
+        Intent i = new Intent(this, AnadirLista.class);
+        startActivity(i);
     }
 }

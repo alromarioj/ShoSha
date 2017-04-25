@@ -24,14 +24,15 @@
         <activity android:name=".ListasActivas" />
         <activity android:name=".AnadirLista" />
         <activity android:name=".ListaProductos" />
-        <activity
-            android:name=".LoginActivity">
+        <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".LectorQR" />
+        <activity android:name=".GenerarQR"></activity>
     </application>
 
 </manifest>
