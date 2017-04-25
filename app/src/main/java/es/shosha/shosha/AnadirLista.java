@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
 
 public class AnadirLista extends AppCompatActivity {
 
@@ -26,5 +27,10 @@ public class AnadirLista extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+    public void mostrarListaManual(View v){
+        //Ejecuta la actividad para crear una lista manualmente
+        Intent i = new Intent(this, ListaManual.class);
+        startActivity(i);
     }
 }

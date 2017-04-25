@@ -47,8 +47,6 @@ public class ListaProductos extends AppCompatActivity {
         abd.close();
         productos=lista.getItems();
         System.out.println("Número de productos: "+productos.size());
-       // productos.add(new Item("ref01","Tomate",1.5));
-        //productos.add(new Item("ref02","Macarrones",2.06));
 
         setContentView(R.layout.activity_lista_productos);
 

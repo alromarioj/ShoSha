@@ -91,7 +91,7 @@ public class ListasActivas extends AppCompatActivity {
                 onBackPressed();
                 return true;
             case R.id.anadir_lista:
-                Intent i = new Intent(this, AnadirLista.class);
+                Intent i = new Intent(this, ListaManual.class);
                 startActivity(i);
                 return true;
             default:
