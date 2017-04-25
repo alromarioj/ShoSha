@@ -22,10 +22,11 @@
     <string name="title_activity_login">Iniciar sesión</string>
     <!-- QR -->
     <string name="escanear_QR">Escanea el código QR de una lista</string>
-    <string name="descripcion_escaneo">Pide el código QR al propietario de la lista y escanealo para unirte a su lista.</string>
+    <string name="descripcion_escaneo">Pide el código QR a algún participante de la lista y escanéalo para unirte a su lista.</string>
     <string name="descripcion_generar">Muestra este código a las personas que quieras invitar a la lista para que lo puedan escanear desde su cuenta de Shosha.</string>
-    <string name="titulo_generar">Código QR de ... </string>
+    <string name="titulo_generar">Código QR de </string>
     <string name="titulo_escaneo">Escanear código QR</string>
+    <string name="QR">Generar código QR</string>
 
     <!-- Strings related to login -->
     <string name="prompt_nombre">Nombre</string>

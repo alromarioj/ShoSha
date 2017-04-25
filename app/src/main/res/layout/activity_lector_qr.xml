@@ -27,7 +27,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="16dp"
             android:paddingBottom="16dp"
@@ -39,11 +39,12 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="16dp"
                 android:paddingTop="16dp"
-                android:text="@string/descripcion_escaneo" />
+                android:text="@string/descripcion_escaneo"
+                android:textColor="@color/black" />
 
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal"
                 android:background="@color/colorPrimary"
                 android:orientation="vertical"
@@ -51,8 +52,8 @@
 
                 <SurfaceView
                     android:id="@+id/camera_view"
-                    android:layout_width="640px"
-                    android:layout_height="480px"
+                    android:layout_width="match_parent"
+                    android:layout_height="600px"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true" />
             </LinearLayout>

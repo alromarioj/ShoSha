@@ -78,7 +78,7 @@ public class LectorQR extends AppCompatActivity {
                 if (barcodes.size() != 0) {
                     //Detecta el código
                     String codigo=barcodes.valueAt(0).displayValue.toString();
-                    System.out.println(codigo);
+                    System.out.println("Código QR leído: "+codigo);
                     // Añadir al usuario como participante en la lista
                 }
                 barcodeDetector.release();

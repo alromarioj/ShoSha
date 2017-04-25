@@ -25,7 +25,6 @@
         <activity android:name=".AnadirLista" />
         <activity android:name=".ListaProductos" />
         <activity android:name=".ListaManual" />
-        <activity android:name=".LoginActivity">
         <activity android:name=".RegistroActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
