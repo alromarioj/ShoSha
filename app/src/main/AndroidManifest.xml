@@ -19,12 +19,12 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".Inicio"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".ListasActivas" />
         <activity android:name=".AnadirLista" />
         <activity android:name=".ListaProductos" />
-        <activity android:name=".RegistroActivity" />
+        <activity android:name=".RegistroActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".LoginActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -34,6 +34,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".Condiciones"
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>
