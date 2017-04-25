@@ -31,12 +31,11 @@
 
             <ImageButton
                 android:id="@+id/imagen"
-                android:layout_width="70dp"
+                android:layout_width="68dp"
                 android:layout_height="70dp"
                 android:layout_marginRight="10dp"
                 android:tint="@color/black"
                 app:srcCompat="?android:attr/actionModeFindDrawable"
-                android:layout_weight="1"
 
                 tools:layout_editor_absoluteX="239dp"
                 tools:layout_editor_absoluteY="24dp" />
