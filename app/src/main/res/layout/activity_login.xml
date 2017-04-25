@@ -7,8 +7,9 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="es.shosha.shosha.LoginActivity">
+    android:paddingTop="60dp"
+    tools:context="es.shosha.shosha.LoginActivity"
+    android:background="@color/fondoClaro">
 
     <!-- Login progress -->
     <ProgressBar
@@ -19,17 +20,25 @@
         android:layout_marginBottom="8dp"
         android:visibility="gone" />
 
-    <ScrollView
-        android:id="@+id/login_form"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
         <LinearLayout
             android:id="@+id/email_login_form"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
+            android:orientation="vertical"
+            android:layout_marginTop="30dp">
+            <ImageView
+                android:src="@mipmap/logo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"
+                android:textSize="30sp"
+                android:typeface="sans"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimaryDark"
+                android:textAlignment="center"/>
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -69,9 +78,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/action_sign_in"
-                android:textStyle="bold" />
-
+                android:text="@string/action_sign_in_short"
+                android:textStyle="bold"
+                android:background="@color/verdeOK"/>
+            <TextView
+                android:layout_marginTop="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/notienescuenta"
+                android:textSize="15sp"
+                android:typeface="sans"
+                android:textStyle="normal"
+                android:textColor="@color/colorPrimary"
+                android:textAlignment="center"/>
+            <Button
+                android:id="@+id/email_sign_up_button"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/registrate"
+                android:textStyle="bold"
+                android:background="@color/colorAccent"/>
         </LinearLayout>
-    </ScrollView>
 </LinearLayout>
