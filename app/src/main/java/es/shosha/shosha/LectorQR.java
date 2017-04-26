@@ -18,6 +18,9 @@ import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.HashMap;
 
 public class LectorQR extends AppCompatActivity {
     BarcodeDetector barcodeDetector;
@@ -78,8 +81,21 @@ public class LectorQR extends AppCompatActivity {
                 if (barcodes.size() != 0) {
                     //Detecta el código
                     String codigo=barcodes.valueAt(0).displayValue.toString();
+
                     System.out.println("Código QR leído: "+codigo);
-                    // Añadir al usuario como participante en la lista
+                    try {
+                        String decodificado=URLDecoder.decode(codigo, "UTF-8");
+                        System.out.println("------------------Código QR leído: " + decodificado);
+                        HashMap<String,String> datos=obtenerDatos(decodificado);
+                        String lista=datos.get("idLista");
+                        String clave=datos.get("clave");
+                        System.out.println("_______________________________Lista: "+lista+" Clave: "+clave);
+
+                        // Añadir al usuario como participante en la lista
+                    }
+                    catch (UnsupportedEncodingException e){
+                        e.printStackTrace();
+                    }
                 }
                 barcodeDetector.release();
             }
@@ -99,5 +115,15 @@ public class LectorQR extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+    private HashMap<String,String> obtenerDatos(String query){
+        HashMap<String,String> mapa=new HashMap<>();
+        String[] datos=query.split("&");
+        String[] par;
+        for(int i=0;i<datos.length;i++){
+            par=datos[i].split("=");
+            mapa.put(par[0],par[1]);
+        }
+        return mapa;
     }
 }
