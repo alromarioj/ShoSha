@@ -1,8 +1,10 @@
 package es.shosha.shosha;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,81 +33,54 @@ public class LectorQR extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lector_qr);
-        // creo el detector qr
-        barcodeDetector =
-                new BarcodeDetector.Builder(getBaseContext())
-                        .setBarcodeFormats(Barcode.QR_CODE)
-                        .build();
 
-        // creo la camara fuente
-        cameraSource = new CameraSource
-                .Builder(getBaseContext(), barcodeDetector)
-                .setRequestedPreviewSize(640, 480)
-                .build();
-        cameraView = (SurfaceView) findViewById(R.id.camera_view);
-        // listener de ciclo de vida de la camara
-        cameraView.getHolder().addCallback(new SurfaceHolder.Callback() {
-            @Override
-            public void surfaceCreated(SurfaceHolder holder) {
-
-                // verifico si el usuario dio los permisos para la camara
-                if (ContextCompat.checkSelfPermission(getBaseContext(), android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                    try {
-                        cameraSource.start(cameraView.getHolder());
-                    } catch (IOException ie) {
-                        Log.e("CAMERA SOURCE", ie.getMessage());
-                    }
-                } else {
-                    Toast.makeText(getBaseContext(), "No tiene permiso para utilizar la cámara", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-            }
-
-            @Override
-            public void surfaceDestroyed(SurfaceHolder holder) {
-                cameraSource.stop();
-            }
-        });
-        // preparo el detector de QR
-        barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
-            @Override
-            public void release() {
-            }
-
-            @Override
-            public void receiveDetections(Detector.Detections<Barcode> detections) {
-                final SparseArray<Barcode> barcodes = detections.getDetectedItems();
-                if (barcodes.size() != 0) {
-                    //Detecta el código
-                    String codigo=barcodes.valueAt(0).displayValue.toString();
-
-                    System.out.println("Código QR leído: "+codigo);
-                    try {
-                        String decodificado=URLDecoder.decode(codigo, "UTF-8");
-                        System.out.println("------------------Código QR leído: " + decodificado);
-                        HashMap<String,String> datos=obtenerDatos(decodificado);
-                        String lista=datos.get("idLista");
-                        String clave=datos.get("clave");
-                        System.out.println("_______________________________Lista: "+lista+" Clave: "+clave);
-
-                        // Añadir al usuario como participante en la lista
-                    }
-                    catch (UnsupportedEncodingException e){
-                        e.printStackTrace();
-                    }
-                }
-                barcodeDetector.release();
-            }
-        });
+        Intent i = new Intent("com.google.zxing.client.android.SCAN");
+        i.putExtra("SCAN_MODE", "QR_CODE_MODE");
+        startActivityForResult(i, 0);
 
         //Aparece el botón de atrás
         if(getSupportActionBar()!=null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode==0){
+            if(resultCode==RESULT_OK){
+                String contents=data.getStringExtra("SCAN_RESULT");
+                String format=data.getStringExtra("SCAN_RESULT_FORMAT");
+
+                try {
+                    String decodificado=URLDecoder.decode(contents, "UTF-8");
+                    HashMap<String,String> datos=obtenerDatos(decodificado);
+                    String lista=datos.get("idLista");
+                    String clave=datos.get("clave");
+                    Toast.makeText(this, "Código detectado", Toast.LENGTH_LONG).show();
+
+                    // Añadir al usuario como participante en la lista
+                    //Añade participante en bd remota
+
+                    /*if(){
+                        //Añade participante en bd local
+
+                        Toast.makeText(this, "Lista añadida", Toast.LENGTH_SHORT).show();
+                        Intent i = new Intent(this, ListasActivas.class);//Va al apartado de listas activas
+                        startActivity(i);
+                    }
+                    else{
+                        Toast.makeText(this, "Error al añadir la lista", Toast.LENGTH_SHORT).show();
+                        startActivityForResult(data, 0);//Reinicia el escáner
+                    }*/
+
+                }
+                catch (UnsupportedEncodingException e){
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
