@@ -62,11 +62,11 @@ public class ListasActivas extends AppCompatActivity {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent i = new Intent(ListasActivas.this, ListaProductos.class);
-                Bundle bundle = new Bundle();
-                bundle.putInt("idLista",adaptador.getItem(position).getId());
-                i.putExtras(bundle);
-                startActivity(i);
+            Intent i = new Intent(ListasActivas.this, ListaProductos.class);
+            Bundle bundle = new Bundle();
+            bundle.putInt("idLista",adaptador.getItem(position).getId());
+            i.putExtras(bundle);
+            startActivity(i);
             }
         });
         // Registramos el menu contextual
@@ -113,7 +113,7 @@ public class ListasActivas extends AppCompatActivity {
         AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo) menuInfo;
         menu.setHeaderTitle("Opciones");
         menu.add(0, v.getId(), 0, "Eliminar");
-        menu.add(0, v.getId(), 0, "Cambiar nombre");
+        menu.add(0, v.getId(), 0, "Editar");
         listaClicada = (Lista) lv.getItemAtPosition(acmi.position);
     }
 
@@ -136,9 +136,12 @@ public class ListasActivas extends AppCompatActivity {
             adaptador.notifyDataSetChanged();
             abd.close();
             Toast.makeText(this, "Eliminando lista " + id, Toast.LENGTH_SHORT).show();
-        } else if (opcion == "Cambiar nombre") {
+        } else if (opcion == "Editar") {//Mostrar activity para editar una lista- parecida a crearla
             //Mostrar popup para cambiar el nombre de la lista
             //new ListaPers(MyApplication.getAppContext(),null).execute("update",String.valueOf(id),idu,)
+
+            //new ListaPers(MyApplication.getAppContext(), null).execute("update", String.valueOf(id), idu,);
+
         } else {
             return false;
         }

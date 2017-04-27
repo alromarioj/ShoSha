@@ -24,10 +24,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 
+import es.shosha.shosha.persistencia.ListaPers;
+import es.shosha.shosha.persistencia.ParticipaPers;
+import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
+
 public class LectorQR extends AppCompatActivity {
-    BarcodeDetector barcodeDetector;
-    CameraSource cameraSource;
-    SurfaceView cameraView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,11 +59,17 @@ public class LectorQR extends AppCompatActivity {
                     String clave=datos.get("clave");
                     Toast.makeText(this, "Código detectado", Toast.LENGTH_LONG).show();
 
+                    int idu=MyApplication.getUser().getId();
+
                     // Añadir al usuario como participante en la lista
                     //Añade participante en bd remota
-
+                    new ParticipaPers(MyApplication.getAppContext(), null).execute("insert", lista,String.valueOf(idu),clave);
                     /*if(){
                         //Añade participante en bd local
+                        AdaptadorBD abd = new AdaptadorBD(getBaseContext());
+                        abd.open();
+                        abd.insertarParticipa(idu, Integer.valueOf(lista),true);
+                        abd.close();
 
                         Toast.makeText(this, "Lista añadida", Toast.LENGTH_SHORT).show();
                         Intent i = new Intent(this, ListasActivas.class);//Va al apartado de listas activas

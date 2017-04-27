@@ -26,9 +26,12 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
  * Created by Jesús Iráizoz on 13/03/2017.
  */
 
-public class ParticipaPers extends AsyncTask<Integer, Void, Void> {
-    private final static String URL = "http://shosha.jiraizoz.es/getParticipaciones.php?";
-    private final static String ATRIBUTO = "lista=";
+public class ParticipaPers extends AsyncTask<String, Void, Void> {
+    private final static String URL_GET = "http://shosha.jiraizoz.es/getParticipaciones.php?";
+    private final static String URL_ADD = "http://shosha.jiraizoz.es/addParticipante.php?";
+    private final static String LISTA = "lista=";
+    private final static String USUARIO = "usuario=";
+    private final static String CLAVE = "clave=";
 
     private Context contexto;
     private final CountDownLatch count;
@@ -39,7 +42,7 @@ public class ParticipaPers extends AsyncTask<Integer, Void, Void> {
     }
 
     @Override
-    protected Void doInBackground(Integer... params) {
+    protected Void doInBackground(String... params) {
         String data = "";
         Usuario usu = null;
         if (params.length == 1) {
@@ -50,7 +53,7 @@ public class ParticipaPers extends AsyncTask<Integer, Void, Void> {
             }
 
             try {
-                java.net.URL urlObj = new URL(ParticipaPers.URL + ParticipaPers.ATRIBUTO + data);
+                java.net.URL urlObj = new URL(URL_GET + LISTA + data);
 
                 HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
 
@@ -69,7 +72,10 @@ public class ParticipaPers extends AsyncTask<Integer, Void, Void> {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else {
+        }else if (params.length == 4 && params[0].equals("insert")) {
+            insertMode(params[1], params[2], params[3]);
+        }
+        else {
             try {
                 lanzadorExcepcion();
             } catch (Exception e) {
@@ -78,6 +84,49 @@ public class ParticipaPers extends AsyncTask<Integer, Void, Void> {
         }
         NegocioChecksum.setChecksum("participa");
         return null;
+    }
+
+    /**
+     * Añade un participante a una lista
+     *
+     * @param params 0:idLista, 1:usuario, 2:clave
+     */
+    private String insertMode(String... params) {
+        String res="";
+        String lista = "",
+                usuario = "", clave="";
+        try {
+            lista = URLEncoder.encode(params[0], "UTF-8");
+            clave = URLEncoder.encode(params[1], "UTF-8");
+            usuario = URLEncoder.encode(params[2],"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            java.net.URL urlObj = new URL(URL_ADD + LISTA + lista + "&" + USUARIO + usuario + "&" + CLAVE + clave);
+
+            HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
+
+            BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
+            String line = "";
+            while ((line = rd.readLine()) != null) {
+                res += line;
+            }
+
+            rd.close();
+
+            System.out.println("Insert response: " + res);
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        finally {
+            return res;
+        }
     }
 
     private void jsonParser(String data) {
