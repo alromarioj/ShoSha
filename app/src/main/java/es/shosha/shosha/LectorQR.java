@@ -7,9 +7,12 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.zxing.client.android.CaptureActivity;
+import com.google.zxing.client.android.Intents;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,11 +33,11 @@ public class LectorQR extends AppCompatActivity {
         setContentView(R.layout.activity_lector_qr);
         // verifico si el usuario dio los permisos para la camara
         if (ContextCompat.checkSelfPermission(getBaseContext(), android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            Intent i = new Intent(getApplicationContext(),CaptureActivity.class);
-            //Intent i = new Intent("com.google.zxing.client.android.SCAN");
-            i.setAction("com.google.zxing.client.android.SCAN");
-            i.putExtra("SCAN_MODE", "QR_CODE_MODE");
-            startActivityForResult(i, 0);
+            Button bt=(Button)findViewById(R.id.btEscanear);
+            Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+            intent.setPackage("com.google.zxing.client.android");
+            intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
+            startActivityForResult(intent, 0);
         } else {
             Toast.makeText(getBaseContext(), "La aplicación necesita usar la cámara", Toast.LENGTH_LONG).show();
         }
