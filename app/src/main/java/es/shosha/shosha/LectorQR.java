@@ -32,8 +32,8 @@ public class LectorQR extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(getBaseContext(), android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             Intent i = new Intent(getApplicationContext(),CaptureActivity.class);
             //Intent i = new Intent("com.google.zxing.client.android.SCAN");
-            //i.setAction("com.google.zxing.client.android.SCAN");
-           // i.putExtra("SCAN_MODE", "QR_CODE_MODE");
+            i.setAction("com.google.zxing.client.android.SCAN");
+            i.putExtra("SCAN_MODE", "QR_CODE_MODE");
             startActivityForResult(i, 0);
         } else {
             Toast.makeText(getBaseContext(), "La aplicación necesita usar la cámara", Toast.LENGTH_LONG).show();
@@ -50,6 +50,7 @@ public class LectorQR extends AppCompatActivity {
             if(resultCode==RESULT_OK){
                 String contents=data.getStringExtra("SCAN_RESULT");
                 String format=data.getStringExtra("SCAN_RESULT_FORMAT");
+
                 try{
                     JSONObject obj = new JSONObject(contents);
                     //String decodificado=URLDecoder.decode(contents, "UTF-8");

@@ -21,6 +21,7 @@ import java.util.concurrent.Executors;
 
 import es.shosha.shosha.dominio.Lista;
 import es.shosha.shosha.dominio.Usuario;
+import es.shosha.shosha.negocio.NegocioChecksum;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 /**
@@ -33,9 +34,12 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
     private final static String URL_GET = "http://shosha.jiraizoz.es/getListas.php?";
     private final static String URL_DEL = "http://shosha.jiraizoz.es/delLista.php?";
     private final static String URL_UPD = "http://shosha.jiraizoz.es/updateLista.php?";
+    private final static String URL_ADD = "http://shosha.jiraizoz.es/addLista.php?";
     private final static String ATRIBUTO_USR = "usuario=";
     private final static String ATRIBUTO_LISTA = "lista=";
     private final static String NOMBRE_LISTA = "nombre=";
+    private final static String PROPIETARIO = "propietario=";
+    private final static String IMAGEN = "imagen=";
     private List<Lista> lListas = null;
 
     private Context contexto;
@@ -97,6 +101,9 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
                         //lista y usuario
                         updateMode(params[1], params[2],params[3]);
                     }
+                    else if(params[0].equals("insert")){
+                        insertMode(params[1],params[2],params[3]);
+                    }
                     else {
                         try {
                             lanzadorExcepcion();
@@ -112,6 +119,7 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
                         e.printStackTrace();
                     }
             }
+        NegocioChecksum.setChecksum("lista");
 
         this.lListas = lListas;
         return lListas;
@@ -119,6 +127,43 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
 
     protected void onPostExecute(List<Lista> listas) {
         this.lListas = listas;
+    }
+    /**
+     * Añade una lista
+     *
+     * @param params 0:nombre, 2:propietario, 1:imagen
+     */
+    private void insertMode(String... params) {
+        String nombre = "",propietario="";
+        String imagen = "";//Tipo?
+        try {
+            propietario = URLEncoder.encode(params[0], "UTF-8");
+            nombre = URLEncoder.encode(params[1], "UTF-8");
+            imagen = URLEncoder.encode(params[2], "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            java.net.URL urlObj = new URL(URL_ADD + NOMBRE_LISTA + nombre + "&" + IMAGEN + imagen + "&" + PROPIETARIO+ propietario);
+
+            HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
+
+            BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
+            String line = "", res = "";
+            while ((line = rd.readLine()) != null) {
+                res += line;
+            }
+
+            rd.close();
+
+            System.out.println("Insert response: " + res);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -161,9 +206,10 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
      * @param params 0:idLista, 1:idUsuario, 2:nombreLista
      */
     private void updateMode(String... params) {
-        String idLista = "",
-                idUsr = "",
-                nombre="";
+        String idLista = "-1",
+                idUsr = "-1",
+                nombre="",
+                imagen="";//Permitir cambiar
         try {
             idLista = URLEncoder.encode(params[0], "UTF-8");
             idUsr = URLEncoder.encode(params[1], "UTF-8");
@@ -236,7 +282,7 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
                         ExecutorService pool = Executors.newFixedThreadPool(1);
 
                         ParticipaPers pp = new ParticipaPers(this.contexto, count);
-                        pp.executeOnExecutor(pool, o.getInt("id"));
+                        pp.executeOnExecutor(pool, String.valueOf(o.getInt("id")));
 
                         count.await();
                         l.setParticipantes(abd.getParticipantes(o.getInt("id")));

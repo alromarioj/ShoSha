@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -21,13 +20,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-
-import java.util.ArrayList;
 import java.util.List;
 
 import es.shosha.shosha.AdaptadorLista.Productos.ProductosAdapter;
@@ -54,6 +50,8 @@ public class ListaProductos extends AppCompatActivity {
         abd.close();
         productos=lista.getItems();
         System.out.println("Número de productos: "+productos.size());
+       // productos.add(new Item("ref01","Tomate",1.5));
+        //productos.add(new Item("ref02","Macarrones",2.06));
 
         setContentView(R.layout.activity_lista_productos);
 

@@ -7,13 +7,19 @@
     <item
         android:id="@+id/anadir_producto"
         android:icon="@drawable/anadir"
-        android:orderInCategory="100"
+        android:orderInCategory="2"
         android:title="@string/nuevo_producto"
         app:showAsAction="ifRoom" />
 
     <item android:id="@+id/anadir_participante"
         android:icon="@drawable/ic_add_person"
         android:title="@string/add_participante"
+        app:showAsAction="ifRoom"
+        android:visible="false"/>
+
+    <item android:id="@+id/QR"
+        android:icon="@drawable/ic_qr"
+        android:title="@string/QR"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/eliminar_producto"
@@ -23,6 +29,4 @@
         app:showAsAction="ifRoom"
         android:visible="false"
          />
-
-
 </menu>

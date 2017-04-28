@@ -10,30 +10,31 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="70dp"
-    tools:context="es.shosha.shosha.ListaManual"
-    >
-
+    tools:context=".ListaManual">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
         android:orientation="vertical"
         android:gravity="center">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginBottom="20dp"
             android:layout_weight="1"
             android:orientation="horizontal">
 
             <ImageButton
                 android:id="@+id/imagen"
                 android:layout_width="100dp"
-                android:layout_height="wrap_content"
+                android:layout_height="100dp"
                 android:layout_marginRight="10dp"
-                android:layout_weight="1"
+                android:onClick="abrirGaleria"
+                android:src="@android:drawable/ic_menu_gallery"
                 android:tint="@color/black"
-                app:srcCompat="@android:drawable/ic_menu_gallery"
                 tools:layout_editor_absoluteX="239dp"
                 tools:layout_editor_absoluteY="24dp" />
 
@@ -41,10 +42,12 @@
                 android:id="@+id/nombre"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_weight="1"
+                android:elevation="0dp"
                 android:ems="10"
+                android:hint="Nombre de la lista"
                 android:inputType="textPersonName"
-                android:text="Nombre de la lista"
                 tools:layout_editor_absoluteX="47dp"
                 tools:layout_editor_absoluteY="83dp" />
         </LinearLayout>
@@ -54,8 +57,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@color/colorPrimaryLight"
-            android:text="Crear lista"
+            android:background="@color/colorPrimaryDark"
+            android:onClick="crearLista"
+            android:text="Crear"
             android:textAlignment="center"
             tools:layout_editor_absoluteX="87dp"
             tools:layout_editor_absoluteY="116dp" />

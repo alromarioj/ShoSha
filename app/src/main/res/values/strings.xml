@@ -20,17 +20,31 @@
     <string name="manual">Manual</string>
     <string name="crea_lista_cero">Crea tú mismo la lista desde cero</string>
     <string name="title_activity_login">Iniciar sesión</string>
+    <!-- QR -->
+    <string name="escanear_QR">Escanea el código QR de una lista</string>
+    <string name="descripcion_escaneo">Pide el código QR a algún participante de la lista y escanéalo para unirte a su lista.</string>
+    <string name="descripcion_generar">Muestra este código a las personas que quieras invitar a la lista para que lo puedan escanear desde su cuenta de Shosha.</string>
+    <string name="titulo_generar">Código QR de </string>
+    <string name="titulo_escaneo">Escanear código QR</string>
+    <string name="QR">Generar código QR</string>
 
     <!-- Strings related to login -->
+    <string name="prompt_nombre">Nombre</string>
     <string name="prompt_email">Email</string>
-    <string name="prompt_password">Contraseña (opcional)</string>
+    <string name="prompt_password">Contraseña</string>
+    <string name="prompt_repassword">Repita Contraseña</string>
     <string name="action_sign_in">Iniciar sesión o registrarse</string>
     <string name="action_sign_in_short">Iniciar sesión</string>
+    <string name="notienescuenta">¿No tienes cuenta aún?</string>
+    <string name="registrate">¡Regístrate!</string>
     <string name="error_invalid_email">La dirección de email no es válida</string>
     <string name="error_invalid_password">La contraseña es demasiado corta</string>
     <string name="error_incorrect_password">La contraseña no es correcta</string>
     <string name="error_field_required">El campo es obligatorio</string>
+    <string name="condiciones1">Al realizar el registro acepta las </string>
+    <string name="condiciones"><u>Condiciones del servicio</u></string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="textoLegal"><![CDATA[La presente Política de Privacidad establece los términos en que ShoSha usa y protege la información que es proporcionada por sus usuarios al momento de utilizar su aplicación. <br/>Esta compañía está comprometida con la seguridad de los datos de sus usuarios. Cuando le pedimos llenar los campos de información personal con la cual usted pueda ser identificado, lo hacemos asegurando que sólo se empleará de acuerdo con los términos de este documento. <br/>Sin embargo esta Política de Privacidad puede cambiar con el tiempo o ser actualizada por lo que le recomendamos y enfatizamos revisar continuamente esta página para asegurarse que está de acuerdo con dichos cambios.<br/><br/><b>Información que es recogida</b><br/>Nuestra aplicación podrá recoger información personal por ejemplo: Nombre,  información de contacto como  su dirección de correo electrónica e información demográfica. Así mismo cuando sea necesario podrá ser requerida información específica para procesar algún pedido o realizar una entrega o facturación.<br/><br/><b>Uso de la información recogida</b><br/>Nuestra aplicación emplea la información con el fin de proporcionar el mejor servicio posible, particularmente para mantener un registro de usuarios, de pedidos en caso que aplique, y mejorar nuestros productos y servicios.  Es posible que sean enviados correos electrónicos periódicamente a través de nuestro sitio con ofertas especiales, nuevos productos y otra información publicitaria que consideremos relevante para usted o que pueda brindarle algún beneficio, estos correos electrónicos serán enviados a la dirección que usted proporcione y podrán ser cancelados en cualquier momento.<br/>ShoSha está altamente comprometido para cumplir con el compromiso de mantener su información segura. Usamos los sistemas más avanzados y los actualizamos constantemente para asegurarnos que no exista ningún acceso no autorizado.<br/><br/><b>Control de su información personal</b><br/>En cualquier momento usted puede restringir la recopilación o el uso de la información personal que es proporcionada a nuestra aplicación. <br/>Cada vez que se le solicite rellenar un formulario, como el de alta de usuario, puede marcar o desmarcar la opción de recibir información por correo electrónico.  En caso de que haya marcado la opción de recibir nuestro boletín o publicidad usted puede cancelarla en cualquier momento.<br/>Esta compañía no venderá, cederá ni distribuirá la información personal que es recopilada sin su consentimiento, salvo que sea requerido por un juez con un orden judicial.<br/>ShoSha Se reserva el derecho de cambiar los términos de la presente Política de Privacidad en cualquier momento.<br/><br/>]]></string>
 </resources>
