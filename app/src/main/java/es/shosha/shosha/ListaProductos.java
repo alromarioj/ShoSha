@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -47,11 +48,12 @@ public class ListaProductos extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        this.lista=(Lista)this.getIntent().getExtras().getSerializable("lista");//Se recoge la lista que se ha pasado desde ListasActivas
+        AdaptadorBD abd = new AdaptadorBD(getBaseContext());
+        abd.open();
+        this.lista = abd.obtenerLista(this.getIntent().getExtras().getInt("idLista"), MyApplication.getUser().getId());//Se recoge la lista que se ha pasado desde ListasActivas
+        abd.close();
         productos=lista.getItems();
         System.out.println("Número de productos: "+productos.size());
-       // productos.add(new Item("ref01","Tomate",1.5));
-        //productos.add(new Item("ref02","Macarrones",2.06));
 
         setContentView(R.layout.activity_lista_productos);
 
@@ -103,7 +105,7 @@ public class ListaProductos extends AppCompatActivity {
                     abd.insertarItem(producto.getId(),producto.getNombre(),producto.getPrecio(),lista.getId());
                     abd.close();
                     //Editar el producto en BD remota
-                    //new ItemPers(MyApplication.getAppContext()).execute("update", String.valueOf(lista.getId()), i.getNombre(),String.valueOf(i.getPrecio()),"1");
+                    new ItemPers(MyApplication.getAppContext()).execute("update", String.valueOf(lista.getId()),String.valueOf(producto.getId()), producto.getNombre(),String.valueOf(producto.getPrecio()),"1");
 
                     Toast.makeText(ListaProductos.this, "Editando producto " + producto.getNombre(), Toast.LENGTH_SHORT).show();
                     //Avisa de que la lista ha cambiado
@@ -165,7 +167,6 @@ public class ListaProductos extends AppCompatActivity {
                         //Insertar en BD local
                         abd.insertarItem(i.getId(),i.getNombre(),i.getPrecio(),lista.getId());
                         //Insertar en BD remota
-                        System.out.println(i.getNombre());
                         new ItemPers(MyApplication.getAppContext()).execute("insert", String.valueOf(lista.getId()), i.getNombre(),String.valueOf(i.getPrecio()),"1");
                         abd.close();
                         Toast.makeText(ListaProductos.this, "Añadiendo producto " + i.getNombre(), Toast.LENGTH_SHORT).show();
@@ -181,6 +182,15 @@ public class ListaProductos extends AppCompatActivity {
                     }
                 });
                 builder.show();
+                return true;
+            case R.id.QR:
+                Intent i = new Intent(this, GenerarQR.class);
+                Bundle bundle = new Bundle();
+                bundle.putInt("idLista",lista.getId());
+                bundle.putString("clave",lista.getClave());
+                bundle.putString("nombre",lista.getNombre());
+                i.putExtras(bundle);
+                startActivity(i);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

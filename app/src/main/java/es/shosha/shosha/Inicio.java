@@ -92,8 +92,13 @@ public class Inicio extends AppCompatActivity
         startActivity(i);
     }
     public void mostrarAnadirLista(View view) {
-        //Ejecuta la actividad de listas activas
+        //Ejecuta la actividad de añadir lista
         Intent i = new Intent(this, AnadirLista.class);
+        startActivity(i);
+    }
+    public void unirseALista(View view){
+        //Ejecuta el lector de códigos QR
+        Intent i = new Intent(this, LectorQR.class);
         startActivity(i);
     }
 }

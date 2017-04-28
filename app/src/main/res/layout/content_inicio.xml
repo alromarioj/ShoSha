@@ -27,19 +27,20 @@
         <Button
             android:id="@+id/bt_nuevaLista"
 
+            style="@android:style/Widget.Button"
             android:layout_width="150dp"
-            android:layout_height="200dp"
+            android:layout_height="match_parent"
             android:layout_margin="10dp"
             android:background="@android:color/background_light"
             android:drawableTop="@mipmap/nueva_lista"
             android:onClick="mostrarAnadirLista"
             android:paddingTop="15dp"
-            android:text="@string/nueva_lista"
-            style="@android:style/Widget.Button" />
+            android:text="@string/nueva_lista" />
 
         <Button
             android:id="@+id/bt_listasActivas"
 
+            style="@android:style/Widget.Button"
             android:layout_width="150dp"
             android:layout_height="200dp"
             android:layout_margin="10dp"
@@ -47,8 +48,7 @@
             android:drawableTop="@mipmap/listas_activas"
             android:onClick="mostrarListasActivas"
             android:paddingTop="15dp"
-            android:text="@string/listas"
-            style="@android:style/Widget.Button" />
+            android:text="@string/listas" />
     </TableRow>
 
     <TableRow
@@ -59,25 +59,26 @@
         <Button
             android:id="@+id/bt_unirseLista"
 
+            style="@android:style/Widget.Button"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="match_parent"
             android:layout_margin="10dp"
             android:background="@android:color/background_light"
             android:drawableTop="@mipmap/nueva_lista"
+            android:onClick="unirseALista"
             android:paddingTop="15dp"
-            android:text="@string/unirse"
-            style="@android:style/Widget.Button" />
+            android:text="@string/unirse" />
 
         <Button
             android:id="@+id/bt_buscarReceta"
 
+            style="@android:style/Widget.Button"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:layout_margin="10dp"
             android:background="@android:color/background_light"
             android:drawableTop="@mipmap/nueva_lista"
             android:paddingTop="15dp"
-            android:text="@string/buscar_receta"
-            style="@android:style/Widget.Button" />
+            android:text="@string/buscar_receta" />
     </TableRow>
 </TableLayout>
