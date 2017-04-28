@@ -3,33 +3,21 @@ package es.shosha.shosha;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.LoaderManager.LoaderCallbacks;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -39,31 +27,21 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
 
-import es.shosha.shosha.dominio.Usuario;
-import es.shosha.shosha.negocio.CargaDatos;
-
-import static android.Manifest.permission.READ_CONTACTS;
-import static es.shosha.shosha.MyApplication.getAppContext;
 import static es.shosha.shosha.R.id.email;
 
-public class RegistroActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
-
-    /**
-     * Id to identity READ_CONTACTS permission request.
-     */
-    private static final int REQUEST_READ_CONTACTS = 0;
+public class RegistroActivity extends AppCompatActivity {
 
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private UserLoginTask mAuthTask = null;
+    private UserRegisterTask mAuthTask = null;
 
     // UI references.
-    private AutoCompleteTextView mEmailView;
+    private EditText mEmailView;
     private EditText mPasswordView;
+    private EditText mrePasswordView;
+    private EditText mNombreView;
     private View mProgressView;
     private View mLoginFormView;
 
@@ -72,10 +50,11 @@ public class RegistroActivity extends AppCompatActivity implements LoaderCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registro);
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(email);
-        populateAutoComplete();
+        mEmailView = (EditText) findViewById(email);
+        mNombreView = (EditText) findViewById(R.id.nombre);
 
         mPasswordView = (EditText) findViewById(R.id.password);
+        mrePasswordView = (EditText) findViewById(R.id.repassword);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -104,50 +83,8 @@ public class RegistroActivity extends AppCompatActivity implements LoaderCallbac
             }
         });
 
+        mLoginFormView = findViewById(R.id.email_login_form);
         mProgressView = findViewById(R.id.login_progress);
-    }
-
-    private void populateAutoComplete() {
-        if (!mayRequestContacts()) {
-            return;
-        }
-
-        getLoaderManager().initLoader(0, null, this);
-    }
-
-    private boolean mayRequestContacts() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return true;
-        }
-        if (checkSelfPermission(READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-        if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(mEmailView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(android.R.string.ok, new OnClickListener() {
-                        @Override
-                        @TargetApi(Build.VERSION_CODES.M)
-                        public void onClick(View v) {
-                            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-                        }
-                    });
-        } else {
-            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-        }
-        return false;
-    }
-
-    /**
-     * Callback received when a permissions request has been completed.
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_READ_CONTACTS) {
-            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                populateAutoComplete();
-            }
-        }
     }
 
 
@@ -164,10 +101,14 @@ public class RegistroActivity extends AppCompatActivity implements LoaderCallbac
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
+        mrePasswordView.setError(null);
+        mNombreView.setError(null);
 
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
+        String repassword = mrePasswordView.getText().toString();
+        String nombre = mNombreView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -176,6 +117,16 @@ public class RegistroActivity extends AppCompatActivity implements LoaderCallbac
         if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
+            cancel = true;
+        }
+        if (!TextUtils.isEmpty(password) && !TextUtils.isEmpty(repassword) && !TextUtils.equals(password, repassword)) {
+            mrePasswordView.setError(getString(R.string.error_pass_repe));
+            focusView = mrePasswordView;
+            cancel = true;
+        }
+        if (TextUtils.isEmpty(nombre)) {
+            mNombreView.setError(getString(R.string.error_field_required));
+            focusView = mNombreView;
             cancel = true;
         }
 
@@ -198,7 +149,7 @@ public class RegistroActivity extends AppCompatActivity implements LoaderCallbac
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
+            mAuthTask = new UserRegisterTask(nombre, email, password);
             mAuthTask.execute((Void) null);
         }
     }
@@ -210,7 +161,7 @@ public class RegistroActivity extends AppCompatActivity implements LoaderCallbac
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
-        return password.length() > 0;
+        return password.length() > 4;
     }
 
     /**
@@ -249,121 +200,51 @@ public class RegistroActivity extends AppCompatActivity implements LoaderCallbac
         }
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return new CursorLoader(this,
-                // Retrieve data rows for the device user's 'profile' contact.
-                Uri.withAppendedPath(ContactsContract.Profile.CONTENT_URI,
-                        ContactsContract.Contacts.Data.CONTENT_DIRECTORY), ProfileQuery.PROJECTION,
-
-                // Select only email addresses.
-                ContactsContract.Contacts.Data.MIMETYPE +
-                        " = ?", new String[]{ContactsContract.CommonDataKinds.Email
-                .CONTENT_ITEM_TYPE},
-
-                // Show primary email addresses first. Note that there won't be
-                // a primary email address if the user hasn't specified one.
-                ContactsContract.Contacts.Data.IS_PRIMARY + " DESC");
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        List<String> emails = new ArrayList<>();
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            emails.add(cursor.getString(ProfileQuery.ADDRESS));
-            cursor.moveToNext();
-        }
-
-        addEmailsToAutoComplete(emails);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> cursorLoader) {
-
-    }
-
-    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
-        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(RegistroActivity.this,
-                        android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
-
-        mEmailView.setAdapter(adapter);
-    }
-
-
-    private interface ProfileQuery {
-        String[] PROJECTION = {
-                ContactsContract.CommonDataKinds.Email.ADDRESS,
-                ContactsContract.CommonDataKinds.Email.IS_PRIMARY,
-        };
-
-        int ADDRESS = 0;
-        int IS_PRIMARY = 1;
-    }
 
     /**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    private class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    private class UserRegisterTask extends AsyncTask<Void, Void, Boolean> {
 
+        private final String mNombre;
         private final String mEmail;
         private final String mPassword;
-        private int idUsuario = 0;
 
-        UserLoginTask(String email, String password) {
+        UserRegisterTask(String nombre, String email, String password) {
+            mNombre = nombre;
             mEmail = email;
             mPassword = password;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            Usuario usuario = null;
+            Integer success = -10;
             try {
-                URL urlObj = new URL("http://shosha.jiraizoz.es/loginUsuario.php?email=" + mEmail + "&pass=" + mPassword);
+                URL urlObj = new URL("http://shosha.jiraizoz.es/addUsuario.php?nombre=" + URLEncoder.encode(mNombre, "UTF-8") + "&email=" + URLEncoder.encode(mEmail, "UTF-8") + "&pass=" + URLEncoder.encode(mPassword, "UTF-8"));
                 System.out.println("=============================");
-                System.out.println("http://shosha.jiraizoz.es/loginUsuario.php?email=" + URLEncoder.encode(mEmail, "UTF-8") + "&pass=" + URLEncoder.encode(mPassword, "UTF-8"));
+                System.out.println("http://shosha.jiraizoz.es/addUsuario.php?nombre=" + URLEncoder.encode(mNombre, "UTF-8") + "&email=" + URLEncoder.encode(mEmail, "UTF-8") + "&pass=" + URLEncoder.encode(mPassword, "UTF-8"));
 
                 HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
 
                 BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
-                String line = "", res = "";
+                String line, res = "";
                 while ((line = rd.readLine()) != null) {
                     res += line;
-                    System.out.println("nueva linea: " + line);
                 }
                 rd.close();
-                System.out.println("=============================");
-                usuario = jsonParser(res);
-                if (usuario != null) {
-                    idUsuario = usuario.getId();
+                try{
+                    JSONObject jso = new JSONObject(res);
+                    success = jso.getInt("success");
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            return usuario != null;
+            return success == 1;
         }
 
-        private Usuario jsonParser(String data) {
-
-            Usuario u = null;
-            try {
-                JSONObject jso = new JSONObject(data);
-                Integer success = jso.getInt("success");
-                System.out.println("LOGIN============ " + success);
-                JSONArray usuarios = jso.getJSONArray("usuario");
-                if (success == 1) {
-                    JSONObject usuario = usuarios.getJSONObject(0);
-                    u = new Usuario(usuario.getInt("id"), usuario.getString("nombre"), usuario.getString("email"));
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return u;
-        }
 
         @Override
         protected void onPostExecute(final Boolean success) {
@@ -371,18 +252,13 @@ public class RegistroActivity extends AppCompatActivity implements LoaderCallbac
             showProgress(false);
 
             if (success) {
-                new Thread(new CargaDatos(idUsuario, getAppContext())).start();
-                SharedPreferences pref = getAppContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
-                SharedPreferences.Editor editor = pref.edit();
-                editor.putInt("idUsuario", idUsuario);
-                editor.apply();
-                Intent i = new Intent(RegistroActivity.this, Inicio.class);
+                Toast.makeText(getBaseContext(), "¡Gracias por registrarte! Ya puedes iniciar sesión",Toast.LENGTH_LONG).show();
+                Intent i = new Intent(RegistroActivity.this, LoginActivity.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 finish();
                 startActivity(i);
             } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+                Toast.makeText(getBaseContext(), "No se ha podido realizar el registro (Error: "+success+")",Toast.LENGTH_LONG).show();
             }
         }
 

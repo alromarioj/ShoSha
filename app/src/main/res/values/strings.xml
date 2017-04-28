@@ -40,6 +40,7 @@
     <string name="error_invalid_email">La dirección de email no es válida</string>
     <string name="error_invalid_password">La contraseña es demasiado corta</string>
     <string name="error_incorrect_password">La contraseña no es correcta</string>
+    <string name="error_pass_repe">Las contraseñas no coinciden</string>
     <string name="error_field_required">El campo es obligatorio</string>
     <string name="condiciones1">Al realizar el registro acepta las </string>
     <string name="condiciones"><u>Condiciones del servicio</u></string>
