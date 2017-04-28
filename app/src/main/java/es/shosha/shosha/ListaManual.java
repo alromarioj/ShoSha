@@ -14,7 +14,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -26,7 +25,7 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 public class ListaManual extends AppCompatActivity {
     private static final int SELECT_PICTURE=1;
-    private ImageView img;
+    protected ImageView img;
     private final String ruta_fotos= Environment.getExternalStorageDirectory().getAbsolutePath()+"ShoSha/imagenes";
     private File file=new File(ruta_fotos);
 

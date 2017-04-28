@@ -40,12 +40,14 @@
 
             <EditText
                 android:id="@+id/nombre"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_weight="1"
+                android:elevation="0dp"
                 android:ems="10"
+                android:hint="Nombre de la lista"
                 android:inputType="textPersonName"
-                android:text="Nombre de la lista"
                 tools:layout_editor_absoluteX="47dp"
                 tools:layout_editor_absoluteY="83dp" />
         </LinearLayout>

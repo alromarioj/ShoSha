@@ -1,32 +1,21 @@
 package es.shosha.shosha;
 
-import android.content.DialogInterface;
+
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.util.SparseArray;
 import android.view.MenuItem;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.widget.Toast;
 
-import com.google.android.gms.vision.CameraSource;
-import com.google.android.gms.vision.Detector;
-import com.google.android.gms.vision.barcode.Barcode;
-import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.google.zxing.client.android.CaptureActivity;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 
-import es.shosha.shosha.persistencia.ListaPers;
 import es.shosha.shosha.persistencia.ParticipaPers;
-import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 public class LectorQR extends AppCompatActivity {
 
@@ -34,11 +23,16 @@ public class LectorQR extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lector_qr);
-
-        Intent i = new Intent("com.google.zxing.client.android.SCAN");
-        i.putExtra("SCAN_MODE", "QR_CODE_MODE");
-        startActivityForResult(i, 0);
-
+        // verifico si el usuario dio los permisos para la camara
+        if (ContextCompat.checkSelfPermission(getBaseContext(), android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            Intent i = new Intent(getApplicationContext(),CaptureActivity.class);
+            //Intent i = new Intent("com.google.zxing.client.android.SCAN");
+            i.setAction("com.google.zxing.client.android.SCAN");
+            i.putExtra("SCAN_MODE", "QR_CODE_MODE");
+            startActivityForResult(i, 0);
+        } else {
+            Toast.makeText(getBaseContext(), "La aplicación necesita usar la cámara", Toast.LENGTH_LONG).show();
+        }
         //Aparece el botón de atrás
         if(getSupportActionBar()!=null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);

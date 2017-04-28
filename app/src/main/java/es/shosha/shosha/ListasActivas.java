@@ -137,10 +137,11 @@ public class ListasActivas extends AppCompatActivity {
             abd.close();
             Toast.makeText(this, "Eliminando lista " + id, Toast.LENGTH_SHORT).show();
         } else if (opcion == "Editar") {//Mostrar activity para editar una lista- parecida a crearla
-            //Mostrar popup para cambiar el nombre de la lista
-            //new ListaPers(MyApplication.getAppContext(),null).execute("update",String.valueOf(id),idu,)
-
-            //new ListaPers(MyApplication.getAppContext(), null).execute("update", String.valueOf(id), idu,);
+            Intent i = new Intent(ListasActivas.this, EditarLista.class);
+            Bundle bundle = new Bundle();
+            bundle.putInt("idLista",id);
+            i.putExtras(bundle);
+            startActivity(i);
 
         } else {
             return false;
