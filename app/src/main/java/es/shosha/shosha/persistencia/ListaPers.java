@@ -19,6 +19,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import es.shosha.shosha.ListaManual;
 import es.shosha.shosha.dominio.Lista;
 import es.shosha.shosha.dominio.Usuario;
 import es.shosha.shosha.negocio.NegocioChecksum;
@@ -44,10 +45,19 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
 
     private Context contexto;
     private final CountDownLatch count;
+    private String accion = "";
+    private ListaManual l;
+    private Integer insertId;
 
     public ListaPers(Context c, CountDownLatch cdl) {
         this.contexto = c;
         count = cdl;
+    }
+
+    public ListaPers(Context c, CountDownLatch cdl, ListaManual l) {
+        this.contexto = c;
+        count = cdl;
+        this.l = l;
     }
 
     @Override
@@ -102,6 +112,7 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
                         updateMode(params[1], params[2],params[3]);
                     }
                     else if(params[0].equals("insert")){
+                        this.accion = "insert";
                         insertMode(params[1],params[2],params[3]);
                     }
                     else {
@@ -119,14 +130,18 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
                         e.printStackTrace();
                     }
             }
-        NegocioChecksum.setChecksum("lista");
 
-        this.lListas = lListas;
+        //this.lListas = lListas;
         return lListas;
     }
 
+    @Override
     protected void onPostExecute(List<Lista> listas) {
+        NegocioChecksum.setChecksum("lista");
         this.lListas = listas;
+        if(accion.equals("insert")){
+            this.l.sigueCrearLista(this.insertId);
+        }
     }
     /**
      * Añade una lista
@@ -160,7 +175,16 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
             rd.close();
 
             System.out.println("Insert response: " + res);
-
+            try {
+                JSONObject jso = new JSONObject(res);
+                Integer success = jso.getInt("success");
+                if(success == 1) {
+                    this.insertId = jso.getInt("message");
+                    System.out.println("=¿="+this.insertId);
+                }
+            } catch(JSONException e) {
+                e.printStackTrace();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -230,7 +254,6 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
             }
 
             rd.close();
-
             System.out.println("Update response: " + res);
 
 
