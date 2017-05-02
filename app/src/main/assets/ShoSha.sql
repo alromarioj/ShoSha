@@ -27,9 +27,14 @@ CREATE TABLE "item" (
 	`comprado`  INTEGER,
 	FOREIGN KEY(`idLista`) REFERENCES `lista`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
-CREATE TABLE `checksums` (
+CREATE TABLE "checksums" (
   `tabla` varchar(50) NOT NULL,
   `crc` double,
   PRIMARY KEY (`tabla`)
+);
+CREATE TABLE "codigoQR" (
+    `idQR` varchar(25) NOT NULL PRIMARY KEY,
+    `idLista` INTEGER NOT NULL UNIQUE,
+    FOREIGN KEY(`idLista`) REFERENCES `lista`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
 COMMIT;

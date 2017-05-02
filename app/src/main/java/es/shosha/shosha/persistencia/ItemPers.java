@@ -15,12 +15,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Item;
-import es.shosha.shosha.dominio.Usuario;
 import es.shosha.shosha.negocio.NegocioChecksum;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
@@ -31,7 +28,7 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
  *
  * @author Jesús Iráizoz
  */
-public class ItemPers extends AsyncTask<String, Void, Void> {
+public class ItemPers extends AsyncTask<String, Void, String> {
     private final static String URL = "http://shosha.jiraizoz.es/getItems.php?";
     private final static String URL_ADD = "http://shosha.jiraizoz.es/addItem.php?";
     private final static String URL_DEL = "http://shosha.jiraizoz.es/delItem.php?";
@@ -44,16 +41,14 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
     private Context contexto;
 
     public ItemPers(Context c) {
+        System.out.println("ASDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFASDFAEAXDFDSFGÑSDA*ASE·ERFWAFCNSD ·");
         this.contexto = c;
     }
 
     @Override
-    protected Void doInBackground(String... params) {
-        List<Item> lItems = null;
+    protected String doInBackground(String... params) {
 
-        String data = "";
-
-        System.out.println("****************************************************************** "+ params[0]);
+        System.out.println("****************************************************************** " + params[0]);
         if (params.length > 0) {
             if (params.length == 5 && params[0].equals("insert")) {
                 insertMode(params[1], params[2], params[3], params[4]);
@@ -62,7 +57,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
             } else {
                 for (String s : params) {
 
-
+                    String data = "";
                     try {
                         data = URLEncoder.encode(s, "UTF-8");
                     } catch (UnsupportedEncodingException e) {
@@ -97,7 +92,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
             }
         }
 
-        return null;
+        return "done";
     }
 
     /**
@@ -182,7 +177,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
 
             AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
             abd.open();
-            abd.eliminarItem(idLista,producto);
+            abd.eliminarItem(idLista, producto);
             abd.close();
 
             System.out.println("Delete response: " + res);

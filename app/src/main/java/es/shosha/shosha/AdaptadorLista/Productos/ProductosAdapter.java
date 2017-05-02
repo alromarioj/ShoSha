@@ -1,5 +1,6 @@
 package es.shosha.shosha.AdaptadorLista.Productos;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -34,7 +35,7 @@ public class ProductosAdapter extends RecyclerView.Adapter {
     private Handler handler = new Handler(); // hanlder for running delayed runnables
     HashMap<Item, Runnable> pendingRunnables = new HashMap<>(); // map of items to pending runnables, so we can cancel a removal if need be
 
-    public ProductosAdapter(List<Item> productos, @NonNull RecyclerViewOnItemClickListener oicl) {
+    public ProductosAdapter(List<Item> productos, RecyclerViewOnItemClickListener recyclerViewOnItemClickListener, Context baseContext, int id) {
         items = productos;
         itemsPendingRemoval = new ArrayList<>();
         this.oicl = oicl;
