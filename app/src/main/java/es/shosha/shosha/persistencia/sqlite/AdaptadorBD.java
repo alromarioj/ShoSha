@@ -155,9 +155,6 @@ public class AdaptadorBD {
     }
 
     public long insertarItem(int id, String nombre, double precio, int idLista) {
-        //    bdatos.beginTransaction();
-
-    /*    try {*/
         bdatos.beginTransaction();
         long res = 0;
         try {
@@ -374,6 +371,19 @@ public class AdaptadorBD {
 
             bdatos.update(TB_USUARIO, cv, "id=?", new String[]{String.valueOf(u.getId())});
 
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+    }
+    public void updateLista(Lista lista, String nombre) {
+        bdatos.beginTransaction();
+        try {
+
+            ContentValues cv = new ContentValues();
+            cv.put(NOMBRE, lista.getNombre());
+
+            bdatos.update(TB_LISTA, cv, "id="+lista.getId(), null);
             bdatos.setTransactionSuccessful();
         } finally {
             bdatos.endTransaction();
