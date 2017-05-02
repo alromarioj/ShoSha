@@ -30,7 +30,10 @@ import es.shosha.shosha.AdaptadorLista.Productos.ProductosAdapter;
 import es.shosha.shosha.AdaptadorLista.Productos.RecyclerViewOnItemClickListener;
 import es.shosha.shosha.dominio.Item;
 import es.shosha.shosha.dominio.Lista;
+
+
 import es.shosha.shosha.persistencia.ItemPers;
+import es.shosha.shosha.persistencia.ListaPers;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 public class ListaProductos extends AppCompatActivity {
@@ -47,6 +50,8 @@ public class ListaProductos extends AppCompatActivity {
         abd.close();
         productos=lista.getItems();
         System.out.println("Número de productos: "+productos.size());
+       // productos.add(new Item("ref01","Tomate",1.5));
+        //productos.add(new Item("ref02","Macarrones",2.06));
 
         setContentView(R.layout.activity_lista_productos);
 
@@ -180,7 +185,7 @@ public class ListaProductos extends AppCompatActivity {
                 Intent i = new Intent(this, GenerarQR.class);
                 Bundle bundle = new Bundle();
                 bundle.putInt("idLista",lista.getId());
-                bundle.putString("clave","123fb");
+                bundle.putString("clave",lista.getClave());
                 bundle.putString("nombre",lista.getNombre());
                 i.putExtras(bundle);
                 startActivity(i);

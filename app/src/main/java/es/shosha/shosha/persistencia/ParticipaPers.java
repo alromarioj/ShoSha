@@ -91,7 +91,7 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
      *
      * @param params 0:idLista, 1:usuario, 2:clave
      */
-    private String insertMode(String... params) {
+    private void insertMode(String... params) {
         String res="";
         String lista = "",
                 usuario = "", clave="";
@@ -124,9 +124,6 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
 
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        finally {
-            return res;
         }
     }
 

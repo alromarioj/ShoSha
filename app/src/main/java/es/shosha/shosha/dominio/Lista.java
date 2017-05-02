@@ -18,6 +18,7 @@ public class Lista implements Serializable {
     private List<Usuario> participantes;
     private Drawable imagen = null;
     private List<Item> items;
+    private String clave="1234";
 
     /**
      * @param id
@@ -67,6 +68,25 @@ public class Lista implements Serializable {
         this.participantes = participantes;
         this.imagen = imagen;
     }
+    /**
+     * @param id
+     * @param nombre
+     * @param propietario
+     * @param estado
+     * @param participantes
+     * @param imagen
+     * @param clave
+     */
+    public Lista(int id, String nombre, Usuario propietario, boolean estado, List<Usuario> participantes, Drawable imagen, String clave) {
+        this.id = id;
+        this.nombre = nombre;
+        this.propietario = propietario;
+        this.estado = estado;
+        this.items = new ArrayList<Item>();
+        this.participantes = participantes;
+        this.imagen = imagen;
+        this.clave=clave;
+    }
 
     /**
      *
@@ -103,6 +123,14 @@ public class Lista implements Serializable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getClave() {
+        return clave;
+    }
+
+    public void setClave(String clave) {
+        this.clave = clave;
     }
 
     public String getNombre() {
