@@ -1,13 +1,12 @@
 package es.shosha.shosha;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Bundle;
-import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -25,7 +24,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import es.shosha.shosha.AdaptadorLista.Productos.ProductosAdapter;
 import es.shosha.shosha.AdaptadorLista.Productos.RecyclerViewOnItemClickListener;
@@ -39,106 +37,109 @@ public class ListaProductos extends AppCompatActivity {
     private Lista lista;
     private List<Item> productos;//=new ArrayList<>();
     RecyclerView mRecyclerView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        this.lista = (Lista) this.getIntent().getExtras().getSerializable("lista");//Se recoge la lista que se ha pasado desde ListasActivas
-        productos = lista.getItems();
-        System.out.println("Número de productos: " + productos.size());
-        // productos.add(new Item("ref01","Tomate",1.5));
-        //productos.add(new Item("ref02","Macarrones",2.06));
+        AdaptadorBD abd = new AdaptadorBD(getBaseContext());
+        abd.open();
+        this.lista = abd.obtenerLista(this.getIntent().getExtras().getInt("idLista"), MyApplication.getUser().getId());//Se recoge la lista que se ha pasado desde ListasActivas
+        abd.close();
+        productos=lista.getItems();
+        System.out.println("Número de productos: "+productos.size());
 
         setContentView(R.layout.activity_lista_productos);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        mRecyclerView= (RecyclerView) findViewById(R.id.recycler_view);
         setUpRecyclerView(productos);
 
         //Cambia el título de la página que muestra la lista de productos
         final Toolbar tb = (Toolbar) findViewById(R.id.toolbar2);
         tb.setTitle(lista.getNombre());
         //Aparece el botón de atrás
-        if (getSupportActionBar() != null) {
+        if(getSupportActionBar()!=null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
         super.onCreate(savedInstanceState);
     }
+    public void editarProducto(View view, int position){
+            final Item producto=((ProductosAdapter)mRecyclerView.getAdapter()).getItem(position);
+            AlertDialog.Builder builder1;
+            //Se crea el PopUp para añadir un nuevo producto
+            builder1=new AlertDialog.Builder(this);
+            builder1.setTitle("Editar producto");
 
-    public void editarProducto(View view, int position) {
-        final Item producto = ((ProductosAdapter) mRecyclerView.getAdapter()).getItem(position);
-        AlertDialog.Builder builder1;
-        //Se crea el PopUp para añadir un nuevo producto
-        builder1 = new AlertDialog.Builder(this);
-        builder1.setTitle("Editar producto");
+            View viewInflated1 = LayoutInflater.from(getBaseContext()).inflate(R.layout.nuevo_producto, (ViewGroup) findViewById(android.R.id.content), false);
+            // Set up the input
+            final EditText input_np2 = (EditText) viewInflated1.findViewById(R.id.in_nombre_producto);
+            input_np2.setText(producto.getNombre());
+            final EditText input_pp = (EditText) viewInflated1.findViewById(R.id.in_precio_producto);
+            input_pp.setText(String.valueOf(producto.getPrecio()));
 
-        View viewInflated1 = LayoutInflater.from(getBaseContext()).inflate(R.layout.nuevo_producto, (ViewGroup) findViewById(android.R.id.content), false);
-        // Set up the input
-        final EditText input_np2 = (EditText) viewInflated1.findViewById(R.id.in_nombre_producto);
-        input_np2.setText(producto.getNombre());
-        final EditText input_pp = (EditText) viewInflated1.findViewById(R.id.in_precio_producto);
-        input_pp.setText(String.valueOf(producto.getPrecio()));
+            // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+            builder1.setView(viewInflated1);
 
-        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-        builder1.setView(viewInflated1);
+            // Set up the buttons
+            builder1.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    //Asumiendo que el precio es >=0
+                    AdaptadorBD abd = new AdaptadorBD(getBaseContext());
+                    abd.open();
+                    //new ItemPers(MyApplication.getAppContext()).execute("insert", id, MyApplication.getUser().getId());
+                    //Se inserta un producto a la lista a partir de los datos introducidos
+                    String precio=input_pp.getText().toString();
+                    precio=(precio.isEmpty()?"0":precio);
+                    //Item i=new Item("ref"+lista.getItems().size(),input_np2.getText().toString(),Double.valueOf(precio));
+                    producto.setNombre(input_np2.getText().toString());
+                    producto.setPrecio(Double.valueOf(precio));
 
-        // Set up the buttons
-        builder1.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                //Asumiendo que el precio es >=0
-                AdaptadorBD abd = new AdaptadorBD(getBaseContext());
-                abd.open();
-                //new ItemPers(MyApplication.getAppContext()).execute("insert", id, MyApplication.getUser().getId());
-                //Se inserta un producto a la lista a partir de los datos introducidos
-                String precio = input_pp.getText().toString();
-                precio = (precio.isEmpty() ? "0" : precio);
-                //Item i=new Item("ref"+lista.getItems().size(),input_np2.getText().toString(),Double.valueOf(precio));
-                producto.setNombre(input_np2.getText().toString());
-                producto.setPrecio(Double.valueOf(precio));
+                    //new ListaPers(MyApplication.getAppContext(), null).execute("update", id, MyApplication.getUser().getId());
+                    abd.insertarItem(producto.getId(),producto.getNombre(),producto.getPrecio(),lista.getId());
+                    abd.close();
+                    //Editar el producto en BD remota
+                    new ItemPers(MyApplication.getAppContext()).execute("update", String.valueOf(lista.getId()),String.valueOf(producto.getId()), producto.getNombre(),String.valueOf(producto.getPrecio()),"1");
 
-                //new ListaPers(MyApplication.getAppContext(), null).execute("update", id, MyApplication.getUser().getId());
-                abd.insertarItem(producto.getId(), producto.getNombre(), producto.getPrecio(), lista.getId());
-                abd.close();
-                //Editar el producto en BD remota
-                //new ItemPers(MyApplication.getAppContext()).execute("update", String.valueOf(lista.getId()), i.getNombre(),String.valueOf(i.getPrecio()),"1");
-
-                Toast.makeText(ListaProductos.this, "Editando producto " + producto.getNombre(), Toast.LENGTH_SHORT).show();
-                //Avisa de que la lista ha cambiado
-                mRecyclerView.getAdapter().notifyDataSetChanged();
-                dialog.dismiss();
-            }
-        });
-        builder1.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-        builder1.show();
+                    Toast.makeText(ListaProductos.this, "Editando producto " + producto.getNombre(), Toast.LENGTH_SHORT).show();
+                    //Avisa de que la lista ha cambiado
+                    mRecyclerView.getAdapter().notifyDataSetChanged();
+                    dialog.dismiss();
+                }
+            });
+            builder1.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            builder1.show();
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //Mostrar menú para la lista de productos
-        getMenuInflater().inflate(R.menu.menu_lista_productos, menu);
+        getMenuInflater().inflate(R.menu.menu_lista_productos,menu);
         return true;
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
+        switch(item.getItemId()){
             case android.R.id.home:
                 onBackPressed();
+                return true;
+            case R.id.anadir_participante:
+                //Intent i = new Intent(this, Contactos.class);
+                //startActivity(i);
                 return true;
             case R.id.anadir_producto:
                 //Se crea el PopUp para añadir un nuevo producto
                 AlertDialog.Builder builder;
-                final View viewInflated;
-                builder = new AlertDialog.Builder(this);
+                View viewInflated;
+                builder=new AlertDialog.Builder(this);
                 builder.setTitle("Añadir nuevo producto");
 
                 viewInflated = LayoutInflater.from(getBaseContext()).inflate(R.layout.nuevo_producto, (ViewGroup) findViewById(android.R.id.content), false);
-
+                // Set up the input
+                final EditText input_np1 = (EditText) viewInflated.findViewById(R.id.in_nombre_producto);
+                final EditText input_pp = (EditText) viewInflated.findViewById(R.id.in_precio_producto);
                 // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
                 builder.setView(viewInflated);
 
@@ -148,35 +149,17 @@ public class ListaProductos extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         //Asumiendo que el precio es >=0
                         AdaptadorBD abd = new AdaptadorBD(getBaseContext());
-                        abd.close();
                         abd.open();
                         //new ItemPers(MyApplication.getAppContext()).execute("insert", id, MyApplication.getUser().getId());
                         //Se inserta un producto a la lista a partir de los datos introducidos
-
-                        // Set up the input
-                        EditText input_np1 = (EditText) viewInflated.findViewById(R.id.in_nombre_producto);
-                        EditText input_pp = (EditText) viewInflated.findViewById(R.id.in_precio_producto);
-
-                        String precio = input_pp.getText().toString();
-
-                        precio = (precio.isEmpty() ? "0" : precio);
-                        final Item i = new Item(lista.getItems().size(), input_np1.getText().toString(), Double.valueOf(precio), lista.getId());
+                        String precio=input_pp.getText().toString();
+                        precio=(precio.isEmpty()?"0":precio);
+                        Item i=new Item(lista.getItems().size(),input_np1.getText().toString(),Double.valueOf(precio));
                         productos.add(i);
                         //Insertar en BD local
-                        abd.insertarItem(i.getId(), i.getNombre(), i.getPrecio(), i.getId());
+                        abd.insertarItem(i.getId(),i.getNombre(),i.getPrecio(),lista.getId());
                         //Insertar en BD remota
-                        System.out.println(i.getNombre());
-
-                        ItemPers ip = new ItemPers(MyApplication.getAppContext());
-                        ip.execute("insert", String.valueOf(i.getId()), i.getNombre(), String.valueOf(i.getPrecio()), "1");
-                        try {
-                            System.out.println(ip.get());
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        } catch (ExecutionException e) {
-                            e.printStackTrace();
-                        }
-
+                        new ItemPers(MyApplication.getAppContext()).execute("insert", String.valueOf(lista.getId()), i.getNombre(),String.valueOf(i.getPrecio()),"1");
                         abd.close();
                         Toast.makeText(ListaProductos.this, "Añadiendo producto " + i.getNombre(), Toast.LENGTH_SHORT).show();
                         //Avisa de que la lista ha cambiado
@@ -192,24 +175,31 @@ public class ListaProductos extends AppCompatActivity {
                 });
                 builder.show();
                 return true;
+            case R.id.QR:
+                Intent i = new Intent(this, GenerarQR.class);
+                Bundle bundle = new Bundle();
+                bundle.putInt("idLista",lista.getId());
+                bundle.putString("clave","123fb");
+                bundle.putString("nombre",lista.getNombre());
+                i.putExtras(bundle);
+                startActivity(i);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
-
     private void setUpRecyclerView(List<Item> productos) {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(new ProductosAdapter(productos, new RecyclerViewOnItemClickListener() {
             @Override
             public void onClick(View v, int position) {
-                editarProducto(v, position);
+                editarProducto(v,position);
             }
-        }, getBaseContext(), lista.getId()));
+        },getBaseContext(),lista.getId()));
         //mRecyclerView.setHasFixedSize(true);
         setUpItemTouchHelper();
         setUpAnimationDecoratorHelper();
     }
-
     /**
      * This is the standard support library way of implementing "swipe to delete" feature. You can do custom drawing in onChildDraw method
      * but whatever you draw will disappear once the swipe is over, and while the items are animating to their new position the recycler view
@@ -232,7 +222,6 @@ public class ListaProductos extends AppCompatActivity {
                 xMarkMargin = (int) ListaProductos.this.getResources().getDimension(R.dimen.fab_margin);
                 initiated = true;
             }
-
             // not important, we don't want drag & drop
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
@@ -242,7 +231,7 @@ public class ListaProductos extends AppCompatActivity {
             @Override
             public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
                 int position = viewHolder.getAdapterPosition();
-                ProductosAdapter testAdapter = (ProductosAdapter) recyclerView.getAdapter();
+                ProductosAdapter testAdapter = (ProductosAdapter)recyclerView.getAdapter();
                 if (testAdapter.isUndoOn() && testAdapter.isPendingRemoval(position)) {
                     return 0;
                 }
@@ -252,7 +241,7 @@ public class ListaProductos extends AppCompatActivity {
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 int swipedPosition = viewHolder.getAdapterPosition();
-                ProductosAdapter adapter = (ProductosAdapter) mRecyclerView.getAdapter();
+                ProductosAdapter adapter = (ProductosAdapter)mRecyclerView.getAdapter();
                 boolean undoOn = adapter.isUndoOn();
                 if (undoOn) {
                     adapter.pendingRemoval(swipedPosition);
@@ -261,7 +250,6 @@ public class ListaProductos extends AppCompatActivity {
                     adapter.remove(swipedPosition);
                 }
             }
-
             @Override
             public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
                 View itemView = viewHolder.itemView;
@@ -285,7 +273,7 @@ public class ListaProductos extends AppCompatActivity {
 
                 int xMarkLeft = itemView.getRight() - xMarkMargin - intrinsicWidth;
                 int xMarkRight = itemView.getRight() - xMarkMargin;
-                int xMarkTop = itemView.getTop() + (itemHeight - intrinsicHeight) / 2;
+                int xMarkTop = itemView.getTop() + (itemHeight - intrinsicHeight)/2;
                 int xMarkBottom = xMarkTop + intrinsicHeight;
                 xMark.setBounds(xMarkLeft, xMarkTop, xMarkRight, xMarkBottom);
 

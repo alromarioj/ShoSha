@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,8 +16,8 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,49 +28,33 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
-import es.shosha.shosha.dominio.Usuario;
-import es.shosha.shosha.negocio.CargaDatos;
-
-import static es.shosha.shosha.MyApplication.getAppContext;
 import static es.shosha.shosha.R.id.email;
 
-/**
- * A login screen that offers login via email/password.
- */
-public class LoginActivity extends AppCompatActivity {
+public class RegistroActivity extends AppCompatActivity {
 
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private UserLoginTask mAuthTask = null;
+    private UserRegisterTask mAuthTask = null;
 
     // UI references.
     private EditText mEmailView;
     private EditText mPasswordView;
+    private EditText mrePasswordView;
+    private EditText mNombreView;
     private View mProgressView;
     private View mLoginFormView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        SharedPreferences pref = getSharedPreferences("MyPref", 0); // 0 - for private mode
-        int id = pref.getInt("idUsuario", -1);
-        if (id > 0) {
-            new Thread(new CargaDatos(id, getAppContext())).start();
-            SharedPreferences.Editor editor = pref.edit();
-            editor.putInt("idUsuario", id);
-            editor.apply();
-            Intent i = new Intent(LoginActivity.this, Inicio.class);
-            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            finish();
-            startActivity(i);
-        }
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_registro);
         // Set up the login form.
         mEmailView = (EditText) findViewById(email);
+        mNombreView = (EditText) findViewById(R.id.nombre);
 
         mPasswordView = (EditText) findViewById(R.id.password);
+        mrePasswordView = (EditText) findViewById(R.id.repassword);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -83,18 +66,19 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
+        Button mEmailSignUpButton = (Button) findViewById(R.id.email_sign_up_button);
+        mEmailSignUpButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptLogin();
             }
         });
 
-        Button registro = (Button) findViewById(R.id.email_sign_up_button);
-        registro.setOnClickListener(new OnClickListener() {
-            public void onClick(View view) {
-                Intent myIntent = new Intent(view.getContext(), RegistroActivity.class);
+        TextView condiciones = (TextView) findViewById(R.id.textView5);
+        condiciones.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(v.getContext(), Condiciones.class);
                 startActivity(myIntent);
             }
         });
@@ -102,7 +86,6 @@ public class LoginActivity extends AppCompatActivity {
         mLoginFormView = findViewById(R.id.email_login_form);
         mProgressView = findViewById(R.id.login_progress);
     }
-
 
 
     /**
@@ -118,10 +101,14 @@ public class LoginActivity extends AppCompatActivity {
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
+        mrePasswordView.setError(null);
+        mNombreView.setError(null);
 
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
+        String repassword = mrePasswordView.getText().toString();
+        String nombre = mNombreView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -130,6 +117,16 @@ public class LoginActivity extends AppCompatActivity {
         if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
+            cancel = true;
+        }
+        if (!TextUtils.isEmpty(password) && !TextUtils.isEmpty(repassword) && !TextUtils.equals(password, repassword)) {
+            mrePasswordView.setError(getString(R.string.error_pass_repe));
+            focusView = mrePasswordView;
+            cancel = true;
+        }
+        if (TextUtils.isEmpty(nombre)) {
+            mNombreView.setError(getString(R.string.error_field_required));
+            focusView = mNombreView;
             cancel = true;
         }
 
@@ -152,7 +149,7 @@ public class LoginActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
+            mAuthTask = new UserRegisterTask(nombre, email, password);
             mAuthTask.execute((Void) null);
         }
     }
@@ -164,7 +161,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
-        return password.length() > 0;
+        return password.length() > 4;
     }
 
     /**
@@ -203,67 +200,51 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+
     /**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    private class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    private class UserRegisterTask extends AsyncTask<Void, Void, Boolean> {
 
+        private final String mNombre;
         private final String mEmail;
         private final String mPassword;
-        private int idUsuario = 0;
 
-        UserLoginTask(String email, String password) {
+        UserRegisterTask(String nombre, String email, String password) {
+            mNombre = nombre;
             mEmail = email;
             mPassword = password;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            Usuario usuario = null;
+            Integer success = -10;
             try {
-                java.net.URL urlObj = new URL("http://shosha.jiraizoz.es/loginUsuario.php?email=" + mEmail + "&pass=" + mPassword);
+                URL urlObj = new URL("http://shosha.jiraizoz.es/addUsuario.php?nombre=" + URLEncoder.encode(mNombre, "UTF-8") + "&email=" + URLEncoder.encode(mEmail, "UTF-8") + "&pass=" + URLEncoder.encode(mPassword, "UTF-8"));
                 System.out.println("=============================");
-                System.out.println("http://shosha.jiraizoz.es/loginUsuario.php?email=" + URLEncoder.encode(mEmail, "UTF-8") + "&pass=" + URLEncoder.encode(mPassword, "UTF-8"));
+                System.out.println("http://shosha.jiraizoz.es/addUsuario.php?nombre=" + URLEncoder.encode(mNombre, "UTF-8") + "&email=" + URLEncoder.encode(mEmail, "UTF-8") + "&pass=" + URLEncoder.encode(mPassword, "UTF-8"));
 
                 HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
 
                 BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
-                String line = "", res = "";
+                String line, res = "";
                 while ((line = rd.readLine()) != null) {
                     res += line;
-                    System.out.println("nueva linea: " + line);
                 }
                 rd.close();
-                System.out.println("=============================");
-                usuario = jsonParser(res);
-                if (usuario != null) {
-                    idUsuario = usuario.getId();
+                try{
+                    JSONObject jso = new JSONObject(res);
+                    success = jso.getInt("success");
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            return usuario != null;
+            return success == 1;
         }
 
-        private Usuario jsonParser(String data) {
-
-            Usuario u = null;
-            try {
-                JSONObject jso = new JSONObject(data);
-                Integer success = jso.getInt("success");
-                System.out.println("LOGIN============ " + success);
-                JSONArray usuarios = jso.getJSONArray("usuario");
-                if (success == 1) {
-                    JSONObject usuario = usuarios.getJSONObject(0);
-                    u = new Usuario(usuario.getInt("id"), usuario.getString("nombre"), usuario.getString("email"));
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return u;
-        }
 
         @Override
         protected void onPostExecute(final Boolean success) {
@@ -271,18 +252,13 @@ public class LoginActivity extends AppCompatActivity {
             showProgress(false);
 
             if (success) {
-                new Thread(new CargaDatos(idUsuario, getAppContext())).start();
-                SharedPreferences pref = getAppContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
-                SharedPreferences.Editor editor = pref.edit();
-                editor.putInt("idUsuario", idUsuario);
-                editor.apply();
-                Intent i = new Intent(LoginActivity.this, Inicio.class);
+                Toast.makeText(getBaseContext(), "¡Gracias por registrarte! Ya puedes iniciar sesión",Toast.LENGTH_LONG).show();
+                Intent i = new Intent(RegistroActivity.this, LoginActivity.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 finish();
                 startActivity(i);
             } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+                Toast.makeText(getBaseContext(), "No se ha podido realizar el registro (Error: "+success+")",Toast.LENGTH_LONG).show();
             }
         }
 
