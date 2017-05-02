@@ -26,7 +26,7 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
  * Created by Jesús Iráizoz on 13/03/2017.
  */
 
-public class ParticipaPers extends AsyncTask<String, Void, Void> {
+public class ParticipaPers extends AsyncTask<String, Void, String> {
     private final static String URL_GET = "http://shosha.jiraizoz.es/getParticipaciones.php?";
     private final static String URL_ADD = "http://shosha.jiraizoz.es/addParticipante.php?";
     private final static String LISTA = "lista=";
@@ -42,8 +42,8 @@ public class ParticipaPers extends AsyncTask<String, Void, Void> {
     }
 
     @Override
-    protected Void doInBackground(String... params) {
-        String data = "";
+    protected String doInBackground(String... params) {
+        String data = "",respuesta="";
         Usuario usu = null;
         if (params.length == 1) {
             try {
@@ -73,7 +73,7 @@ public class ParticipaPers extends AsyncTask<String, Void, Void> {
                 e.printStackTrace();
             }
         }else if (params.length == 4 && params[0].equals("insert")) {
-            insertMode(params[1], params[2], params[3]);
+            respuesta= insertMode(params[1], params[2], params[3]);
         }
         else {
             try {
@@ -83,7 +83,7 @@ public class ParticipaPers extends AsyncTask<String, Void, Void> {
             }
         }
         NegocioChecksum.setChecksum("participa");
-        return null;
+        return respuesta;
     }
 
     /**
@@ -114,12 +114,13 @@ public class ParticipaPers extends AsyncTask<String, Void, Void> {
             String line = "";
             while ((line = rd.readLine()) != null) {
                 res += line;
+
             }
 
             rd.close();
-
             System.out.println("Insert response: " + res);
-
+            JSONObject jo=new JSONObject(res);
+            res=jo.getString("success");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -127,6 +128,11 @@ public class ParticipaPers extends AsyncTask<String, Void, Void> {
         finally {
             return res;
         }
+    }
+
+    @Override
+    protected void onPostExecute(String s) {
+        super.onPostExecute(s);
     }
 
     private void jsonParser(String data) {

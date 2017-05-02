@@ -4,13 +4,15 @@
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <!--
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />-->
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-    -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature android:required="true" android:name="android.hardware.camera2"></uses-feature>
+    <uses-feature android:required="true" android:name="android.hardware.camera"/>
+    <uses-feature android:name="android.hardware.camera.focus" android:required="false"/>
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
+    <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="10"/>
 
     <application
         android:name=".MyApplication"
@@ -26,17 +28,21 @@
         <activity android:name=".AnadirLista" />
         <activity android:name=".ListaProductos" />
         <activity android:name=".ListaManual" />
-        <activity android:name="com.google.zxing.client.android.CaptureActivity"
-            android:screenOrientation="landscape"
-            android:clearTaskOnLaunch="true"
-            android:stateNotNeeded="true"
-            android:configChanges="orientation|keyboardHidden"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-            android:windowSoftInputMode="stateAlwaysHidden">
-            <intent-filter>
-                <action android:name="com.google.zxing.client.android.SCAN"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
+        <activity android:clearTaskOnLaunch="true"
+        android:stateNotNeeded="true"
+        android:configChanges="orientation|keyboardHidden"
+        android:name="com.google.zxing.client.android.CaptureActivity"
+        android:screenOrientation="landscape"
+        android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+        android:windowSoftInputMode="stateAlwaysHidden" >
+        <intent-filter >
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
+        <intent-filter >
+            <action android:name="com.google.zxing.client.android.SCAN" />
+            <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
         </activity>
         <activity
             android:name=".RegistroActivity"

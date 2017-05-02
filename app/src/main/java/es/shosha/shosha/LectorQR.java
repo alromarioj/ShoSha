@@ -25,9 +25,7 @@ public class LectorQR extends AppCompatActivity {
         setContentView(R.layout.activity_lector_qr);
         // verifico si el usuario dio los permisos para la camara
         if (ContextCompat.checkSelfPermission(getBaseContext(), android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            Intent i = new Intent(getApplicationContext(),CaptureActivity.class);
-            //Intent i = new Intent("com.google.zxing.client.android.SCAN");
-            i.setAction("com.google.zxing.client.android.SCAN");
+            Intent i = new Intent("com.google.zxing.client.android.SCAN");
             i.putExtra("SCAN_MODE", "QR_CODE_MODE");
             startActivityForResult(i, 0);
         } else {
