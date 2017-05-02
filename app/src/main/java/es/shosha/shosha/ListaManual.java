@@ -2,14 +2,10 @@ package es.shosha.shosha;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Environment;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -19,11 +15,13 @@ import android.widget.Toast;
 import java.io.File;
 import java.util.Random;
 
-import es.shosha.shosha.dominio.Lista;
 import es.shosha.shosha.persistencia.ListaPers;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
+import static es.shosha.shosha.R.id.nombre;
+
 public class ListaManual extends AppCompatActivity {
+    private String nomLista, claveLista;
     private static final int SELECT_PICTURE=1;
     protected ImageView img;
     private final String ruta_fotos= Environment.getExternalStorageDirectory().getAbsolutePath()+"ShoSha/imagenes";
@@ -69,17 +67,17 @@ public class ListaManual extends AppCompatActivity {
                 }
     }
     public void crearLista(View view){
-        String nombre=((EditText)findViewById(R.id.nombre)).getText().toString(),
-                clave=generarClave(5);
-        AdaptadorBD abd = new AdaptadorBD(getBaseContext());
-        abd.open();
-        int id=0;
+        this.nomLista=((EditText)findViewById(nombre)).getText().toString();
+        this.claveLista = generarClave(5);
         String idu=String.valueOf(MyApplication.getUser().getId());
 
-        new ListaPers(MyApplication.getAppContext(), null).execute("insert", idu,nombre,clave);
-        //Obtener id de la última lista creada?
-
-        abd.insertarLista(id,nombre,MyApplication.getUser(),"1");//Añadir clave
+        new ListaPers(MyApplication.getAppContext(), null, this).execute("insert", idu,nomLista,claveLista);
+    }
+    public void sigueCrearLista(Integer id){
+        System.out.println("=?="+id);
+        AdaptadorBD abd = new AdaptadorBD(getBaseContext());
+        abd.open();
+        abd.insertarLista(id,nomLista,MyApplication.getUser(),"1");//Añadir clave
         abd.close();
         Toast.makeText(this, "Añadiendo lista ", Toast.LENGTH_SHORT).show();
 
@@ -89,6 +87,7 @@ public class ListaManual extends AppCompatActivity {
         bundle.putInt("idLista",id);
         i.putExtras(bundle);
         startActivity(i);
+        this.finish();
     }
     private String generarClave(int longitud){
         String cadenaAleatoria = "";
