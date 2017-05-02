@@ -34,6 +34,7 @@ public class AdaptadorBD {
     private static final String TB_ITEM = "item";
     private static final String TB_PARTICIPA = "participa";
     private static final String TB_CHK = "checksums";
+    private static final String TB_QR = "codigoQR";
     private static final String ID = "id";
     private static final String NOMBRE = "nombre";
     private static final String USR_EMAIL = "email";
@@ -46,6 +47,7 @@ public class AdaptadorBD {
     private static final String PPA_ACTIVO = "activo";
     private static final String CHK_TABLA = "tabla";
     private static final String CHK_CRC = "crc";
+    private static final String QR_IDQR = "idQR";
     private static final String SQL_TRNCTE = "DELETE FROM ";
 
 
@@ -213,6 +215,19 @@ public class AdaptadorBD {
         }
     }
 
+    public void insertaQR(String codigoQR, int idLista) {
+        bdatos.beginTransaction();
+        try {
+            ContentValues valores = new ContentValues();
+            valores.put(QR_IDQR, codigoQR);
+            valores.put(IDLISTA, idLista);
+            bdatos.replace(TB_QR, null, valores);
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+    }
+
     public List<Lista> obtenerListas(int idUsuario) {
 
         String sql = "SELECT distinct l.* FROM lista l LEFT JOIN participa p ON l.id=p.idLista WHERE (l.propietario=" + idUsuario + " AND l.estado=1) OR (p.idUsuario=" + idUsuario + " AND p.activo=1)";
@@ -283,9 +298,10 @@ public class AdaptadorBD {
         c.close();
         return aux;
     }
+
     public Lista obtenerLista(int idLista, int idUsuario) {
 
-        String sql = "SELECT DISTINCT l.* FROM lista l LEFT JOIN participa p ON l.id=p.idLista WHERE l.id="+idLista+" AND ((l.propietario=" + idUsuario + " AND l.estado=1) OR (p.idUsuario=" + idUsuario + " AND p.activo=1))";
+        String sql = "SELECT DISTINCT l.* FROM lista l LEFT JOIN participa p ON l.id=p.idLista WHERE l.id=" + idLista + " AND ((l.propietario=" + idUsuario + " AND l.estado=1) OR (p.idUsuario=" + idUsuario + " AND p.activo=1))";
         Cursor c = bdatos.rawQuery(sql, null);
         Usuario u = this.obtenerUsuario(idUsuario);
         Lista l = null;
@@ -364,6 +380,21 @@ public class AdaptadorBD {
         return mapa;
     }
 
+    public String obtenerQR(int idLista) {
+
+        String codigo = "";
+
+        Cursor c = bdatos.query(true, TB_QR, null, IDLISTA + "=?", new String[]{String.valueOf(idLista)}, null, null, null, null);
+
+        if (c.moveToFirst()) {
+            do {
+                codigo = c.getString(0);
+            } while (c.moveToNext());
+        }
+        c.close();
+        return codigo;
+    }
+
     public void updateUsuario(Usuario u) {
         bdatos.beginTransaction();
         try {
@@ -395,7 +426,14 @@ public class AdaptadorBD {
                     valores.put(PPA_ACTIVO, "0");
                     res = bdatos.update(TB_PARTICIPA, valores, IDLISTA + "=" + id + " AND " + PPA_IDUSR + " = " + usuario.getId(), null);
                 }
-                bdatos.setTransactionSuccessful();
+
+                long qr = eliminarQR(id);
+                if (qr > -1)
+                    bdatos.setTransactionSuccessful();
+                else {
+                    res = -1;
+                    Log.e("Método eliminarLista", "La transacción no se realizó correctamente", new Exception("Resultado QR: " + qr + " / Resultado método: " + res));
+                }
             }
         } finally {
             bdatos.endTransaction();
@@ -418,6 +456,16 @@ public class AdaptadorBD {
                     valores.put(PPA_ACTIVO, "0");
                     res = bdatos.update(TB_PARTICIPA, valores, IDLISTA + "=" + id + " AND " + PPA_IDUSR + " = " + idUsuario, null);
                 }
+
+
+                long qr = eliminarQR(id);
+                if (qr > -1)
+                    bdatos.setTransactionSuccessful();
+                else {
+                    res = -1;
+                    Log.e("Método eliminarLista", "La transacción no se realizó correctamente", new Exception("Resultado QR: " + qr + " / Resultado método: " + res));
+                }
+
                 bdatos.setTransactionSuccessful();
             }
         } finally {
@@ -425,15 +473,16 @@ public class AdaptadorBD {
         }
         return res;
     }
+
     public long eliminarItem(int lista, int item) {
         bdatos.beginTransaction();
         long res = -1;
         try {
-            String sql="SELECT * FROM " + TB_LISTA + " l join "+TB_ITEM+" i on l."+ID+"=i."+IDLISTA+" WHERE l." + ID + "=" + lista+" AND l."+LST_ESTADO+"=1 AND i."+ID+"="+item;
+            String sql = "SELECT * FROM " + TB_LISTA + " l join " + TB_ITEM + " i on l." + ID + "=i." + IDLISTA + " WHERE l." + ID + "=" + lista + " AND l." + LST_ESTADO + "=1 AND i." + ID + "=" + item;
             Cursor cursor = bdatos.rawQuery(sql, null);
             if (cursor.moveToFirst()) {
-                res=bdatos.delete(TB_ITEM,ID+"="+item,null);
-                System.out.println("Respuesta eliminar item en local: "+res);
+                res = bdatos.delete(TB_ITEM, ID + "=" + item, null);
+                System.out.println("Respuesta eliminar item en local: " + res);
                 bdatos.setTransactionSuccessful();
             }
         } finally {
@@ -454,6 +503,44 @@ public class AdaptadorBD {
         } finally {
             bdatos.endTransaction();
         }
+        return res;
+    }
+
+    /**
+     * Metodo privado para eliminar un código QR de una lista concreta.
+     * MÉTODO SIN TRANSACCIONES
+     *
+     * @param idLista Id de la lísta a eliminar el código
+     * @return resultado de la operación de eliminar
+     */
+    private long eliminarQR(int idLista) {
+        long res = -1;
+//        bdatos.beginTransaction();
+//        try {
+        res = bdatos.delete(TB_QR, IDLISTA + "=?", new String[]{String.valueOf(idLista)});
+        bdatos.setTransactionSuccessful();
+//        } finally {
+//            bdatos.endTransaction();
+//        }
+        return res;
+    }
+
+    /**
+     * Metodo privado para eliminar un código QR de una lista concreta.
+     * MÉTODO SIN TRANSACCIONES
+     *
+     * @param codigoQR Código QR a eliminar
+     * @return resultado de la operación
+     */
+    private long eliminarQR(String codigoQR) {
+        long res = -1;
+//        bdatos.beginTransaction();
+//        try {
+        res = bdatos.delete(TB_QR, QR_IDQR + "=?", new String[]{String.valueOf(codigoQR)});
+        bdatos.setTransactionSuccessful();
+//        } finally {
+//            bdatos.endTransaction();
+//        }
         return res;
     }
 
