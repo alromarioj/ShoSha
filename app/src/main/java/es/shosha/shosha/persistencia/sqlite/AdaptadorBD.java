@@ -427,13 +427,13 @@ public class AdaptadorBD {
                     res = bdatos.update(TB_PARTICIPA, valores, IDLISTA + "=" + id + " AND " + PPA_IDUSR + " = " + usuario.getId(), null);
                 }
 
-                long qr = eliminarQR(id);
-                if (qr > -1)
+//                long qr = eliminarQR(id);
+//                if (qr > -1) {
                     bdatos.setTransactionSuccessful();
-                else {
-                    res = -1;
-                    Log.e("Método eliminarLista", "La transacción no se realizó correctamente", new Exception("Resultado QR: " + qr + " / Resultado método: " + res));
-                }
+//                } else {
+//                    res = -1;
+//                    Log.e("Método eliminarLista", "La transacción no se realizó correctamente", new Exception("Resultado QR: " + qr + " / Resultado método: " + res));
+//                }
             }
         } finally {
             bdatos.endTransaction();
