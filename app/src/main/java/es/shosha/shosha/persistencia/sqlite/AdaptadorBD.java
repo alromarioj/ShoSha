@@ -349,6 +349,21 @@ public class AdaptadorBD {
         return aux;
     }
 
+    public Item obtenerItem(int idItem) {
+
+        Cursor c = bdatos.query(false, TB_ITEM, null, "id=" + idItem, null, null, null, null, null);
+        Item i = null;
+        if (c.moveToFirst()) {
+            do {
+                i = new Item(c.getInt(0), c.getString(1), c.getDouble(2), c.getInt(3));
+                i.setCantidad(c.getInt(4));
+                i.setComprado(c.getInt(5) == 1);
+            } while (c.moveToNext());
+        }
+        c.close();
+        return i;
+    }
+
     public List<Usuario> getParticipantes(int idLista) {
         //Cursor cursor = bdatos.rawQuery("SELECT * FROM " + TB_PARTICIPA + " WHERE " + IDLISTA + "='" + idLista + "'", null);
         Cursor cursor = bdatos.query(false, TB_PARTICIPA, null, IDLISTA + "=?", new String[]{String.valueOf(idLista)}, null, null, null, null);
@@ -417,7 +432,7 @@ public class AdaptadorBD {
             ContentValues cv = new ContentValues();
             cv.put(NOMBRE, lista.getNombre());
 
-            bdatos.update(TB_LISTA, cv, "id="+lista.getId(), null);
+            bdatos.update(TB_LISTA, cv, "id=" + lista.getId(), null);
             bdatos.setTransactionSuccessful();
         } finally {
             bdatos.endTransaction();
@@ -440,13 +455,13 @@ public class AdaptadorBD {
                     res = bdatos.update(TB_PARTICIPA, valores, IDLISTA + "=" + id + " AND " + PPA_IDUSR + " = " + usuario.getId(), null);
                 }
 
-                //long qr = eliminarQR(id);
-                //if (qr > -1)
-                    bdatos.setTransactionSuccessful();
-                //else {
-                    //res = -1;
-                    //Log.e("Método eliminarLista", "La transacción no se realizó correctamente", new Exception("Resultado QR: " + qr + " / Resultado método: " + res));
-                //}
+//                long qr = eliminarQR(id);
+//                if (qr > -1) {
+                bdatos.setTransactionSuccessful();
+//                } else {
+//                    res = -1;
+//                    Log.e("Método eliminarLista", "La transacción no se realizó correctamente", new Exception("Resultado QR: " + qr + " / Resultado método: " + res));
+//                }
             }
         } finally {
             bdatos.endTransaction();
@@ -471,15 +486,13 @@ public class AdaptadorBD {
                 }
 
 
-                long qr = eliminarQR(id);
-                if (qr > -1)
-                    bdatos.setTransactionSuccessful();
-                else {
-                    res = -1;
-                    Log.e("Método eliminarLista", "La transacción no se realizó correctamente", new Exception("Resultado QR: " + qr + " / Resultado método: " + res));
-                }
-
+//                long qr = eliminarQR(id);
+//                if (qr > -1)
                 bdatos.setTransactionSuccessful();
+//                else {
+//                    res = -1;
+//                    Log.e("Método eliminarLista", "La transacción no se realizó correctamente", new Exception("Resultado QR: " + qr + " / Resultado método: " + res));
+//                }
             }
         } finally {
             bdatos.endTransaction();

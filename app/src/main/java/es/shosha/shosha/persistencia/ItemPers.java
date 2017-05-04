@@ -2,6 +2,7 @@ package es.shosha.shosha.persistencia;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -127,7 +128,17 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
             }
 
             rd.close();
-            System.out.println("Insert response: " + res);
+
+            Log.i("--> URL insercion lista", ItemPers.URL_ADD + ItemPers.ATRIBUTO + idLista + "&" + ItemPers.NOMBRE + nombre + "&" + ItemPers.PRECIO + precio + "&" + ItemPers.CANTIDAD + cantidad);
+
+            AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
+            abd.open();
+            abd.insertarItem(Integer.valueOf(res), nombre, precio, Integer.valueOf(idLista));
+            //Insertar en BD remota
+
+            abd.close();
+
+            System.out.println("Insert remote response: " + res);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -196,6 +207,8 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
 
             java.net.URL urlObj = new URL(ItemPers.URL_DEL + ItemPers.ATRIBUTO + idLista + "&" + ItemPers.ID + producto);
 
+            Log.i(" --> URL borrado lista", ItemPers.URL_DEL + ItemPers.ATRIBUTO + idLista + "&" + ItemPers.ID + producto);
+
             HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
 
             BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
@@ -213,10 +226,11 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
 
             AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
             abd.open();
-            abd.eliminarItem(idLista, producto);
+            long resl = abd.eliminarItem(idLista, producto);
             abd.close();
 
-            System.out.println("Delete response: " + res);
+            System.out.println("Delete remote response: " + res);
+            System.out.println("Delete local response: " + resl);
 
         } catch (IOException e) {
             e.printStackTrace();
