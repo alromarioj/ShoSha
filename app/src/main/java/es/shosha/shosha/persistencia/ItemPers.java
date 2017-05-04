@@ -161,7 +161,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
 
         try {
             java.net.URL urlObj = new URL(URL_UPD + ATRIBUTO + idLista + "&"+ID+idProducto+"&" + NOMBRE + nombre + "&" + PRECIO + precio + "&" + CANTIDAD + cantidad);
-
+            System.out.println(urlObj.toString());
             HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
 
             BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
