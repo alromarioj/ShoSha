@@ -7,15 +7,23 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.zxing.client.android.CaptureActivity;
+import com.google.zxing.client.android.Intents;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 
+import es.shosha.shosha.dominio.Lista;
 import es.shosha.shosha.persistencia.ParticipaPers;
+import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 public class LectorQR extends AppCompatActivity {
 
@@ -25,11 +33,11 @@ public class LectorQR extends AppCompatActivity {
         setContentView(R.layout.activity_lector_qr);
         // verifico si el usuario dio los permisos para la camara
         if (ContextCompat.checkSelfPermission(getBaseContext(), android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            Intent i = new Intent(getApplicationContext(),CaptureActivity.class);
-            //Intent i = new Intent("com.google.zxing.client.android.SCAN");
-            i.setAction("com.google.zxing.client.android.SCAN");
-            i.putExtra("SCAN_MODE", "QR_CODE_MODE");
-            startActivityForResult(i, 0);
+            Button bt=(Button)findViewById(R.id.btEscanear);
+            Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+            intent.setPackage("com.google.zxing.client.android");
+            intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
+            startActivityForResult(intent, 0);
         } else {
             Toast.makeText(getBaseContext(), "La aplicación necesita usar la cámara", Toast.LENGTH_LONG).show();
         }
@@ -46,24 +54,29 @@ public class LectorQR extends AppCompatActivity {
                 String contents=data.getStringExtra("SCAN_RESULT");
                 String format=data.getStringExtra("SCAN_RESULT_FORMAT");
 
-                try {
-                    String decodificado=URLDecoder.decode(contents, "UTF-8");
-                    HashMap<String,String> datos=obtenerDatos(decodificado);
-                    String lista=datos.get("idLista");
-                    String clave=datos.get("clave");
+                try{
+                    JSONObject obj = new JSONObject(contents);
+                    //String decodificado=URLDecoder.decode(contents, "UTF-8");
+                    //HashMap<String,String> datos=obtenerDatos(decodificado);
+                    String lista=obj.getString("idLista");//datos.get("idLista");
+                    String clave=obj.getString("clave");//datos.get("clave");
                     Toast.makeText(this, "Código detectado", Toast.LENGTH_LONG).show();
 
                     int idu=MyApplication.getUser().getId();
 
                     // Añadir al usuario como participante en la lista
-                    //Añade participante en bd remota
-                    new ParticipaPers(MyApplication.getAppContext(), null).execute("insert", lista,String.valueOf(idu),clave);
-                    /*if(){
+                    //Comprobar clave
+                    AdaptadorBD abd = new AdaptadorBD(getBaseContext());
+                    abd.open();
+                    int idl=Integer.valueOf(lista);
+                    Lista l=abd.obtenerLista(idl,idu);
+
+                    if(clave==l.getClave()){
+                        //Añade participante en bd remota
+                        new ParticipaPers(MyApplication.getAppContext(), null).execute("insert", lista,String.valueOf(idu),clave);
                         //Añade participante en bd local
-                        AdaptadorBD abd = new AdaptadorBD(getBaseContext());
-                        abd.open();
                         abd.insertarParticipa(idu, Integer.valueOf(lista),true);
-                        abd.close();
+
 
                         Toast.makeText(this, "Lista añadida", Toast.LENGTH_SHORT).show();
                         Intent i = new Intent(this, ListasActivas.class);//Va al apartado de listas activas
@@ -72,10 +85,10 @@ public class LectorQR extends AppCompatActivity {
                     else{
                         Toast.makeText(this, "Error al añadir la lista", Toast.LENGTH_SHORT).show();
                         startActivityForResult(data, 0);//Reinicia el escáner
-                    }*/
-
+                    }
+                    abd.close();
                 }
-                catch (UnsupportedEncodingException e){
+                catch(JSONException e){
                     e.printStackTrace();
                 }
             }

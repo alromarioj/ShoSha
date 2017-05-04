@@ -71,6 +71,25 @@ public class Lista implements Serializable {
         this.imagen = imagen;
         this.codigoQR = "";
     }
+    /**
+     * @param id
+     * @param nombre
+     * @param propietario
+     * @param estado
+     * @param participantes
+     * @param imagen
+     * @param clave
+     */
+    public Lista(int id, String nombre, Usuario propietario, boolean estado, List<Usuario> participantes, Drawable imagen, String clave) {
+        this.id = id;
+        this.nombre = nombre;
+        this.propietario = propietario;
+        this.estado = estado;
+        this.items = new ArrayList<Item>();
+        this.participantes = participantes;
+        this.imagen = imagen;
+        this.clave=clave;
+    }
 
     /**
      *
@@ -108,6 +127,14 @@ public class Lista implements Serializable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getClave() {
+        return clave;
+    }
+
+    public void setClave(String clave) {
+        this.clave = clave;
     }
 
     public String getNombre() {

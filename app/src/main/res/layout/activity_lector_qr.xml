@@ -41,7 +41,14 @@
                 android:text="@string/descripcion_escaneo"
                 android:textColor="@color/black" />
 
-            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                <Button
+                    android:id="@+id/btEscanear"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Escanear código"
+                    />
+
+            <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="280dp"
                 android:layout_height="280dp"
                 android:layout_gravity="center_horizontal"
@@ -55,7 +62,7 @@
                     android:layout_height="match_parent"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true" />
-            </LinearLayout>
+            </LinearLayout>-->
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 </android.support.design.widget.CoordinatorLayout>

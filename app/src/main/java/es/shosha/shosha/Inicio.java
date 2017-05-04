@@ -96,4 +96,9 @@ public class Inicio extends AppCompatActivity
         Intent i = new Intent(this, AnadirLista.class);
         startActivity(i);
     }
+    public void unirseALista(View view) {
+        //Ejecuta la actividad de listas activas
+        Intent i = new Intent(this, LectorQR.class);
+        startActivity(i);
+    }
 }
