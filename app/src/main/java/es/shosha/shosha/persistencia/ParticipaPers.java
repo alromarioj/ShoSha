@@ -73,7 +73,7 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
                 e.printStackTrace();
             }
         }else if (params.length == 4 && params[0].equals("insert")) {
-            respuesta= insertMode(params[1], params[2], params[3]);
+            /*respuesta=*/ insertMode(params[1], params[2], params[3]);
         }
         else {
             try {
@@ -122,7 +122,11 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
             JSONObject jo=new JSONObject(res);
             res=jo.getString("success");
 
-        } catch (IOException e) {
+        }
+        catch (JSONException e){
+            e.printStackTrace();
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
     }
