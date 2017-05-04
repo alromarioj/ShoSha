@@ -410,6 +410,19 @@ public class AdaptadorBD {
             bdatos.endTransaction();
         }
     }
+    public void updateLista(Lista lista, String nombre) {
+        bdatos.beginTransaction();
+        try {
+
+            ContentValues cv = new ContentValues();
+            cv.put(NOMBRE, lista.getNombre());
+
+            bdatos.update(TB_LISTA, cv, "id="+lista.getId(), null);
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+    }
 
     public long eliminarLista(int id, Usuario usuario) {
         bdatos.beginTransaction();
