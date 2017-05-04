@@ -56,8 +56,6 @@ public class LectorQR extends AppCompatActivity {
 
                 try{
                     JSONObject obj = new JSONObject(contents);
-                    //String decodificado=URLDecoder.decode(contents, "UTF-8");
-                    //HashMap<String,String> datos=obtenerDatos(decodificado);
                     String lista=obj.getString("idLista");//datos.get("idLista");
                     String clave=obj.getString("clave");//datos.get("clave");
                     Toast.makeText(this, "Código detectado", Toast.LENGTH_LONG).show();

@@ -14,9 +14,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-
+import java.util.List;
+import java.util.Map;
 import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Item;
+import es.shosha.shosha.dominio.Usuario;
 import es.shosha.shosha.negocio.NegocioChecksum;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
@@ -24,7 +26,6 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
  * Clase que se encarga de obtener los items de la base de datos remota y los añade a la interna.
  * Es una tarea en segundo plano.
  * Como parámetros se le pasan los ids de las listas
- *
  * @author Jesús Iráizoz
  */
 public class ItemPers extends AsyncTask<String, Void, Void> {
@@ -115,6 +116,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
+
         try {
             java.net.URL urlObj = new URL(ItemPers.URL_ADD + ItemPers.ATRIBUTO + idLista + "&" + ItemPers.NOMBRE + nombre + "&" + ItemPers.PRECIO + precio + "&" + ItemPers.CANTIDAD + cantidad);
 
@@ -127,13 +129,14 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
             }
 
             rd.close();
+
             System.out.println("Insert response: " + res);
+
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
     /**
      * Edita un producto de una lista
      *
@@ -142,8 +145,8 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
     private void updateMode(String... params) {
         String nombre = "";
         double precio = 0;
-        int idLista = -1,
-                idProducto = -1,
+        int idLista=-1,
+                idProducto=-1,
                 cantidad = 1;
         try {
             idLista = Integer.valueOf(params[0]);
@@ -158,8 +161,8 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
         }
 
         try {
-            java.net.URL urlObj = new URL(URL_UPD + ATRIBUTO + idLista + "&" + ID + idProducto + "&" + NOMBRE + nombre + "&" + PRECIO + precio + "&" + CANTIDAD + cantidad);
-
+            java.net.URL urlObj = new URL(URL_UPD + ATRIBUTO + idLista + "&"+ID+idProducto+"&" + NOMBRE + nombre + "&" + PRECIO + precio + "&" + CANTIDAD + cantidad);
+            System.out.println(urlObj.toString());
             HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
 
             BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
@@ -177,10 +180,8 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
             e.printStackTrace();
         }
     }
-
     /**
      * Borra un producto de una lista
-     *
      * @param params 0:idLista, 1:nombre, 2:precio, 3:cantidad
      */
     private void deleteMode(String... params) {
@@ -195,7 +196,6 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
         try {
 
             java.net.URL urlObj = new URL(ItemPers.URL_DEL + ItemPers.ATRIBUTO + idLista + "&" + ItemPers.ID + producto);
-
             HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
 
             BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
