@@ -37,6 +37,7 @@ public class ProductosAdapter extends RecyclerView.Adapter {
 
     public ProductosAdapter(List<Item> productos, RecyclerViewOnItemClickListener recyclerViewOnItemClickListener, Context baseContext, int id) {
         items = productos;
+
         itemsPendingRemoval = new ArrayList<>();
         this.oicl = oicl;
     }
