@@ -24,6 +24,7 @@ CREATE TABLE "item" (
 	`nombre`	varchar(100) NOT NULL,
 	`precio`	double,
 	`idLista`	INTEGER NOT NULL,
+	`cantidad`  INTEGER,
 	`comprado`  INTEGER,
 	FOREIGN KEY(`idLista`) REFERENCES `lista`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );

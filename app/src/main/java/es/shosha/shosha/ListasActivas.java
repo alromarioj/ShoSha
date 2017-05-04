@@ -62,11 +62,11 @@ public class ListasActivas extends AppCompatActivity {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Intent i = new Intent(ListasActivas.this, ListaProductos.class);
-            Bundle bundle = new Bundle();
-            bundle.putInt("idLista",adaptador.getItem(position).getId());
-            i.putExtras(bundle);
-            startActivity(i);
+                Intent i = new Intent(ListasActivas.this, ListaProductos.class);
+                Bundle bundle = new Bundle();
+                bundle.putInt("idLista", adaptador.getItem(position).getId());
+                i.putExtras(bundle);
+                startActivity(i);
             }
         });
         // Registramos el menu contextual
@@ -125,24 +125,25 @@ public class ListasActivas extends AppCompatActivity {
     public boolean onContextItemSelected(MenuItem item) {
         String opcion = item.getTitle().toString();
         int id = listaClicada.getId();
-        String idu=MyApplication.getUser().getStringId();
-        if (opcion == "Eliminar") {
+        String idu = MyApplication.getUser().getStringId();
+        if (opcion.equals("Eliminar")) {
             //Se elimina la lista seleccionada de las listas del usuario
-            AdaptadorBD abd = new AdaptadorBD(getBaseContext());
-            abd.open();
+            Toast.makeText(this, "Eliminando lista " + id, Toast.LENGTH_SHORT).show();
+
             new ListaPers(MyApplication.getAppContext(), null).execute("delete", String.valueOf(id), idu);
-            abd.eliminarLista(id, MyApplication.getUser());
+
+
             listas.remove(listaClicada);
             adaptador.notifyDataSetChanged();
-            abd.close();
-            Toast.makeText(this, "Eliminando lista " + id, Toast.LENGTH_SHORT).show();
-        } else if (opcion == "Editar") {//Mostrar activity para editar una lista- parecida a crearla
+
+
+
+        } else if (opcion.equals("Editar")) {
             Intent i = new Intent(ListasActivas.this, EditarLista.class);
             Bundle bundle = new Bundle();
             bundle.putInt("idLista",id);
             i.putExtras(bundle);
             startActivity(i);
-
         } else {
             return false;
         }
