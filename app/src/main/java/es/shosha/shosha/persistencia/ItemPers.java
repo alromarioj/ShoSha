@@ -15,6 +15,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Item;
 import es.shosha.shosha.negocio.NegocioChecksum;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
@@ -205,7 +206,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
 
             rd.close();
 
-            /*
+
             System.out.println("------------------------> Borrado, va a local");
             System.out.println("------------------------> Borrado, va a local");
             System.out.println("------------------------> Borrado, va a local");
@@ -214,7 +215,6 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
             abd.open();
             abd.eliminarItem(idLista, producto);
             abd.close();
-             */
 
             System.out.println("Delete response: " + res);
 
