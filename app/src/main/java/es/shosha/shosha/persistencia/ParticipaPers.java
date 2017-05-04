@@ -73,7 +73,7 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
                 e.printStackTrace();
             }
         }else if (params.length == 4 && params[0].equals("insert")) {
-            insertMode(params[1], params[2], params[3]);
+            /*respuesta=*/ insertMode(params[1], params[2], params[3]);
         }
         else {
             try {
@@ -91,7 +91,7 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
      *
      * @param params 0:idLista, 1:usuario, 2:clave
      */
-    private void insertMode(String... params) {
+    private String insertMode(String... params) {
         String res="";
         String lista = "",
                 usuario = "", clave="";
@@ -122,11 +122,14 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
             JSONObject jo=new JSONObject(res);
             res=jo.getString("success");
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch(JSONException e2){
-            e2.printStackTrace();
         }
+        catch (JSONException e){
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return res;
     }
 
     @Override

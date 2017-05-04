@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.Toast;
 
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,7 +30,6 @@ public class LectorQR extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(getBaseContext(), android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             Button bt=(Button)findViewById(R.id.btEscanear);
             Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-            intent.setPackage("com.google.zxing.client.android");
             intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
             startActivityForResult(intent, 0);
         } else {
