@@ -36,6 +36,7 @@ public class ProductosViewHolder extends RecyclerView.ViewHolder implements View
 
     @Override
     public void onClick(View v) {
+        System.out.println("NULO?"+(oicl == null));
         oicl.onClick(v,getAdapterPosition());
     }
 }
