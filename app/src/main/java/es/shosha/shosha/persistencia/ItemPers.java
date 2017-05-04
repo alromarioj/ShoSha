@@ -2,6 +2,7 @@ package es.shosha.shosha.persistencia;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,6 +27,7 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
  * Clase que se encarga de obtener los items de la base de datos remota y los añade a la interna.
  * Es una tarea en segundo plano.
  * Como parámetros se le pasan los ids de las listas
+ *
  * @author Jesús Iráizoz
  */
 public class ItemPers extends AsyncTask<String, Void, Void> {
@@ -116,7 +118,6 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
-
         try {
             java.net.URL urlObj = new URL(ItemPers.URL_ADD + ItemPers.ATRIBUTO + idLista + "&" + ItemPers.NOMBRE + nombre + "&" + ItemPers.PRECIO + precio + "&" + ItemPers.CANTIDAD + cantidad);
 
@@ -130,13 +131,22 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
 
             rd.close();
 
-            System.out.println("Insert response: " + res);
+            Log.i("--> URL insercion lista", ItemPers.URL_ADD + ItemPers.ATRIBUTO + idLista + "&" + ItemPers.NOMBRE + nombre + "&" + ItemPers.PRECIO + precio + "&" + ItemPers.CANTIDAD + cantidad);
 
+            AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
+            abd.open();
+            abd.insertarItem(Integer.valueOf(res), nombre, precio, Integer.valueOf(idLista));
+            //Insertar en BD remota
+
+            abd.close();
+
+            System.out.println("Insert remote response: " + res);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
     /**
      * Edita un producto de una lista
      *
@@ -145,8 +155,8 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
     private void updateMode(String... params) {
         String nombre = "";
         double precio = 0;
-        int idLista=-1,
-                idProducto=-1,
+        int idLista = -1,
+                idProducto = -1,
                 cantidad = 1;
         try {
             idLista = Integer.valueOf(params[0]);
@@ -180,8 +190,10 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
             e.printStackTrace();
         }
     }
+
     /**
      * Borra un producto de una lista
+     *
      * @param params 0:idLista, 1:nombre, 2:precio, 3:cantidad
      */
     private void deleteMode(String... params) {
@@ -196,6 +208,9 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
         try {
 
             java.net.URL urlObj = new URL(ItemPers.URL_DEL + ItemPers.ATRIBUTO + idLista + "&" + ItemPers.ID + producto);
+
+            Log.i(" --> URL borrado lista", ItemPers.URL_DEL + ItemPers.ATRIBUTO + idLista + "&" + ItemPers.ID + producto);
+
             HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
 
             BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
@@ -213,10 +228,11 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
 
             AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
             abd.open();
-            abd.eliminarItem(idLista, producto);
+            long resl = abd.eliminarItem(idLista, producto);
             abd.close();
 
-            System.out.println("Delete response: " + res);
+            System.out.println("Delete remote response: " + res);
+            System.out.println("Delete local response: " + resl);
 
         } catch (IOException e) {
             e.printStackTrace();

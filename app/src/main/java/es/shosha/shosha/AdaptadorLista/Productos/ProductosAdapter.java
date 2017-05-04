@@ -11,13 +11,11 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Item;
 import es.shosha.shosha.persistencia.ItemPers;
+import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 /**
  * Created by inhernan on 23/03/2017.
@@ -34,21 +32,25 @@ public class ProductosAdapter extends RecyclerView.Adapter {
 
     private Handler handler = new Handler(); // hanlder for running delayed runnables
     HashMap<Item, Runnable> pendingRunnables = new HashMap<>(); // map of items to pending runnables, so we can cancel a removal if need be
+    Context contexto;
+    int idLista;
 
-    public ProductosAdapter(List<Item> productos, RecyclerViewOnItemClickListener recyclerViewOnItemClickListener, Context baseContext, int id) {
+    public ProductosAdapter(List<Item> productos, @NonNull RecyclerViewOnItemClickListener oicl, Context contexto, int idLista) {
         items = productos;
         itemsPendingRemoval = new ArrayList<>();
-        this.oicl = oicl;
+        this.oicl=oicl;
+        this.contexto=contexto;
+        this.idLista=idLista;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ProductosViewHolder(parent, oicl);
+        return new ProductosViewHolder(parent,oicl);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        ProductosViewHolder viewHolder = (ProductosViewHolder) holder;
+        ProductosViewHolder viewHolder = (ProductosViewHolder)holder;
         final Item item = items.get(position);
 
         if (itemsPendingRemoval.contains(item)) {
@@ -64,8 +66,7 @@ public class ProductosAdapter extends RecyclerView.Adapter {
                     // user wants to undo the removal, let's cancel the pending task
                     Runnable pendingRemovalRunnable = pendingRunnables.get(item);
                     pendingRunnables.remove(item);
-                    if (pendingRemovalRunnable != null)
-                        handler.removeCallbacks(pendingRemovalRunnable);
+                    if (pendingRemovalRunnable != null) handler.removeCallbacks(pendingRemovalRunnable);
                     itemsPendingRemoval.remove(item);
                     // this will rebind the row in "normal" state
                     notifyItemChanged(items.indexOf(item));
@@ -78,7 +79,7 @@ public class ProductosAdapter extends RecyclerView.Adapter {
             viewHolder.precio.setVisibility(View.VISIBLE);
             viewHolder.comprado.setVisibility(View.VISIBLE);
             viewHolder.nombre.setText(item.getNombre());
-            viewHolder.precio.setText(item.getPrecio() + " €");
+            viewHolder.precio.setText(item.getPrecio()+" €");
             viewHolder.undoButton.setVisibility(View.GONE);
             viewHolder.undoButton.setOnClickListener(null);
         }
@@ -141,24 +142,17 @@ public class ProductosAdapter extends RecyclerView.Adapter {
             itemsPendingRemoval.remove(item);
         }
         if (items.contains(item)) {
+            AdaptadorBD abd = new AdaptadorBD(contexto);
+            abd.open();
+            //Eliminar producto de BD local
+            abd.eliminarItem(idLista,item.getId());
+            //Eliminar de BD remota
+            new ItemPers(MyApplication.getAppContext()).execute("delete", String.valueOf(idLista), String.valueOf(item.getId()));
+            abd.close();
+            //Toast.makeText(ListaProductos.this, "Eliminando producto ", Toast.LENGTH_SHORT).show();
             items.remove(position);
-            System.out.println("------------------------> Va a ITEMPERS con "+item.toString());
-
-            ItemPers ip = new ItemPers(MyApplication.getAppContext());
-
-            ip.execute("delete", String.valueOf(item.getIdLista()), String.valueOf(item.getId()));
-            try {
-                ip.get(3, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (TimeoutException e) {
-            //    e.printStackTrace();
-            }
             notifyItemRemoved(position);
         }
-
     }
 
     public boolean isPendingRemoval(int position) {

@@ -3,22 +3,16 @@ package es.shosha.shosha;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-
-import com.google.zxing.client.android.CaptureActivity;
-import com.google.zxing.client.android.Intents;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.HashMap;
 
 import es.shosha.shosha.dominio.Lista;
@@ -69,7 +63,7 @@ public class LectorQR extends AppCompatActivity {
                     int idl=Integer.valueOf(lista);
                     Lista l=abd.obtenerLista(idl,idu);
 
-                    if(clave==l.getClave()){
+                    if(clave==l.getCodigoQR()){
                         //Añade participante en bd remota
                         new ParticipaPers(MyApplication.getAppContext(), null).execute("insert", lista,String.valueOf(idu),clave);
                         //Añade participante en bd local
