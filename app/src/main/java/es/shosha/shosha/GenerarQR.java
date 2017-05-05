@@ -43,7 +43,7 @@ public class GenerarQR extends AppCompatActivity {
         }
     }
     public void generar(View view){
-        String datos="{'idLista'='"+idLista+",'clave'='"+clave+"'";
+        String datos="{'idLista'='"+idLista+",'clave'='"+clave+"'}";
 
         //IntentIntegrator integrator = new IntentIntegrator(this);
         //Integrator.addExtra("ENCODE_DATA", bundle);

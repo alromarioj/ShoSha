@@ -71,13 +71,14 @@ public class ListaManual extends AppCompatActivity {
         this.claveLista = generarClave(5);
         String idu=String.valueOf(MyApplication.getUser().getId());
 
-        new ListaPers(MyApplication.getAppContext(), null, this).execute("insert", idu,nomLista,claveLista);
+        new ListaPers(MyApplication.getAppContext(), null, this).execute("insert", idu,nomLista,claveLista,"imagen");
     }
     public void sigueCrearLista(Integer id){
         System.out.println("=?="+id);
         AdaptadorBD abd = new AdaptadorBD(getBaseContext());
         abd.open();
         abd.insertarLista(id,nomLista,MyApplication.getUser(),"1");//Añadir clave
+        abd.insertaQR(claveLista,id);
         abd.close();
         Toast.makeText(this, "Añadiendo lista ", Toast.LENGTH_SHORT).show();
 

@@ -155,7 +155,6 @@ public class AdaptadorBD {
 
         return res;
     }
-
     public long insertarItem(int id, String nombre, double precio, int idLista) {
         //    bdatos.beginTransaction();
 

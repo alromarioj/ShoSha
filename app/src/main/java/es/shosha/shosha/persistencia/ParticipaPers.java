@@ -18,6 +18,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import es.shosha.shosha.LectorQR;
 import es.shosha.shosha.dominio.Usuario;
 import es.shosha.shosha.negocio.NegocioChecksum;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
@@ -32,13 +33,21 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
     private final static String LISTA = "lista=";
     private final static String USUARIO = "usuario=";
     private final static String CLAVE = "clave=";
+    private LectorQR lqr;
+    private int lista,usuario;
 
     private Context contexto;
     private final CountDownLatch count;
+    private String respuesta,accion;
 
     public ParticipaPers(Context contexto, CountDownLatch count) {
         this.contexto = contexto;
         this.count = count;
+    }
+    public ParticipaPers(Context contexto, CountDownLatch count, LectorQR lectorQR) {
+        this.contexto = contexto;
+        this.count = count;
+        this.lqr=lectorQR;
     }
 
     @Override
@@ -73,7 +82,8 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
                 e.printStackTrace();
             }
         }else if (params.length == 4 && params[0].equals("insert")) {
-            /*respuesta=*/ insertMode(params[1], params[2], params[3]);
+            accion="insert";
+            insertMode(params[1], params[2], params[3]);
         }
         else {
             try {
@@ -91,14 +101,14 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
      *
      * @param params 0:idLista, 1:usuario, 2:clave
      */
-    private String insertMode(String... params) {
-        String res="";
-        String lista = "",
-                usuario = "", clave="";
+    private void insertMode(String... params) {
+        String res="", clave="";
+        lista = -1;
+        usuario = -1;
         try {
-            lista = URLEncoder.encode(params[0], "UTF-8");
+            lista = Integer.valueOf(params[0]);
             clave = URLEncoder.encode(params[1], "UTF-8");
-            usuario = URLEncoder.encode(params[2],"UTF-8");
+            usuario = Integer.valueOf(params[2]);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (NumberFormatException e) {
@@ -120,7 +130,7 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
             rd.close();
             System.out.println("Insert response: " + res);
             JSONObject jo=new JSONObject(res);
-            res=jo.getString("success");
+            respuesta=jo.getString("success");
 
         }
         catch (JSONException e){
@@ -129,12 +139,15 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
         catch (IOException e) {
             e.printStackTrace();
         }
-        return res;
+
     }
 
     @Override
     protected void onPostExecute(String s) {
-        super.onPostExecute(s);
+        NegocioChecksum.setChecksum("participa");
+        if (accion.equals("insert")) {
+            this.lqr.sigueAnadirParticipante(!respuesta.equals("1"),usuario,lista);
+        }
     }
 
     private void jsonParser(String data) {
