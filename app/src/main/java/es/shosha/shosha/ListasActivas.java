@@ -56,17 +56,17 @@ public class ListasActivas extends AppCompatActivity {
 
     }
 
-    public void setListas(List<Lista> listas) {
-        adaptador = new AdapterLista(this, listas);
+    public void setListas(List<Lista> listas2) {
+        adaptador = new AdapterLista(this, listas2);
         list.setAdapter(adaptador);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Intent i = new Intent(ListasActivas.this, ListaProductos.class);
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("lista", adaptador.getItem(position));
-            i.putExtras(bundle);
-            startActivity(i);
+                Intent i = new Intent(ListasActivas.this, ListaProductos.class);
+                Bundle bundle = new Bundle();
+                bundle.putInt("idLista", adaptador.getItem(position).getId());
+                i.putExtras(bundle);
+                startActivity(i);
             }
         });
         // Registramos el menu contextual
@@ -91,8 +91,12 @@ public class ListasActivas extends AppCompatActivity {
                 onBackPressed();
                 return true;
             case R.id.anadir_lista:
-                Intent i = new Intent(this, AnadirLista.class);
+                Intent i = new Intent(this, ListaManual.class);
                 startActivity(i);
+                return true;
+            case R.id.escanear_QR:
+                Intent i1 = new Intent(this, LectorQR.class);
+                startActivity(i1);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -109,7 +113,7 @@ public class ListasActivas extends AppCompatActivity {
         AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo) menuInfo;
         menu.setHeaderTitle("Opciones");
         menu.add(0, v.getId(), 0, "Eliminar");
-        menu.add(0, v.getId(),0, "Cambiar nombre");
+        menu.add(0, v.getId(), 0, "Editar");
         listaClicada = (Lista) lv.getItemAtPosition(acmi.position);
     }
 
@@ -119,26 +123,35 @@ public class ListasActivas extends AppCompatActivity {
      */
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        String opcion=item.getTitle().toString();
-        if (opcion == "Eliminar") {
+        String opcion = item.getTitle().toString();
+        int id = listaClicada.getId();
+        String idu = MyApplication.getUser().getStringId();
+        if (opcion.equals("Eliminar")) {
             //Se elimina la lista seleccionada de las listas del usuario
-            int id=listaClicada.getId();
-            AdaptadorBD abd = new AdaptadorBD(getBaseContext());
-            abd.open();
-            new ListaPers(MyApplication.getAppContext(), null).execute("delete", String.valueOf(id), MyApplication.getUser().getStringId());
-            abd.eliminarLista(id, MyApplication.getUser());
+            Toast.makeText(this, "Eliminando lista " + id, Toast.LENGTH_SHORT).show();
+
+            new ListaPers(MyApplication.getAppContext(), null).execute("delete", String.valueOf(id), idu);
+
+
             listas.remove(listaClicada);
             adaptador.notifyDataSetChanged();
 
-            abd.close();
-            Toast.makeText(this, "Eliminando lista " + id, Toast.LENGTH_SHORT).show();
-        }
-        else if(opcion=="Cambiar nombre"){
-            //Mostrar popup para cambiar el nombre de la lista
-        }
-        else{
+
+
+        } else if (opcion.equals("Editar")) {
+            Intent i = new Intent(ListasActivas.this, EditarLista.class);
+            Bundle bundle = new Bundle();
+            bundle.putInt("idLista",id);
+            i.putExtras(bundle);
+            startActivity(i);
+        } else {
             return false;
         }
         return true;
+    }
+    public void mostrarAnadirLista(View view) {
+        //Ejecuta la actividad de listas activas
+        Intent i = new Intent(this, AnadirLista.class);
+        startActivity(i);
     }
 }

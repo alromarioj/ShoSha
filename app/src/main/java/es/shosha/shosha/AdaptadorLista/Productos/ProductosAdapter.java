@@ -1,5 +1,6 @@
 package es.shosha.shosha.AdaptadorLista.Productos;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -11,7 +12,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Item;
+import es.shosha.shosha.persistencia.ItemPers;
+import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 /**
  * Created by inhernan on 23/03/2017.
@@ -23,16 +27,21 @@ public class ProductosAdapter extends RecyclerView.Adapter {
     private RecyclerViewOnItemClickListener oicl;
     List<Item> items;
     List<Item> itemsPendingRemoval;
-    int lastInsertedIndex=0; // so we can add some more items for testing purposes
-    boolean undoOn=true; // is undo on, you can turn it on from the toolbar menu
+    int lastInsertedIndex = 0; // so we can add some more items for testing purposes
+    boolean undoOn = true; // is undo on, you can turn it on from the toolbar menu
 
     private Handler handler = new Handler(); // hanlder for running delayed runnables
     HashMap<Item, Runnable> pendingRunnables = new HashMap<>(); // map of items to pending runnables, so we can cancel a removal if need be
+    Context contexto;
+    int idLista;
 
-    public ProductosAdapter(List<Item> productos,  @NonNull RecyclerViewOnItemClickListener oicl) {
+    public ProductosAdapter(List<Item> productos, @NonNull RecyclerViewOnItemClickListener oicl, Context contexto, int idLista) {
         items = productos;
+
         itemsPendingRemoval = new ArrayList<>();
         this.oicl=oicl;
+        this.contexto=contexto;
+        this.idLista=idLista;
     }
 
     @Override
@@ -134,6 +143,14 @@ public class ProductosAdapter extends RecyclerView.Adapter {
             itemsPendingRemoval.remove(item);
         }
         if (items.contains(item)) {
+            AdaptadorBD abd = new AdaptadorBD(contexto);
+            abd.open();
+            //Eliminar producto de BD local
+            abd.eliminarItem(idLista,item.getId());
+            //Eliminar de BD remota
+            new ItemPers(MyApplication.getAppContext()).execute("delete", String.valueOf(idLista), String.valueOf(item.getId()));
+            abd.close();
+            //Toast.makeText(ListaProductos.this, "Eliminando producto ", Toast.LENGTH_SHORT).show();
             items.remove(position);
             notifyItemRemoved(position);
         }

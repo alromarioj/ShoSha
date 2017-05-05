@@ -14,6 +14,8 @@ import android.view.View;
 
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
+import es.shosha.shosha.negocio.CargaDatos;
+
 import static es.shosha.shosha.MyApplication.getAppContext;
 
 public class Inicio extends AppCompatActivity
@@ -53,7 +55,7 @@ public class Inicio extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        switch (id) {
+        switch (id){
             case R.id.nav_perfil:
 
                 break;
@@ -89,10 +91,14 @@ public class Inicio extends AppCompatActivity
         Intent i = new Intent(this, ListasActivas.class);
         startActivity(i);
     }
-
     public void mostrarAnadirLista(View view) {
         //Ejecuta la actividad de listas activas
         Intent i = new Intent(this, AnadirLista.class);
+        startActivity(i);
+    }
+    public void unirseALista(View view) {
+        //Ejecuta la actividad de listas activas
+        Intent i = new Intent(this, LectorQR.class);
         startActivity(i);
     }
 }

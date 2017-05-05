@@ -18,6 +18,7 @@ public class Lista implements Serializable {
     private List<Usuario> participantes;
     private Drawable imagen = null;
     private List<Item> items;
+    private String codigoQR;
 
     /**
      * @param id
@@ -31,6 +32,7 @@ public class Lista implements Serializable {
         this.propietario = propietario;
         this.estado = estado;
         this.items = new ArrayList<Item>();
+        this.codigoQR = "";
     }
 
     /**
@@ -48,6 +50,7 @@ public class Lista implements Serializable {
         this.estado = estado;
         this.items = items;
         this.participantes = participantes;
+        this.codigoQR = "";
     }
 
     /**
@@ -66,6 +69,26 @@ public class Lista implements Serializable {
         this.items = new ArrayList<Item>();
         this.participantes = participantes;
         this.imagen = imagen;
+        this.codigoQR = "";
+    }
+    /**
+     * @param id
+     * @param nombre
+     * @param propietario
+     * @param estado
+     * @param participantes
+     * @param imagen
+     * @param codigoQR
+     */
+    public Lista(int id, String nombre, Usuario propietario, boolean estado, List<Usuario> participantes, Drawable imagen, String codigoQR) {
+        this.id = id;
+        this.nombre = nombre;
+        this.propietario = propietario;
+        this.estado = estado;
+        this.items = new ArrayList<Item>();
+        this.participantes = participantes;
+        this.imagen = imagen;
+        this.codigoQR=codigoQR;
     }
 
     /**
@@ -73,6 +96,7 @@ public class Lista implements Serializable {
      */
     public Lista() {
         this.items = new ArrayList<Item>();
+        this.codigoQR = "";
     }
 
     @Override
@@ -183,5 +207,13 @@ public class Lista implements Serializable {
 
     public void setItems(List<Item> items) {
         this.items = items;
+    }
+
+    public String getCodigoQR() {
+        return codigoQR;
+    }
+
+    public void setCodigoQR(String codigoQR) {
+        this.codigoQR = codigoQR;
     }
 }

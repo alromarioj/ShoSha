@@ -19,6 +19,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import es.shosha.shosha.ListaManual;
+import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Lista;
 import es.shosha.shosha.dominio.Usuario;
 import es.shosha.shosha.negocio.NegocioChecksum;
@@ -34,17 +36,29 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
     private final static String URL_GET = "http://shosha.jiraizoz.es/getListas.php?";
     private final static String URL_DEL = "http://shosha.jiraizoz.es/delLista.php?";
     private final static String URL_UPD = "http://shosha.jiraizoz.es/updateLista.php?";
+    private final static String URL_ADD = "http://shosha.jiraizoz.es/addLista.php?";
     private final static String ATRIBUTO_USR = "usuario=";
     private final static String ATRIBUTO_LISTA = "lista=";
     private final static String NOMBRE_LISTA = "nombre=";
+    private final static String PROPIETARIO = "propietario=";
+    private final static String IMAGEN = "imagen=";
     private List<Lista> lListas = null;
 
     private Context contexto;
     private final CountDownLatch count;
+    private String accion = "";
+    private ListaManual l;
+    private Integer insertId;
 
     public ListaPers(Context c, CountDownLatch cdl) {
         this.contexto = c;
         count = cdl;
+    }
+
+    public ListaPers(Context c, CountDownLatch cdl, ListaManual l) {
+        this.contexto = c;
+        count = cdl;
+        this.l = l;
     }
 
     @Override
@@ -52,73 +66,127 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
         List<Lista> lListas = null;
         String data = "";
         Usuario usu = null;
-            switch (params.length){
-                case 1:
-                    try {
-                        data = URLEncoder.encode(params[0], "UTF-8");
-                        java.net.URL urlObj = new URL(ListaPers.URL_GET + ListaPers.ATRIBUTO_USR + data);
+        switch (params.length) {
+            case 1:
+                try {
+                    data = URLEncoder.encode(params[0], "UTF-8");
+                    java.net.URL urlObj = new URL(ListaPers.URL_GET + ListaPers.ATRIBUTO_USR + data);
 
-                        HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
+                    HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
 
-                        BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
-                        String line = "", res = "";
-                        while ((line = rd.readLine()) != null) {
-                            res += line;
-                        }
-                        rd.close();
-                        lListas = jsonParser(res);
-                        if (count != null)
-                            count.countDown();
+                    BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
+                    String line = "", res = "";
+                    while ((line = rd.readLine()) != null) {
+                        res += line;
+                    }
+                    rd.close();
 
-                    }catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
-                    catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    lListas = jsonParser(res);
 
-                    break;
-                case 3:
-                    if (params[0].equals("delete")) {
-                        //lista y usuario
-                        deleteMode(params[1], params[2]);
-                    }
-                    else {
-                        try {
-                            lanzadorExcepcion();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    break;
-                case 4:
-                    if (params[0].equals("update")) {
-                        //lista y usuario
-                        updateMode(params[1], params[2],params[3]);
-                    }
-                    else {
-                        try {
-                            lanzadorExcepcion();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    break;
-                default:
+                    if (count != null)
+                        count.countDown();
+
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                break;
+            case 3:
+                if (params[0].equals("delete")) {
+                    //lista y usuario
+                    deleteMode(params[1], params[2]);
+                } else {
                     try {
                         lanzadorExcepcion();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-            }
-        NegocioChecksum.setChecksum("lista");
+                }
+                break;
+            case 4:
+                if (params[0].equals("update")) {
+                    //lista y usuario
+                    updateMode(params[1], params[2], params[3]);
+                } else if (params[0].equals("insert")) {
+                    this.accion = "insert";
+                    insertMode(params[1], params[2], params[3]);
+                } else {
+                    try {
+                        lanzadorExcepcion();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            default:
+                try {
+                    lanzadorExcepcion();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+        }
 
-        this.lListas = lListas;
+
+        //this.lListas = lListas;
         return lListas;
     }
 
+    @Override
     protected void onPostExecute(List<Lista> listas) {
+        NegocioChecksum.setChecksum("lista");
         this.lListas = listas;
+        if (accion.equals("insert")) {
+            this.l.sigueCrearLista(this.insertId);
+        }
+    }
+
+    /**
+     * Añade una lista
+     *
+     * @param params 0:nombre, 2:propietario, 1:imagen
+     */
+    private void insertMode(String... params) {
+        String nombre = "", propietario = "";
+        String imagen = "";//Tipo?
+        try {
+            propietario = URLEncoder.encode(params[0], "UTF-8");
+            nombre = URLEncoder.encode(params[1], "UTF-8");
+            imagen = URLEncoder.encode(params[2], "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            java.net.URL urlObj = new URL(URL_ADD + NOMBRE_LISTA + nombre + "&" + IMAGEN + imagen + "&" + PROPIETARIO + propietario);
+
+            HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
+
+            BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
+            String line = "", res = "";
+            while ((line = rd.readLine()) != null) {
+                res += line;
+            }
+
+            rd.close();
+
+            System.out.println("Insert response: " + res);
+            try {
+                JSONObject jso = new JSONObject(res);
+                Integer success = jso.getInt("success");
+                if (success == 1) {
+                    this.insertId = jso.getInt("message");
+                    System.out.println("=¿=" + this.insertId);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -148,7 +216,13 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
 
             rd.close();
 
-            System.out.println("Delete response: " + res);
+            AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
+            abd.open();
+            long resl = abd.eliminarLista(Integer.valueOf(idLista), Integer.valueOf(idUsr));
+            abd.close();
+
+            System.out.println("Delete remote response: " + res);
+            System.out.println("Delete local response: " + resl);
 
 
         } catch (IOException e) {
@@ -158,12 +232,14 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
 
     /**
      * Cambiar el nombre de una lista
+     *
      * @param params 0:idLista, 1:idUsuario, 2:nombreLista
      */
     private void updateMode(String... params) {
-        String idLista = "",
-                idUsr = "",
-                nombre="";
+        String idLista = "-1",
+                idUsr = "-1",
+                nombre = "",
+                imagen = "";//Permitir cambiar
         try {
             idLista = URLEncoder.encode(params[0], "UTF-8");
             idUsr = URLEncoder.encode(params[1], "UTF-8");
@@ -173,7 +249,7 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
         }
 
         try {
-            java.net.URL urlObj = new URL(ListaPers.URL_DEL + ListaPers.ATRIBUTO_LISTA + idLista + "&" + ListaPers.ATRIBUTO_USR + idUsr+"&"+ListaPers.NOMBRE_LISTA+nombre);
+            java.net.URL urlObj = new URL(ListaPers.URL_UPD + ListaPers.ATRIBUTO_LISTA + idLista + "&" + ListaPers.ATRIBUTO_USR + idUsr + "&" + ListaPers.NOMBRE_LISTA + nombre);
 
             HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
 
@@ -236,7 +312,7 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
                         ExecutorService pool = Executors.newFixedThreadPool(1);
 
                         ParticipaPers pp = new ParticipaPers(this.contexto, count);
-                        pp.executeOnExecutor(pool, o.getInt("id"));
+                        pp.executeOnExecutor(pool, String.valueOf(o.getInt("id")));
 
                         count.await();
                         l.setParticipantes(abd.getParticipantes(o.getInt("id")));

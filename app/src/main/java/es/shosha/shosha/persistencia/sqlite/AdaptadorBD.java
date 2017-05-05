@@ -34,6 +34,7 @@ public class AdaptadorBD {
     private static final String TB_ITEM = "item";
     private static final String TB_PARTICIPA = "participa";
     private static final String TB_CHK = "checksums";
+    private static final String TB_QR = "codigoQR";
     private static final String ID = "id";
     private static final String NOMBRE = "nombre";
     private static final String USR_EMAIL = "email";
@@ -46,6 +47,7 @@ public class AdaptadorBD {
     private static final String PPA_ACTIVO = "activo";
     private static final String CHK_TABLA = "tabla";
     private static final String CHK_CRC = "crc";
+    private static final String QR_IDQR = "idQR";
     private static final String SQL_TRNCTE = "DELETE FROM ";
 
 
@@ -167,7 +169,7 @@ public class AdaptadorBD {
             valores.put(ITM_PRECIO, precio);
             valores.put(IDLISTA, idLista);
 
-            long l = bdatos.replace(TB_ITEM,null,valores);
+            long l = bdatos.replace(TB_ITEM, null, valores);
 
             bdatos.setTransactionSuccessful();
         } finally {
@@ -207,6 +209,19 @@ public class AdaptadorBD {
                 valores.put(CHK_CRC, mapaRemoto.get(k));
                 bdatos.replace(TB_CHK, null, valores);
             }
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+    }
+
+    public void insertaQR(String codigoQR, int idLista) {
+        bdatos.beginTransaction();
+        try {
+            ContentValues valores = new ContentValues();
+            valores.put(QR_IDQR, codigoQR);
+            valores.put(IDLISTA, idLista);
+            bdatos.replace(TB_QR, null, valores);
             bdatos.setTransactionSuccessful();
         } finally {
             bdatos.endTransaction();
@@ -284,6 +299,31 @@ public class AdaptadorBD {
         return aux;
     }
 
+    public Lista obtenerLista(int idLista, int idUsuario) {
+
+        String sql = "SELECT DISTINCT l.* FROM lista l LEFT JOIN participa p ON l.id=p.idLista WHERE l.id=" + idLista + " AND ((l.propietario=" + idUsuario + " AND l.estado=1) OR (p.idUsuario=" + idUsuario + " AND p.activo=1))";
+        Cursor c = bdatos.rawQuery(sql, null);
+        Usuario u = this.obtenerUsuario(idUsuario);
+        Lista l = null;
+        if (c.moveToFirst()) {
+            l = new Lista();
+            l.setId(c.getInt(0));
+            l.setNombre(c.getString(1));
+            l.setEstado(c.getString(3).equals("1"));
+            int usrProp = c.getInt(2);
+            if (usrProp == idUsuario && u != null) {
+                l.setPropietario(u);
+            } else if (usrProp != idUsuario) {
+                l.setPropietario(this.obtenerUsuario(usrProp));
+            }
+            l.setListaItems(this.obtenerItems(l.getId()));
+            l.setParticipantes(this.getParticipantes(l.getId()));
+        }
+
+        c.close();
+        return l;
+    }
+
     public Usuario obtenerUsuario(int id) {
         Cursor c = bdatos.query(false, TB_USUARIO, null, "id=" + id, null, null, null, null, null);
         Usuario u = null;
@@ -301,12 +341,27 @@ public class AdaptadorBD {
         List<Item> aux = new ArrayList<Item>();
         if (c.moveToFirst()) {
             do {
-                i = new Item(c.getInt(0), c.getString(1), c.getDouble(2));
+                i = new Item(c.getInt(0), c.getString(1), c.getDouble(2), idLista);
                 aux.add(i);
             } while (c.moveToNext());
         }
         c.close();
         return aux;
+    }
+
+    public Item obtenerItem(int idItem) {
+
+        Cursor c = bdatos.query(false, TB_ITEM, null, "id=" + idItem, null, null, null, null, null);
+        Item i = null;
+        if (c.moveToFirst()) {
+            do {
+                i = new Item(c.getInt(0), c.getString(1), c.getDouble(2), c.getInt(3));
+                i.setCantidad(c.getInt(4));
+                i.setComprado(c.getInt(5) == 1);
+            } while (c.moveToNext());
+        }
+        c.close();
+        return i;
     }
 
     public List<Usuario> getParticipantes(int idLista) {
@@ -340,6 +395,21 @@ public class AdaptadorBD {
         return mapa;
     }
 
+    public String obtenerQR(int idLista) {
+
+        String codigo = "";
+
+        Cursor c = bdatos.query(true, TB_QR, null, IDLISTA + "=?", new String[]{String.valueOf(idLista)}, null, null, null, null);
+
+        if (c.moveToFirst()) {
+            do {
+                codigo = c.getString(0);
+            } while (c.moveToNext());
+        }
+        c.close();
+        return codigo;
+    }
+
     public void updateUsuario(Usuario u) {
         bdatos.beginTransaction();
         try {
@@ -350,6 +420,19 @@ public class AdaptadorBD {
 
             bdatos.update(TB_USUARIO, cv, "id=?", new String[]{String.valueOf(u.getId())});
 
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+    }
+    public void updateLista(Lista lista, String nombre) {
+        bdatos.beginTransaction();
+        try {
+
+            ContentValues cv = new ContentValues();
+            cv.put(NOMBRE, lista.getNombre());
+
+            bdatos.update(TB_LISTA, cv, "id=" + lista.getId(), null);
             bdatos.setTransactionSuccessful();
         } finally {
             bdatos.endTransaction();
@@ -371,7 +454,14 @@ public class AdaptadorBD {
                     valores.put(PPA_ACTIVO, "0");
                     res = bdatos.update(TB_PARTICIPA, valores, IDLISTA + "=" + id + " AND " + PPA_IDUSR + " = " + usuario.getId(), null);
                 }
+
+//                long qr = eliminarQR(id);
+//                if (qr > -1) {
                 bdatos.setTransactionSuccessful();
+//                } else {
+//                    res = -1;
+//                    Log.e("Método eliminarLista", "La transacción no se realizó correctamente", new Exception("Resultado QR: " + qr + " / Resultado método: " + res));
+//                }
             }
         } finally {
             bdatos.endTransaction();
@@ -394,11 +484,89 @@ public class AdaptadorBD {
                     valores.put(PPA_ACTIVO, "0");
                     res = bdatos.update(TB_PARTICIPA, valores, IDLISTA + "=" + id + " AND " + PPA_IDUSR + " = " + idUsuario, null);
                 }
+
+
+//                long qr = eliminarQR(id);
+//                if (qr > -1)
+                bdatos.setTransactionSuccessful();
+//                else {
+//                    res = -1;
+//                    Log.e("Método eliminarLista", "La transacción no se realizó correctamente", new Exception("Resultado QR: " + qr + " / Resultado método: " + res));
+//                }
+            }
+        } finally {
+            bdatos.endTransaction();
+        }
+        return res;
+    }
+
+    public long eliminarItem(int lista, int item) {
+        bdatos.beginTransaction();
+        long res = -1;
+        try {
+            String sql = "SELECT * FROM " + TB_LISTA + " l join " + TB_ITEM + " i on l." + ID + "=i." + IDLISTA + " WHERE l." + ID + "=" + lista + " AND l." + LST_ESTADO + "=1 AND i." + ID + "=" + item;
+            Cursor cursor = bdatos.rawQuery(sql, null);
+            if (cursor.moveToFirst()) {
+                res = bdatos.delete(TB_ITEM, ID + "=" + item, null);
+                System.out.println("Respuesta eliminar item en local: " + res);
                 bdatos.setTransactionSuccessful();
             }
         } finally {
             bdatos.endTransaction();
         }
+        return res;
+    }
+
+    public long eliminarItem(String idLista, String idItem) {
+
+        bdatos.beginTransaction();
+        long res = -1;
+        try {
+            if (Integer.valueOf(idLista) > 0 && Integer.valueOf(idItem) > 0) {
+                res = bdatos.delete(TB_ITEM, "id=? AND idLista=?", new String[]{idItem, idLista});
+                bdatos.setTransactionSuccessful();
+            }
+        } finally {
+            bdatos.endTransaction();
+        }
+        return res;
+    }
+
+    /**
+     * Metodo privado para eliminar un código QR de una lista concreta.
+     * MÉTODO SIN TRANSACCIONES
+     *
+     * @param idLista Id de la lísta a eliminar el código
+     * @return resultado de la operación de eliminar
+     */
+    private long eliminarQR(int idLista) {
+        long res = -1;
+//        bdatos.beginTransaction();
+//        try {
+        res = bdatos.delete(TB_QR, IDLISTA + "=?", new String[]{String.valueOf(idLista)});
+        bdatos.setTransactionSuccessful();
+//        } finally {
+//            bdatos.endTransaction();
+//        }
+        return res;
+    }
+
+    /**
+     * Metodo privado para eliminar un código QR de una lista concreta.
+     * MÉTODO SIN TRANSACCIONES
+     *
+     * @param codigoQR Código QR a eliminar
+     * @return resultado de la operación
+     */
+    private long eliminarQR(String codigoQR) {
+        long res = -1;
+//        bdatos.beginTransaction();
+//        try {
+        res = bdatos.delete(TB_QR, QR_IDQR + "=?", new String[]{String.valueOf(codigoQR)});
+        bdatos.setTransactionSuccessful();
+//        } finally {
+//            bdatos.endTransaction();
+//        }
         return res;
     }
 
