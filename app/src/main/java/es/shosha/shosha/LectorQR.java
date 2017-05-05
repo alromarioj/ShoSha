@@ -15,6 +15,8 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 
 import es.shosha.shosha.dominio.Lista;
@@ -40,7 +42,8 @@ public class LectorQR extends AppCompatActivity {
                 String contents=data.getStringExtra("SCAN_RESULT");
 
                 try{
-                    JSONObject obj = new JSONObject(contents);
+                    String decodificado= URLDecoder.decode(contents, "UTF-8");
+                    JSONObject obj = new JSONObject(decodificado);
                     String lista=obj.getString("idLista");
                     String clave=obj.getString("clave");
                     Toast.makeText(this, "Código detectado", Toast.LENGTH_LONG).show();
@@ -48,8 +51,11 @@ public class LectorQR extends AppCompatActivity {
 
                     // Añadir al usuario como participante en la lista
                     //Añade participante en bd remota
-                    new ParticipaPers(MyApplication.getAppContext(), null).execute("insert", lista,String.valueOf(idu),clave);
+                    new ParticipaPers(MyApplication.getAppContext(), null,this).execute("insert", lista,clave,String.valueOf(idu));
 
+                }
+                catch (UnsupportedEncodingException e){
+                    e.printStackTrace();
                 }
                 catch(JSONException e){
                     e.printStackTrace();

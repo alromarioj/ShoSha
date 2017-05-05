@@ -43,11 +43,7 @@ public class GenerarQR extends AppCompatActivity {
         }
     }
     public void generar(View view){
-        String datos="{'idLista'='"+idLista+",'clave'='"+clave+"'}";
-
-        //IntentIntegrator integrator = new IntentIntegrator(this);
-        //Integrator.addExtra("ENCODE_DATA", bundle);
-        System.out.println("Datos enviados en código QR: "+datos);
+        String datos="{'idLista'='"+idLista+"','clave'='"+clave+"'}";
         ImageView qrcode=(ImageView)findViewById(R.id.codigoQR);
 
         Writer writer = new QRCodeWriter();
