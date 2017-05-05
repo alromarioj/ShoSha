@@ -103,6 +103,7 @@ public class ListaProductos extends AppCompatActivity {
                     abd.close();
                     Toast.makeText(ListaProductos.this, "Editando producto " + producto.getNombre(), Toast.LENGTH_SHORT).show();
                     //Avisa de que la lista ha cambiado
+                    // No parece funcionar TODO
                     mRecyclerView.getAdapter().notifyDataSetChanged();
                     dialog.dismiss();
                 }
