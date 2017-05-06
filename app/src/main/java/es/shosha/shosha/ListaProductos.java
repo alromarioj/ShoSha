@@ -38,12 +38,14 @@ public class ListaProductos extends AppCompatActivity {
     private Lista lista;
     private List<Item> productos;//=new ArrayList<>();
     RecyclerView mRecyclerView;
+    ListaProductos actividad=this;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         AdaptadorBD abd = new AdaptadorBD(getBaseContext());
         abd.open();
         this.lista = abd.obtenerLista(this.getIntent().getExtras().getInt("idLista"), MyApplication.getUser().getId());//Se recoge la lista que se ha pasado desde ListasActivas
+        System.out.println(lista.toString());
         abd.close();
         productos = lista.getItems();
         System.out.println("Número de productos: " + productos.size());
@@ -118,6 +120,7 @@ public class ListaProductos extends AppCompatActivity {
         });
         builder1.show();
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //Mostrar menú para la lista de productos
@@ -159,19 +162,8 @@ public class ListaProductos extends AppCompatActivity {
                         precio = (precio.isEmpty() ? "0" : precio);
                         Item i = new Item(lista.getItems().size(), input_np1.getText().toString(), Double.valueOf(precio), lista.getId());
 
+                        new ItemPers(MyApplication.getAppContext(),actividad).execute("insert", String.valueOf(lista.getId()), i.getNombre(), String.valueOf(i.getPrecio()), "1");
 
-                        new ItemPers(MyApplication.getAppContext()).execute("insert", String.valueOf(lista.getId()), i.getNombre(), String.valueOf(i.getPrecio()), "1");
-
-                        AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
-                        abd.open();
-                        int sp = productos.size();
-                        do {
-                            productos = abd.obtenerItems(lista.getId());
-                        } while (sp == productos.size());
-                        abd.close();
-                        Toast.makeText(ListaProductos.this, "Añadiendo producto " + i.getNombre(), Toast.LENGTH_SHORT).show();
-                        //Avisa de que la lista ha cambiado
-                        mRecyclerView.getAdapter().notifyDataSetChanged();
                         dialog.dismiss();
                     }
                 });
@@ -195,6 +187,16 @@ public class ListaProductos extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+    public void sigueNuevoProducto(int id){
+        AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
+        abd.open();
+        Item producto=abd.obtenerItem(id);
+        productos.add(producto);
+        abd.close();
+        Toast.makeText(ListaProductos.this, "Añadiendo producto " + producto.getNombre(), Toast.LENGTH_SHORT).show();
+        //Avisa de que la lista ha cambiado
+        mRecyclerView.getAdapter().notifyDataSetChanged();
     }
     private void setUpRecyclerView(List<Item> productos) {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));

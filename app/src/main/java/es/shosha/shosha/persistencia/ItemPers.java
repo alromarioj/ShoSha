@@ -46,20 +46,23 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
 
     private Context contexto;
     private ListaProductos lp;
+    private int item;
+    private String accion="";
 
     public ItemPers(Context c) {
         this.contexto = c;
     }
-    public ItemPers(Context c, ListaProductos listaProductos) {
+    public ItemPers(Context c, ListaProductos lp) {
         this.contexto = c;
-        this.lp=listaProductos;
+        this.lp=lp;
     }
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        //super.onPostExecute(aVoid);
         NegocioChecksum.setChecksum("item");
-
+        if (accion.equals("insert")) {
+            this.lp.sigueNuevoProducto(item);
+        }
     }
 
     @Override
@@ -67,6 +70,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
         String data = "";
         if (params.length > 0) {
             if (params.length == 5 && params[0].equals("insert")) {
+                accion=params[0];
                 insertMode(params[1], params[2], params[3], params[4]);
             } else if (params.length == 3 && params[0].equals("delete")) {
                 deleteMode(params[1], params[2]);
@@ -139,14 +143,15 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
 
             rd.close();
 
-            Log.i("--> URL insercion lista", ItemPers.URL_ADD + ItemPers.ATRIBUTO + idLista + "&" + ItemPers.NOMBRE + nombre + "&" + ItemPers.PRECIO + precio + "&" + ItemPers.CANTIDAD + cantidad);
+            Log.i("--> URL insercion lista", urlObj.toString());
 
             AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
             abd.open();
-            abd.insertarItem(Integer.valueOf(res), nombre, precio, Integer.valueOf(idLista));
+            abd.insertarItem(Integer.valueOf(res), params[1], precio, Integer.valueOf(idLista));
             //Insertar en BD remota
 
             abd.close();
+            item=Integer.valueOf(res);
 
             System.out.println("Insert remote response: " + res);
 

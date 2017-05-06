@@ -63,6 +63,7 @@ public class LectorQR extends AppCompatActivity {
         }
     }
     public void sigueAnadirParticipante(boolean error, int usuario, int lista){
+        System.out.println("Error: "+error+" Usuario: "+usuario+" Lista: "+lista);
         if(error){
             Toast.makeText(this, "Error al añadir la lista", Toast.LENGTH_SHORT).show();
         }
