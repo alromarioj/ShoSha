@@ -229,7 +229,9 @@ public class AdaptadorBD {
 
     public List<Lista> obtenerListas(int idUsuario) {
 
-        String sql = "SELECT distinct l.* FROM lista l LEFT JOIN participa p ON l.id=p.idLista WHERE (l.propietario=" + idUsuario + " AND l.estado=1) OR (p.idUsuario=" + idUsuario + " AND p.activo=1)";
+        String sql = "SELECT distinct l.*,c.idQR " +
+                "FROM codigoQR c JOIN lista l on c.idLista=l.id LEFT JOIN participa p ON l.id=p.idLista " +
+                "WHERE (l.propietario=" + idUsuario + " AND l.estado=1) OR (p.idUsuario=" + idUsuario + " AND p.activo=1)";
 
         //Cursor de las listas del usuario idUsuario
         //Cursor c = bdatos.query(false, TB_LISTA, null, "propietario='" + idUsuario + "'", null, null, null, null, null);
@@ -246,6 +248,7 @@ public class AdaptadorBD {
                 l.setId(c.getInt(0));
                 l.setNombre(c.getString(1));
                 l.setEstado(c.getString(3).equals("1"));
+                l.setCodigoQR(c.getString(4));
                 int usrProp = c.getInt(2);
                 if (usrProp == idUsuario && u != null) {
                     l.setPropietario(u);
@@ -300,7 +303,9 @@ public class AdaptadorBD {
 
     public Lista obtenerLista(int idLista, int idUsuario) {
 
-        String sql = "SELECT DISTINCT l.* FROM lista l LEFT JOIN participa p ON l.id=p.idLista WHERE l.id=" + idLista + " AND ((l.propietario=" + idUsuario + " AND l.estado=1) OR (p.idUsuario=" + idUsuario + " AND p.activo=1))";
+        String sql = "SELECT DISTINCT l.*, c.idQR " +
+                "FROM codigoQR c JOIN lista l on c.idLista=l.id LEFT JOIN participa p ON l.id=p.idLista " +
+                "WHERE l.id=" + idLista + " AND ((l.propietario=" + idUsuario + " AND l.estado=1) OR (p.idUsuario=" + idUsuario + " AND p.activo=1))";
         Cursor c = bdatos.rawQuery(sql, null);
         Usuario u = this.obtenerUsuario(idUsuario);
         Lista l = null;
@@ -309,6 +314,7 @@ public class AdaptadorBD {
             l.setId(c.getInt(0));
             l.setNombre(c.getString(1));
             l.setEstado(c.getString(3).equals("1"));
+            l.setCodigoQR(c.getString(4));
             int usrProp = c.getInt(2);
             if (usrProp == idUsuario && u != null) {
                 l.setPropietario(u);

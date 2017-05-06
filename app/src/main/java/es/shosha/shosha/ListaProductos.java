@@ -187,7 +187,7 @@ public class ListaProductos extends AppCompatActivity {
                 Intent i = new Intent(this, GenerarQR.class);
                 Bundle bundle = new Bundle();
                 bundle.putInt("idLista", lista.getId());
-                bundle.putString("clave", "123fb");
+                bundle.putString("clave", lista.getCodigoQR());
                 bundle.putString("nombre", lista.getNombre());
                 i.putExtras(bundle);
                 startActivity(i);

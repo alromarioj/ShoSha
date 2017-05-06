@@ -294,6 +294,7 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
                 l.setId(o.getInt("id"));
                 l.setNombre(o.getString("nombre"));
                 l.setEstado(o.getString("estado").equals("1"));
+                l.setCodigoQR(o.getString("codigoQR"));
 
                 AdaptadorBD abd = new AdaptadorBD(this.contexto);
                 abd.open();

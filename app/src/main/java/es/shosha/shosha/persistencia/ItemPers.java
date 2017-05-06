@@ -1,5 +1,6 @@
 package es.shosha.shosha.persistencia;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -17,6 +18,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
+
+import es.shosha.shosha.ListaProductos;
 import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Item;
 import es.shosha.shosha.dominio.Usuario;
@@ -42,21 +45,26 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
     private final static String CANTIDAD = "cantidad=";
 
     private Context contexto;
+    private ListaProductos lp;
 
     public ItemPers(Context c) {
         this.contexto = c;
+    }
+    public ItemPers(Context c, ListaProductos listaProductos) {
+        this.contexto = c;
+        this.lp=listaProductos;
     }
 
     @Override
     protected void onPostExecute(Void aVoid) {
         //super.onPostExecute(aVoid);
         NegocioChecksum.setChecksum("item");
+
     }
 
     @Override
     protected Void doInBackground(String... params) {
         String data = "";
-        System.out.println("ItemPers!");
         if (params.length > 0) {
             if (params.length == 5 && params[0].equals("insert")) {
                 insertMode(params[1], params[2], params[3], params[4]);

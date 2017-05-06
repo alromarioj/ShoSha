@@ -65,8 +65,6 @@ public class NegocioChecksum {
             abd.insertarChecksum(mapaRemoto);
             abd.close();
         }
-
-
         return actualizar;
     }
 }

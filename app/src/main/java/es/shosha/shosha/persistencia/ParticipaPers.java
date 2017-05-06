@@ -92,7 +92,6 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
                 e.printStackTrace();
             }
         }
-        NegocioChecksum.setChecksum("participa");
         return respuesta;
     }
 
@@ -117,7 +116,7 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
 
         try {
             java.net.URL urlObj = new URL(URL_ADD + LISTA + lista + "&" + USUARIO + usuario + "&" + CLAVE + clave);
-
+            System.out.println(urlObj.toString());
             HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
 
             BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
@@ -144,7 +143,7 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onPostExecute(String s) {
-        NegocioChecksum.setChecksum("participa");
+       NegocioChecksum.setChecksum("participa");
         if (accion.equals("insert")) {
             this.lqr.sigueAnadirParticipante(!respuesta.equals("1"),usuario,lista);
         }
