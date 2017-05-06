@@ -46,7 +46,6 @@ public class LectorQR extends AppCompatActivity {
                     JSONObject obj = new JSONObject(decodificado);
                     String lista=obj.getString("idLista");
                     String clave=obj.getString("clave");
-                    Toast.makeText(this, "Código detectado", Toast.LENGTH_LONG).show();
                     int idu=MyApplication.getUser().getId();
 
                     // Añadir al usuario como participante en la lista
@@ -74,7 +73,10 @@ public class LectorQR extends AppCompatActivity {
             abd.insertarParticipa(usuario, lista,true);
 
             Toast.makeText(this, "Lista añadida", Toast.LENGTH_SHORT).show();
-            Intent i = new Intent(this, ListasActivas.class);//Va al apartado de listas activas
+            Intent i = new Intent(this, ListaProductos.class);//Muestra la lista nueva
+            Bundle bundle = new Bundle();
+            bundle.putInt("idLista", lista);
+            i.putExtras(bundle);
             startActivity(i);
             abd.close();
         }

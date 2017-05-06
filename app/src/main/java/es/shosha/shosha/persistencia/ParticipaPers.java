@@ -38,7 +38,7 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
 
     private Context contexto;
     private final CountDownLatch count;
-    private String respuesta,accion;
+    private String respuesta,accion="";
 
     public ParticipaPers(Context contexto, CountDownLatch count) {
         this.contexto = contexto;

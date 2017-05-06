@@ -156,9 +156,6 @@ public class AdaptadorBD {
         return res;
     }
     public long insertarItem(int id, String nombre, double precio, int idLista) {
-        //    bdatos.beginTransaction();
-
-    /*    try {*/
         bdatos.beginTransaction();
         long res = 0;
         try {
@@ -183,18 +180,15 @@ public class AdaptadorBD {
         long res;
         try {
             ContentValues valores = new ContentValues();
-
             valores.put(IDLISTA, idLista);
             valores.put(PPA_IDUSR, idUsr);
             valores.put(PPA_ACTIVO, activo ? 1 : 0);
             bdatos.delete(TB_PARTICIPA, IDLISTA + " = " + idLista + " AND " + PPA_IDUSR + " = " + idUsr, null);
             res = bdatos.insert(TB_PARTICIPA, null, valores);
-
             bdatos.setTransactionSuccessful();
         } finally {
             bdatos.endTransaction();
         }
-
         return res;
     }
 
@@ -202,7 +196,6 @@ public class AdaptadorBD {
         bdatos.beginTransaction();
         try {
             ContentValues valores = new ContentValues();
-
             for (String k : mapaRemoto.keySet()) {
                 valores.put(CHK_TABLA, k);
                 valores.put(CHK_CRC, mapaRemoto.get(k));
@@ -238,8 +231,7 @@ public class AdaptadorBD {
         Cursor c = bdatos.rawQuery(sql, null);
 
         Usuario u = this.obtenerUsuario(idUsuario);
-
-        Lista l = null;
+        Lista l;
         List<Lista> aux = new ArrayList<Lista>();
 
         if (c.moveToFirst()) {
@@ -255,17 +247,13 @@ public class AdaptadorBD {
                 } else if (usrProp != idUsuario) {
                     l.setPropietario(this.obtenerUsuario(usrProp));
                 }
-
                 l.setListaItems(this.obtenerItems(l.getId()));
-
                 l.setParticipantes(this.getParticipantes(l.getId()));
 
                 aux.add(l);
-
             } while (c.moveToNext());
         }
         c.close();
-
         return aux;
     }
 
@@ -302,7 +290,6 @@ public class AdaptadorBD {
     }
 
     public Lista obtenerLista(int idLista, int idUsuario) {
-
         String sql = "SELECT DISTINCT l.*, c.idQR " +
                 "FROM codigoQR c JOIN lista l on c.idLista=l.id LEFT JOIN participa p ON l.id=p.idLista " +
                 "WHERE l.id=" + idLista + " AND ((l.propietario=" + idUsuario + " AND l.estado=1) OR (p.idUsuario=" + idUsuario + " AND p.activo=1))";
