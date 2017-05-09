@@ -79,7 +79,7 @@ public class ListaProductos extends AppCompatActivity {
 
         // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
         builder1.setView(viewInflated1);
-
+ 
         // Set up the buttons
         builder1.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
