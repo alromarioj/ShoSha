@@ -49,7 +49,7 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
     private final CountDownLatch count;
     private String accion = "";
     private ListaManual l;
-    private Integer insertId;
+    private int insertId;
 
     public ListaPers(Context c, CountDownLatch cdl) {
         this.contexto = c;

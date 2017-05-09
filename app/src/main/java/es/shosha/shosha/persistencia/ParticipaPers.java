@@ -2,6 +2,7 @@ package es.shosha.shosha.persistencia;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -52,7 +53,7 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
 
     @Override
     protected String doInBackground(String... params) {
-        String data = "",respuesta="";
+        String data = "", respuesta = "";
         Usuario usu = null;
         if (params.length == 1) {
             try {
@@ -84,8 +85,7 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
         }else if (params.length == 4 && params[0].equals("insert")) {
             accion="insert";
             insertMode(params[1], params[2], params[3]);
-        }
-        else {
+        } else{
             try {
                 lanzadorExcepcion();
             } catch (Exception e) {
@@ -98,16 +98,21 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
     /**
      * Añade un participante a una lista
      *
-     * @param params 0:idLista, 1:usuario, 2:clave
+     * @param params 0:idLista, 1:usuario, 2:clave o 0:qrCode, 1:usuario
      */
     private void insertMode(String... params) {
-        String res="", clave="";
-        lista = -1;
-        usuario = -1;
+        String res = "";
+        String lista = "",
+                usuario = "", clave = "";
         try {
-            lista = Integer.valueOf(params[0]);
-            clave = URLEncoder.encode(params[1], "UTF-8");
-            usuario = Integer.valueOf(params[2]);
+            if (params.length != 2) {
+                lista = URLEncoder.encode(params[0], "UTF-8");
+                clave = URLEncoder.encode(params[1], "UTF-8");
+                usuario = URLEncoder.encode(params[2], "UTF-8");
+            } else {
+                clave = URLEncoder.encode(params[0], "UTF-8");
+                usuario = URLEncoder.encode(params[1], "UTF-8");
+            }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (NumberFormatException e) {
@@ -115,8 +120,15 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
         }
 
         try {
-            java.net.URL urlObj = new URL(URL_ADD + LISTA + lista + "&" + USUARIO + usuario + "&" + CLAVE + clave);
-            System.out.println(urlObj.toString());
+            java.net.URL urlObj;
+
+            if (params.length != 2)
+                urlObj = new URL(URL_ADD + LISTA + lista + "&" + USUARIO + usuario + "&" + CLAVE + clave);
+            else
+                urlObj = new URL(URL_ADD_QR + USUARIO + usuario + "&" + CLAVE + clave);
+
+            Log.i("URL Participa", urlObj.toString());
+
             HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
 
             BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
@@ -128,17 +140,16 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
 
             rd.close();
             System.out.println("Insert response: " + res);
-            JSONObject jo=new JSONObject(res);
-            respuesta=jo.getString("success");
+            JSONObject jo = new JSONObject(res);
+            res = jo.getString("success");
 
-        }
-        catch (JSONException e){
-            e.printStackTrace();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+            Log.i("ParticipaPers", res);
 
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch(JSONException e2){
+            e2.printStackTrace();
+        }
     }
 
     @Override

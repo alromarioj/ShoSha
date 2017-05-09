@@ -38,14 +38,12 @@ public class ListaProductos extends AppCompatActivity {
     private Lista lista;
     private List<Item> productos;//=new ArrayList<>();
     RecyclerView mRecyclerView;
-    ListaProductos actividad=this;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         AdaptadorBD abd = new AdaptadorBD(getBaseContext());
         abd.open();
         this.lista = abd.obtenerLista(this.getIntent().getExtras().getInt("idLista"), MyApplication.getUser().getId());//Se recoge la lista que se ha pasado desde ListasActivas
-        System.out.println(lista.toString());
         abd.close();
         productos = lista.getItems();
         System.out.println("Número de productos: " + productos.size());
@@ -86,7 +84,7 @@ public class ListaProductos extends AppCompatActivity {
         builder1.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                //Asumiendo que el precio es >=0 
+                //Asumiendo que el precio es >=0
 
                 new ItemPers(MyApplication.getAppContext()).execute("update", String.valueOf(lista.getId()), String.valueOf(producto.getId()), producto.getNombre(), String.valueOf(producto.getPrecio()), "1");
 
@@ -120,16 +118,15 @@ public class ListaProductos extends AppCompatActivity {
         });
         builder1.show();
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //Mostrar menú para la lista de productos
-        getMenuInflater().inflate(R.menu.menu_lista_productos,menu);
+        getMenuInflater().inflate(R.menu.menu_lista_productos, menu);
         return true;
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
                 return true;
@@ -141,7 +138,7 @@ public class ListaProductos extends AppCompatActivity {
                 //Se crea el PopUp para añadir un nuevo producto
                 final AlertDialog.Builder builder;
                 View viewInflated;
-                builder=new AlertDialog.Builder(this);
+                builder = new AlertDialog.Builder(this);
                 builder.setTitle("Añadir nuevo producto");
 
                 viewInflated = LayoutInflater.from(getBaseContext()).inflate(R.layout.nuevo_producto, (ViewGroup) findViewById(android.R.id.content), false);
@@ -203,9 +200,9 @@ public class ListaProductos extends AppCompatActivity {
         mRecyclerView.setAdapter(new ProductosAdapter(productos, new RecyclerViewOnItemClickListener() {
             @Override
             public void onClick(View v, int position) {
-                editarProducto(v,position);
+                editarProducto(v, position);
             }
-        },getBaseContext(),lista.getId()));
+        }, getBaseContext(), lista.getId()));
         //mRecyclerView.setHasFixedSize(true);
         setUpItemTouchHelper();
         setUpAnimationDecoratorHelper();
@@ -232,6 +229,7 @@ public class ListaProductos extends AppCompatActivity {
                 xMarkMargin = (int) ListaProductos.this.getResources().getDimension(R.dimen.fab_margin);
                 initiated = true;
             }
+
             // not important, we don't want drag & drop
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
@@ -241,7 +239,7 @@ public class ListaProductos extends AppCompatActivity {
             @Override
             public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
                 int position = viewHolder.getAdapterPosition();
-                ProductosAdapter testAdapter = (ProductosAdapter)recyclerView.getAdapter();
+                ProductosAdapter testAdapter = (ProductosAdapter) recyclerView.getAdapter();
                 if (testAdapter.isUndoOn() && testAdapter.isPendingRemoval(position)) {
                     return 0;
                 }
@@ -251,7 +249,7 @@ public class ListaProductos extends AppCompatActivity {
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 int swipedPosition = viewHolder.getAdapterPosition();
-                ProductosAdapter adapter = (ProductosAdapter)mRecyclerView.getAdapter();
+                ProductosAdapter adapter = (ProductosAdapter) mRecyclerView.getAdapter();
                 boolean undoOn = adapter.isUndoOn();
                 if (undoOn) {
                     adapter.pendingRemoval(swipedPosition);
@@ -260,6 +258,7 @@ public class ListaProductos extends AppCompatActivity {
                     adapter.remove(swipedPosition);
                 }
             }
+
             @Override
             public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
                 View itemView = viewHolder.itemView;
@@ -283,7 +282,7 @@ public class ListaProductos extends AppCompatActivity {
 
                 int xMarkLeft = itemView.getRight() - xMarkMargin - intrinsicWidth;
                 int xMarkRight = itemView.getRight() - xMarkMargin;
-                int xMarkTop = itemView.getTop() + (itemHeight - intrinsicHeight)/2;
+                int xMarkTop = itemView.getTop() + (itemHeight - intrinsicHeight) / 2;
                 int xMarkBottom = xMarkTop + intrinsicHeight;
                 xMark.setBounds(xMarkLeft, xMarkTop, xMarkRight, xMarkBottom);
 
