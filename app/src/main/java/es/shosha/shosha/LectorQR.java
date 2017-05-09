@@ -47,11 +47,9 @@ public class LectorQR extends AppCompatActivity {
                     String lista=obj.getString("idLista");
                     String clave=obj.getString("clave");
                     int idu=MyApplication.getUser().getId();
-
                     // Añadir al usuario como participante en la lista
                     //Añade participante en bd remota
                     new ParticipaPers(MyApplication.getAppContext(), null,this).execute("insert", lista,clave,String.valueOf(idu));
-
                 }
                 catch (UnsupportedEncodingException e){
                     e.printStackTrace();

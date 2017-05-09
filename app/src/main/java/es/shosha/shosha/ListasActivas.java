@@ -43,15 +43,6 @@ public class ListasActivas extends AppCompatActivity {
 
         abd.close();
 
-     /*   try {
-            AsyncTask<String, Void, List<Lista>> at = new ListaPers().execute("u1");
-            setListas(at.get());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }*/
-
         super.onCreate(savedInstanceState);
 
     }

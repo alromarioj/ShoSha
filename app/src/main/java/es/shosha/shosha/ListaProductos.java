@@ -36,7 +36,7 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 public class ListaProductos extends AppCompatActivity {
     private ListView list;
     private Lista lista;
-    private List<Item> productos;//=new ArrayList<>();
+    private List<Item> productos;
     RecyclerView mRecyclerView;
     ListaProductos actividad=this;
     @Override
@@ -45,7 +45,6 @@ public class ListaProductos extends AppCompatActivity {
         AdaptadorBD abd = new AdaptadorBD(getBaseContext());
         abd.open();
         this.lista = abd.obtenerLista(this.getIntent().getExtras().getInt("idLista"), MyApplication.getUser().getId());//Se recoge la lista que se ha pasado desde ListasActivas
-        System.out.println(lista.toString());
         abd.close();
         productos = lista.getItems();
         System.out.println("Número de productos: " + productos.size());

@@ -50,13 +50,10 @@ public class AdaptadorBD {
     private static final String QR_IDQR = "idQR";
     private static final String SQL_TRNCTE = "DELETE FROM ";
 
-
     private static final String ID_LOG = "USO DE BD";
 
     private final Context contexto;
-
     private SQLiteDatabase bdatos;
-
     private AuxiliarBD auxBD;
 
 

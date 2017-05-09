@@ -16,6 +16,7 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 public class EditarLista extends ListaManual {
     private Lista lista;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
