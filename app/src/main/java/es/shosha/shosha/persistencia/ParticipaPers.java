@@ -2,6 +2,7 @@ package es.shosha.shosha.persistencia;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,6 +30,7 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 public class ParticipaPers extends AsyncTask<String, Void, String> {
     private final static String URL_GET = "http://shosha.jiraizoz.es/getParticipaciones.php?";
     private final static String URL_ADD = "http://shosha.jiraizoz.es/addParticipante.php?";
+    private final static String URL_ADD_QR = "http://shosha.jiraizoz.es/addParticipanteQR.php?";
     private final static String LISTA = "lista=";
     private final static String USUARIO = "usuario=";
     private final static String CLAVE = "clave=";
@@ -43,7 +45,7 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
 
     @Override
     protected String doInBackground(String... params) {
-        String data = "",respuesta="";
+        String data = "", respuesta = "";
         Usuario usu = null;
         if (params.length == 1) {
             try {
@@ -72,10 +74,11 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }else if (params.length == 4 && params[0].equals("insert")) {
+        } else if (params.length == 4 && params[0].equals("insert") && !params[1].equals("qr")) {
             insertMode(params[1], params[2], params[3]);
-        }
-        else {
+        } else if (params.length == 4 && params[0].equals("insert") && params[1].equals("qr")) {
+            insertMode(params[2], params[3]);
+        } else {
             try {
                 lanzadorExcepcion();
             } catch (Exception e) {
@@ -89,16 +92,21 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
     /**
      * Añade un participante a una lista
      *
-     * @param params 0:idLista, 1:usuario, 2:clave
+     * @param params 0:idLista, 1:usuario, 2:clave o 0:qrCode, 1:usuario
      */
     private void insertMode(String... params) {
-        String res="";
+        String res = "";
         String lista = "",
-                usuario = "", clave="";
+                usuario = "", clave = "";
         try {
-            lista = URLEncoder.encode(params[0], "UTF-8");
-            clave = URLEncoder.encode(params[1], "UTF-8");
-            usuario = URLEncoder.encode(params[2],"UTF-8");
+            if (params.length != 2) {
+                lista = URLEncoder.encode(params[0], "UTF-8");
+                clave = URLEncoder.encode(params[1], "UTF-8");
+                usuario = URLEncoder.encode(params[2], "UTF-8");
+            } else {
+                clave = URLEncoder.encode(params[0], "UTF-8");
+                usuario = URLEncoder.encode(params[1], "UTF-8");
+            }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (NumberFormatException e) {
@@ -106,7 +114,14 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
         }
 
         try {
-            java.net.URL urlObj = new URL(URL_ADD + LISTA + lista + "&" + USUARIO + usuario + "&" + CLAVE + clave);
+            java.net.URL urlObj;
+
+            if (params.length != 2)
+                urlObj = new URL(URL_ADD + LISTA + lista + "&" + USUARIO + usuario + "&" + CLAVE + clave);
+            else
+                urlObj = new URL(URL_ADD_QR + USUARIO + usuario + "&" + CLAVE + clave);
+
+            Log.i("URL Participa", urlObj.toString());
 
             HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
 
@@ -119,12 +134,14 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
 
             rd.close();
             System.out.println("Insert response: " + res);
-            JSONObject jo=new JSONObject(res);
-            res=jo.getString("success");
+            JSONObject jo = new JSONObject(res);
+            res = jo.getString("success");
+
+            Log.i("ParticipaPers", res);
 
         } catch (IOException e) {
             e.printStackTrace();
-        } catch(JSONException e2){
+        } catch (JSONException e2) {
             e2.printStackTrace();
         }
     }

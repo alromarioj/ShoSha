@@ -73,7 +73,8 @@ public class ListaManual extends AppCompatActivity {
 
         new ListaPers(MyApplication.getAppContext(), null, this).execute("insert", idu,nomLista,claveLista);
     }
-    public void sigueCrearLista(Integer id){
+
+    public void sigueCrearLista(int id) {
         System.out.println("=?="+id);
         AdaptadorBD abd = new AdaptadorBD(getBaseContext());
         abd.open();
