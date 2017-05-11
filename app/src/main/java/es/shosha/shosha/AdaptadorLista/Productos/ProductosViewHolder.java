@@ -20,6 +20,7 @@ public class ProductosViewHolder extends RecyclerView.ViewHolder implements View
 
     TextView precio;
     TextView nombre;
+    TextView cantidad;
     Button undoButton;
     CheckBox comprado;
     private RecyclerViewOnItemClickListener oicl;
@@ -28,9 +29,17 @@ public class ProductosViewHolder extends RecyclerView.ViewHolder implements View
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_producto, parent, false));
         nombre = (TextView) itemView.findViewById(R.id.nombreP);
         precio=(TextView)itemView.findViewById(R.id.precioP);
+        cantidad=(TextView)itemView.findViewById(R.id.cantidadP);
         undoButton = (Button) itemView.findViewById(R.id.undo_button);
         comprado=(CheckBox) itemView.findViewById(R.id.comprado);
         itemView.setOnClickListener(this);
+        comprado.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO
+                setComprado();
+            }
+        });
         this.oicl=oicl;
     }
 

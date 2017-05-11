@@ -33,6 +33,17 @@
                     android:imeOptions="actionDone"
                     android:inputType="numberDecimal" />
             </android.support.design.widget.TextInputLayout>
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <AutoCompleteTextView
+                android:id="@+id/in_cantidad_producto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Cantidad"
+                android:imeOptions="actionDone"
+                android:inputType="number" />
+        </android.support.design.widget.TextInputLayout>
 
     </LinearLayout>
 

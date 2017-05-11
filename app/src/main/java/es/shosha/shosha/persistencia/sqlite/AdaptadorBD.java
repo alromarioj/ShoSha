@@ -42,6 +42,8 @@ public class AdaptadorBD {
     private static final String LST_PROP = "propietario";
     private static final String LST_ESTADO = "estado";
     private static final String ITM_PRECIO = "precio";
+    private static final String ITM_CANTIDAD = "cantidad";
+    private static final String ITM_COMPRADO = "comprado";
     private static final String IDLISTA = "idLista";
     private static final String PPA_IDUSR = "idUsuario";
     private static final String PPA_ACTIVO = "activo";
@@ -152,6 +154,8 @@ public class AdaptadorBD {
 
         return res;
     }
+
+    @Deprecated
     public long insertarItem(int id, String nombre, double precio, int idLista) {
         bdatos.beginTransaction();
         long res = 0;
@@ -161,6 +165,28 @@ public class AdaptadorBD {
             valores.put(NOMBRE, nombre);
             valores.put(ITM_PRECIO, precio);
             valores.put(IDLISTA, idLista);
+
+            long l = bdatos.replace(TB_ITEM, null, valores);
+
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+
+        return res;
+    }
+
+    public long insertarItem(int id, String nombre, double precio, int idLista, int cantidad, boolean comprado) {
+        bdatos.beginTransaction();
+        long res = 0;
+        try {
+            ContentValues valores = new ContentValues();
+            valores.put(ID, id);
+            valores.put(NOMBRE, nombre);
+            valores.put(ITM_PRECIO, precio);
+            valores.put(IDLISTA, idLista);
+            valores.put(ITM_CANTIDAD, cantidad);
+            valores.put(ITM_COMPRADO, comprado);
 
             long l = bdatos.replace(TB_ITEM, null, valores);
 
@@ -228,7 +254,8 @@ public class AdaptadorBD {
         Cursor c = bdatos.rawQuery(sql, null);
 
         Usuario u = this.obtenerUsuario(idUsuario);
-        Lista l;
+
+        Lista l = null;
         List<Lista> aux = new ArrayList<Lista>();
 
         if (c.moveToFirst()) {
@@ -330,7 +357,7 @@ public class AdaptadorBD {
         List<Item> aux = new ArrayList<Item>();
         if (c.moveToFirst()) {
             do {
-                i = new Item(c.getInt(0), c.getString(1), c.getDouble(2), idLista);
+                i = new Item(c.getInt(0), c.getString(1), c.getDouble(3), idLista);
                 aux.add(i);
             } while (c.moveToNext());
         }
