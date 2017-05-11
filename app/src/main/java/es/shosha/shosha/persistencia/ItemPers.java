@@ -18,7 +18,6 @@ import java.net.URLEncoder;
 
 import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Item;
-import es.shosha.shosha.negocio.NegocioChecksum;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 /**
@@ -48,7 +47,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         //super.onPostExecute(aVoid);
-        NegocioChecksum.setChecksum("item");
+        //NegocioChecksum.setChecksum("item");
     }
 
     @Override
@@ -129,7 +128,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
 
             rd.close();
 
-            Log.i("--> URL insercion lista", ItemPers.URL_ADD + ItemPers.ATRIBUTO + idLista + "&" + ItemPers.NOMBRE + nombre + "&" + ItemPers.PRECIO + precio + "&" + ItemPers.CANTIDAD + cantidad);
+            Log.i("--> respuesta ItmPers", ItemPers.URL_ADD + ItemPers.ATRIBUTO + idLista + "&" + ItemPers.NOMBRE + nombre + "&" + ItemPers.PRECIO + precio + "&" + ItemPers.CANTIDAD + cantidad);
 
             AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
             abd.open();

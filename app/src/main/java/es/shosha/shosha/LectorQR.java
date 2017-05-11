@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 
 import java.util.HashMap;
+import java.util.concurrent.CountDownLatch;
 
 import es.shosha.shosha.persistencia.ParticipaPers;
 import es.shosha.shosha.zxing.IntentIntegrator;
@@ -62,7 +63,7 @@ public class LectorQR extends AppCompatActivity implements OnClickListener {
 
             int idu = MyApplication.getUser().getId();
 
-            new ParticipaPers(MyApplication.getAppContext(), null).execute("insert", "qr", clave, String.valueOf(idu));
+            new ParticipaPers(MyApplication.getAppContext(), (CountDownLatch) null).execute("insert", "qr", clave, String.valueOf(idu));
 
 
             /*try {

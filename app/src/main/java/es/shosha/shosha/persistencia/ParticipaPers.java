@@ -15,18 +15,18 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import es.shosha.shosha.dominio.Lista;
 import es.shosha.shosha.dominio.Usuario;
-import es.shosha.shosha.negocio.NegocioChecksum;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 /**
  * Created by Jesús Iráizoz on 13/03/2017.
  */
-
 public class ParticipaPers extends AsyncTask<String, Void, String> {
     private final static String URL_GET = "http://shosha.jiraizoz.es/getParticipaciones.php?";
     private final static String URL_ADD = "http://shosha.jiraizoz.es/addParticipante.php?";
@@ -35,8 +35,24 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
     private final static String USUARIO = "usuario=";
     private final static String CLAVE = "clave=";
 
+    public static final String MULTIPLES_LISTAS = "multiple";
+    public static final String INSERT = "insert";
+    private static final String UTF_8 = "UTF-8";
+
     private Context contexto;
     private final CountDownLatch count;
+    private List<Lista> listas;
+
+    public ParticipaPers(Context contexto) {
+        this.contexto = contexto;
+        this.count = null;
+    }
+
+    public ParticipaPers(Context contexto, List<Lista> lLista) {
+        this.contexto = contexto;
+        this.listas = lLista;
+        this.count = null;
+    }
 
     public ParticipaPers(Context contexto, CountDownLatch count) {
         this.contexto = contexto;
@@ -47,36 +63,24 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
     protected String doInBackground(String... params) {
         String data = "", respuesta = "";
         Usuario usu = null;
-        if (params.length == 1) {
-            try {
-                data = URLEncoder.encode(params[0].toString(), "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
 
-            try {
-                java.net.URL urlObj = new URL(URL_GET + LISTA + data);
+        if (params.length == 1 && params[0].equals(MULTIPLES_LISTAS)) {
 
-                HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
+            for (Lista l : listas)
+                jsonParser(getDataJson(String.valueOf(l.getId())));
 
-                BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
-                String line = "", res = "";
-                while ((line = rd.readLine()) != null) {
-                    res += line;
-                }
+            if (count != null)
+                count.countDown();
 
-                rd.close();
-                jsonParser(res);
+        } else if (params.length == 1) {
+            jsonParser(getDataJson(params[0]));
+            if (count != null)
+                count.countDown();
 
-                if (count != null)
-                    count.countDown();
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else if (params.length == 4 && params[0].equals("insert") && !params[1].equals("qr")) {
+        } else if (params.length == 4 && params[0].equals(INSERT) && !params[1].equals("qr")) {
             insertMode(params[1], params[2], params[3]);
-        } else if (params.length == 4 && params[0].equals("insert") && params[1].equals("qr")) {
+        } else if (params.length == 4 && params[0].equals(INSERT) && params[1].equals("qr")) {
             insertMode(params[2], params[3]);
         } else {
             try {
@@ -85,8 +89,34 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
                 e.printStackTrace();
             }
         }
-        NegocioChecksum.setChecksum("participa");
+        //  NegocioChecksum.setChecksum("participa");
         return respuesta;
+    }
+
+    private String getDataJson(String value) {
+        String data = "", res = "";
+        try {
+            data = URLEncoder.encode(value, UTF_8);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            java.net.URL urlObj = new URL(URL_GET + LISTA + data);
+
+            HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
+
+            BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
+            String line = "";
+            while ((line = rd.readLine()) != null) {
+                res += line;
+            }
+
+            rd.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return res;
     }
 
     /**
@@ -100,12 +130,12 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
                 usuario = "", clave = "";
         try {
             if (params.length != 2) {
-                lista = URLEncoder.encode(params[0], "UTF-8");
-                clave = URLEncoder.encode(params[1], "UTF-8");
-                usuario = URLEncoder.encode(params[2], "UTF-8");
+                lista = URLEncoder.encode(params[0], UTF_8);
+                clave = URLEncoder.encode(params[1], UTF_8);
+                usuario = URLEncoder.encode(params[2], UTF_8);
             } else {
-                clave = URLEncoder.encode(params[0], "UTF-8");
-                usuario = URLEncoder.encode(params[1], "UTF-8");
+                clave = URLEncoder.encode(params[0], UTF_8);
+                usuario = URLEncoder.encode(params[1], UTF_8);
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();

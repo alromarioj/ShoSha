@@ -23,7 +23,6 @@ import es.shosha.shosha.ListaManual;
 import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Lista;
 import es.shosha.shosha.dominio.Usuario;
-import es.shosha.shosha.negocio.NegocioChecksum;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 /**
@@ -49,6 +48,11 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
     private String accion = "";
     private ListaManual l;
     private int insertId;
+
+    public ListaPers(Context c) {
+        this.contexto = c;
+        count = null;
+    }
 
     public ListaPers(Context c, CountDownLatch cdl) {
         this.contexto = c;
@@ -135,7 +139,7 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
 
     @Override
     protected void onPostExecute(List<Lista> listas) {
-        NegocioChecksum.setChecksum("lista");
+        // NegocioChecksum.setChecksum("lista");
         this.lListas = listas;
         if (accion.equals("insert")) {
             this.l.sigueCrearLista(this.insertId);

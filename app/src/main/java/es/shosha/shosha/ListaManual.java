@@ -22,23 +22,24 @@ import static es.shosha.shosha.R.id.nombre;
 
 public class ListaManual extends AppCompatActivity {
     private String nomLista, claveLista;
-    private static final int SELECT_PICTURE=1;
+    private static final int SELECT_PICTURE = 1;
     protected ImageView img;
-    private final String ruta_fotos= Environment.getExternalStorageDirectory().getAbsolutePath()+"ShoSha/imagenes";
-    private File file=new File(ruta_fotos);
+    private final String ruta_fotos = Environment.getExternalStorageDirectory().getAbsolutePath() + "ShoSha/imagenes";
+    private File file = new File(ruta_fotos);
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_manual);
-        img=(ImageView)findViewById(R.id.imagen);
+        img = (ImageView) findViewById(R.id.imagen);
         //Aparece el botón de atrás
-        if(getSupportActionBar()!=null){
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
         file.mkdirs();
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -49,7 +50,8 @@ public class ListaManual extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-    public void abrirGaleria(View v){
+
+    public void abrirGaleria(View v) {
         Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
         intent.setType("image/*");
         startActivityForResult(intent, SELECT_PICTURE);
@@ -58,51 +60,55 @@ public class ListaManual extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-            if (requestCode == SELECT_PICTURE)
-                if (resultCode == Activity.RESULT_OK) {
-                    Uri selectedImage = data.getData();
-                    //lblPhoto.setText(getPath(selectedImage));
-                    img.setImageURI(selectedImage);
+        if (requestCode == SELECT_PICTURE)
+            if (resultCode == Activity.RESULT_OK) {
+                Uri selectedImage = data.getData();
+                //lblPhoto.setText(getPath(selectedImage));
+                img.setImageURI(selectedImage);
 
-                }
+            }
     }
-    public void crearLista(View view){
-        this.nomLista=((EditText)findViewById(nombre)).getText().toString();
-        this.claveLista = generarClave(5);
-        String idu=String.valueOf(MyApplication.getUser().getId());
 
-        new ListaPers(MyApplication.getAppContext(), null, this).execute("insert", idu,nomLista,claveLista);
+    public void crearLista(View view) {
+        this.nomLista = ((EditText) findViewById(nombre)).getText().toString();
+        this.claveLista = generarClave(5);
+        String idu = String.valueOf(MyApplication.getUser().getId());
+
+        new ListaPers(MyApplication.getAppContext(), null, this).execute("insert", idu, nomLista, claveLista);
     }
 
     public void sigueCrearLista(int id) {
-        System.out.println("=?="+id);
+        System.out.println("=?=" + id);
         AdaptadorBD abd = new AdaptadorBD(getBaseContext());
         abd.open();
-        abd.insertarLista(id,nomLista,MyApplication.getUser(),"1");//Añadir clave
+        abd.insertarLista(id, nomLista, MyApplication.getUser(), "1");//Añadir clave
         abd.close();
         Toast.makeText(this, "Añadiendo lista ", Toast.LENGTH_SHORT).show();
 
         //Muestra las listas del usuario
         Intent i = new Intent(this, ListaProductos.class);
         Bundle bundle = new Bundle();
-        bundle.putInt("idLista",id);
+        bundle.putInt("idLista", id);
         i.putExtras(bundle);
         startActivity(i);
         this.finish();
     }
-    private String generarClave(int longitud){
+
+    private String generarClave(int longitud) {
         String cadenaAleatoria = "";
         long milis = new java.util.GregorianCalendar().getTimeInMillis();
         Random r = new Random(milis);
         int i = 0;
-        while ( i < longitud){
-            char c = (char)r.nextInt(255);
-            if ( (c >= '0' && c <='9') || (c >='A' && c <='Z') ){
+        while (i < longitud) {
+            char c = (char) r.nextInt(255);
+            if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z')) {
                 cadenaAleatoria += c;
-                i ++;
+                i++;
             }
         }
         return cadenaAleatoria;
-    };
+    }
+
+    ;
 }
 
