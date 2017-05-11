@@ -133,7 +133,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
 
             AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
             abd.open();
-            abd.insertarItem(Integer.valueOf(res), nombre, precio, Integer.valueOf(idLista));
+            abd.insertarItem(Integer.valueOf(res), nombre, precio, Integer.valueOf(idLista), cantidad, false);
             //Insertar en BD remota
 
             abd.close();
@@ -180,6 +180,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
             }
 
             rd.close();
+            Log.i("--> URL update lista", URL_UPD + ATRIBUTO + idLista + "&" + ID + idProducto + "&" + NOMBRE + nombre + "&" + PRECIO + precio + "&" + CANTIDAD + cantidad);
 
             System.out.println("Update response: " + res);
 
@@ -256,6 +257,8 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
                     itm.setNombre(o.getString("nombre"));
                     itm.setPrecio(o.getDouble("precio"));
                     itm.setIdLista(o.getInt("idLista"));
+                    itm.setCantidad(o.getInt("cantidad"));
+                    itm.setComprado(o.getBoolean("comprado"));
 
 
                     insertarBD(itm, idLista);
@@ -272,7 +275,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
         AdaptadorBD adap = new AdaptadorBD(this.contexto);
         adap.open();
         try {
-            long l = adap.insertarItem(i.getId(), i.getNombre(), i.getPrecio(), idLista);
+            long l = adap.insertarItem(i.getId(), i.getNombre(), i.getPrecio(), idLista, i.getCantidad(), i.isComprado());
         } finally {
             adap.close();
         }
