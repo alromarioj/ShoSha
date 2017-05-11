@@ -168,9 +168,8 @@ public class ListaProductos extends AppCompatActivity {
                         String precio = input_pp.getText().toString();
                         precio = (precio.isEmpty() ? "0" : precio);
                         Item i = new Item(lista.getItems().size(), input_np1.getText().toString(), Double.valueOf(precio), lista.getId());
-
-                        new ItemPers(MyApplication.getAppContext(),actividad).execute("insert", String.valueOf(lista.getId()), i.getNombre(), String.valueOf(i.getPrecio()), "1");
-                        new ItemPers(MyApplication.getAppContext()).execute("insert", String.valueOf(lista.getId()), i.getNombre(), String.valueOf(i.getPrecio()), String.valueOf(i.getCantidad()));
+                        
+                        new ItemPers(MyApplication.getAppContext(),actividad).execute("insert", String.valueOf(lista.getId()), i.getNombre(), String.valueOf(i.getPrecio()), String.valueOf(i.getCantidad()));
                         dialog.dismiss();
                     }
                 });
