@@ -78,7 +78,7 @@
         <activity android:name=".GenerarQR" />
         <activity android:name=".Condiciones" />
         <activity android:name=".EditarLista" />
-        <activity android:name=".Comprado"></activity>
+
         <service android:name=".servicios.ServicioFirebaseMessaging">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>

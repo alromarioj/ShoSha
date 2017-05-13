@@ -15,7 +15,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.shosha.shosha.AdaptadorLista.AdapterLista;
+import es.shosha.shosha.Adaptadores.AdapterLista;
 import es.shosha.shosha.dominio.Lista;
 import es.shosha.shosha.persistencia.ListaPers;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;

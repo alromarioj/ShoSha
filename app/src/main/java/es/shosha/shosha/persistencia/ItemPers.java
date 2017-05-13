@@ -36,10 +36,12 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 public class ItemPers extends AsyncTask<String, Void, Void> {
     private final static String URL = "http://shosha.jiraizoz.es/getItems.php?";
     private final static String URL_ADD = "http://shosha.jiraizoz.es/addItem.php?";
+    private final static String URL_BUY = "http://shosha.jiraizoz.es/compraItem.php?";
     private final static String URL_DEL = "http://shosha.jiraizoz.es/delItem.php?";
     private final static String URL_UPD = "http://shosha.jiraizoz.es/updateItem.php?";
     private final static String ATRIBUTO = "lista=";
     private final static String ID = "producto=";
+    private final static String USUARIO="usuario=";
     private final static String NOMBRE = "nombre=";
     private final static String PRECIO = "precio=";
     private final static String CANTIDAD = "cantidad=";
@@ -74,7 +76,9 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
                 insertMode(params[1], params[2], params[3], params[4]);
             } else if (params.length == 3 && params[0].equals("delete")) {
                 deleteMode(params[1], params[2]);
-            } else if (params.length == 6 && params[0].equals("update")) {
+            } else if (params.length == 4 && params[0].equals("buy")) {
+                buyMode(params[1], params[2],params[3]);//lista+producto+usuario
+            }else if (params.length == 6 && params[0].equals("update")) {
                 updateMode(params[1], params[2], params[3], params[4], params[5]);
             } else {
                 for (String s : params) {
@@ -109,6 +113,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
 
         return null;
     }
+
 
     /**
      * Añade un producto a una lista
@@ -154,6 +159,49 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
             item=Integer.valueOf(res);
 
             System.out.println("Insert remote response: " + res);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    /**
+     * Compra un producto de una lista
+     *
+     * @param params 0:idLista, 1:idProducto, 2:usuario
+     */
+    private void buyMode(String... params) {
+        int idLista = -1,
+                idProducto = -1,
+                usuario = -1;
+        try {
+            idLista = Integer.valueOf(params[0]);
+            idProducto = Integer.valueOf(params[1]);
+            usuario = Integer.valueOf(params[2]);
+        }  catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            java.net.URL urlObj = new URL(URL_BUY + ATRIBUTO + idLista + "&" + ID + idProducto + "&" + USUARIO+ usuario);
+
+            HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
+
+            BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
+            String line = "", res = "";
+            while ((line = rd.readLine()) != null) {
+                res += line;
+            }
+
+            rd.close();
+            Log.i("--> URL compra item",  urlObj.toString());
+            AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
+            abd.open();
+            long resl = abd.comprarItem(idProducto);
+            abd.close();
+
+            System.out.println("Buy local response: " + resl);
+            System.out.println("Buy remote response: " + res);
+
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -274,10 +322,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
                     itm.setIdLista(o.getInt("idLista"));
                     itm.setCantidad(o.getInt("cantidad"));
                     itm.setComprado(o.getBoolean("comprado"));
-
-
                     insertarBD(itm, idLista);
-
 
                 }
             }

@@ -454,6 +454,20 @@ public class AdaptadorBD {
             bdatos.endTransaction();
         }
     }
+    public long comprarItem(int idProducto) {
+        bdatos.beginTransaction();
+        long res=-1;
+        try {
+            ContentValues cv = new ContentValues();
+            cv.put(ITM_COMPRADO,1);
+
+            res=bdatos.update(TB_ITEM, cv, "id=" + idProducto, null);
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+        return res;
+    }
 
     public long eliminarLista(int id, Usuario usuario) {
         bdatos.beginTransaction();

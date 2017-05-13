@@ -1,4 +1,4 @@
-package es.shosha.shosha.AdaptadorLista.Productos;
+package es.shosha.shosha.Adaptadores.Productos;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -45,7 +45,7 @@ public class ProductosAdapter extends RecyclerView.Adapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ProductosViewHolder(parent,oicl);
+        return new ProductosViewHolder(parent,oicl,idLista);
     }
 
     @Override
