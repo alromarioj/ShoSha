@@ -41,7 +41,7 @@ public class ProductosViewHolder extends RecyclerView.ViewHolder implements View
             public void onClick(View view) {
                 new ItemPers(MyApplication.getAppContext()).execute("buy",
                         String.valueOf(lista),
-                        "1",//Id del producto seleccionado
+                        String.valueOf(itemView.getId()),//"1",//Id del producto seleccionado
                         String.valueOf(MyApplication.getUser().getId()));
 
             }
