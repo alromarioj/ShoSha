@@ -26,15 +26,19 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 /**
  * Created by Jesús Iráizoz on 13/03/2017.
  */
-
 public class ParticipaPers extends AsyncTask<String, Void, String> {
     private final static String URL_GET = "http://shosha.jiraizoz.es/getParticipaciones.php?";
     private final static String URL_ADD = "http://shosha.jiraizoz.es/addParticipante.php?";
+    private final static String URL_ADD_QR = "http://shosha.jiraizoz.es/addParticipanteQR.php?";
     private final static String LISTA = "lista=";
     private final static String USUARIO = "usuario=";
     private final static String CLAVE = "clave=";
     private LectorQR lqr;
     private int lista,usuario;
+
+    public static final String MULTIPLES_LISTAS = "multiple";
+    public static final String INSERT = "insert";
+    private static final String UTF_8 = "UTF-8";
 
     private Context contexto;
     private final CountDownLatch count;
@@ -130,15 +134,13 @@ public class ParticipaPers extends AsyncTask<String, Void, String> {
             System.out.println("Insert response: " + res);
             JSONObject jo=new JSONObject(res);
             respuesta=jo.getString("success");
+            Log.i("ParticipaPers", res);
 
-        }
-        catch (JSONException e){
+        } catch (IOException e) {
             e.printStackTrace();
+        } catch(JSONException e2){
+            e2.printStackTrace();
         }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-
     }
 
     @Override

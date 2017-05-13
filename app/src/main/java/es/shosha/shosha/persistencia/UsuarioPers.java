@@ -17,13 +17,13 @@ import java.net.URLEncoder;
 import java.util.concurrent.CountDownLatch;
 
 import es.shosha.shosha.dominio.Usuario;
-import es.shosha.shosha.negocio.NegocioChecksum;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 /**
+ *
+ * En obtención de la BD remota, inserta directamente a la BD local el usuario
  * Created by Jesús Iráizoz on 02/03/2017.
  */
-
 public class UsuarioPers extends AsyncTask<Integer,Void,Usuario> {
     private final static String URL = "http://shosha.jiraizoz.es/getUsuario.php?";
     private final static String ATRIBUTO = "id=";
@@ -79,7 +79,7 @@ public class UsuarioPers extends AsyncTask<Integer,Void,Usuario> {
             }
         }
 
-        NegocioChecksum.setChecksum("usuario");
+        //NegocioChecksum.setChecksum("usuario");
 
         return usu;
     }
@@ -93,13 +93,6 @@ public class UsuarioPers extends AsyncTask<Integer,Void,Usuario> {
                 JSONObject o = listas.getJSONObject(i);
 
                 u = new Usuario(o.getInt("id"), o.getString("nombre"), o.getString("email"));
-                System.out.println("#################################################");
-                System.out.println("#################################################");
-                System.out.println(u.toString());
-                System.out.println("#################################################");
-                System.out.println("#################################################\n");
-
-            //    MyApplication.setUser(u);
 
                 insertarBD(u);
 

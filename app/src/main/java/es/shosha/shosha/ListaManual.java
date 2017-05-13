@@ -22,23 +22,24 @@ import static es.shosha.shosha.R.id.nombre;
 
 public class ListaManual extends AppCompatActivity {
     private String nomLista, claveLista;
-    private static final int SELECT_PICTURE=1;
+    private static final int SELECT_PICTURE = 1;
     protected ImageView img;
-    private final String ruta_fotos= Environment.getExternalStorageDirectory().getAbsolutePath()+"ShoSha/imagenes";
-    private File file=new File(ruta_fotos);
+    private final String ruta_fotos = Environment.getExternalStorageDirectory().getAbsolutePath() + "ShoSha/imagenes";
+    private File file = new File(ruta_fotos);
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_manual);
-        img=(ImageView)findViewById(R.id.imagen);
+        img = (ImageView) findViewById(R.id.imagen);
         //Aparece el botón de atrás
-        if(getSupportActionBar()!=null){
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
         file.mkdirs();
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -73,8 +74,9 @@ public class ListaManual extends AppCompatActivity {
 
         new ListaPers(MyApplication.getAppContext(), null, this).execute("insert", idu,nomLista,claveLista,"imagen");
     }
-    public void sigueCrearLista(Integer id){
-        System.out.println("=?="+id);
+
+    public void sigueCrearLista(int id) {
+        System.out.println("=?=" + id);
         AdaptadorBD abd = new AdaptadorBD(getBaseContext());
         abd.open();
         abd.insertarLista(id,nomLista,MyApplication.getUser(),"1");//Añadir clave
@@ -99,7 +101,7 @@ public class ListaManual extends AppCompatActivity {
             char c = (char)r.nextInt(255);
             if ( (c >= '0' && c <='9') || (c >='A' && c <='Z') ){
                 cadenaAleatoria += c;
-                i ++;
+                i++;
             }
         }
         return cadenaAleatoria;

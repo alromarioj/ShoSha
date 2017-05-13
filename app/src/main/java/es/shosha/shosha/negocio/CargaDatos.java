@@ -11,8 +11,7 @@ import java.util.concurrent.Executors;
 
 import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Lista;
-import es.shosha.shosha.persistencia.ChecksumPers;
-import es.shosha.shosha.dominio.Usuario;
+import es.shosha.shosha.negocio.Timer.ChecksumEjecutorTimer;
 import es.shosha.shosha.persistencia.ItemPers;
 import es.shosha.shosha.persistencia.ListaPers;
 import es.shosha.shosha.persistencia.UsuarioPers;
@@ -35,14 +34,17 @@ public class CargaDatos implements Runnable {
     public void run() {
         //Comprobamos primero si se han realizado cambios en la BD remota
         //Para ello, comprobamos checksums
+        boolean actualizar = false;
 
-        AdaptadorBD abd = new AdaptadorBD(this.contexto);
-        abd.open();
+        //TODO: Fallo de bucle infinito. buscarlo.
 
-        boolean actualizar = true;
-        actualizar = NegocioChecksum.setChecksum();
+        Map<String, Double> mapaInsercion = NegocioChecksum.setChecksum(true);
 
-        /*ChecksumPers cp = new ChecksumPers();
+        if (mapaInsercion != null && mapaInsercion.size() > 0)
+            actualizar = true;
+
+        /*
+        ChecksumPers cp = new ChecksumPers();
         cp.execute();
 
         Map<String, Double> mapaRemoto = null;
@@ -57,7 +59,8 @@ public class CargaDatos implements Runnable {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
-        }*/
+        }
+        */
 
         //Si no coindicen las BD, se realiza la inserción
         if (actualizar) {
@@ -67,7 +70,9 @@ public class CargaDatos implements Runnable {
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
 
-        //    abd.insertarChecksum(mapaRemoto);
+            AdaptadorBD abd = new AdaptadorBD(this.contexto);
+            abd.open();
+            //    abd.insertarChecksum(mapaRemoto);
 
             try {
                 final int N = 2;
@@ -103,8 +108,13 @@ public class CargaDatos implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            abd.close();
         }
-        abd.close();
+
+
+        // Iniciamos un timer de los checksums
+        new ChecksumEjecutorTimer();
+
 
     }
 }

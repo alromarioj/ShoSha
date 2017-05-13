@@ -131,12 +131,13 @@ public class ListaProductos extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //Mostrar menú para la lista de productos
-        getMenuInflater().inflate(R.menu.menu_lista_productos,menu);
+        getMenuInflater().inflate(R.menu.menu_lista_productos, menu);
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
                 return true;
@@ -148,7 +149,7 @@ public class ListaProductos extends AppCompatActivity {
                 //Se crea el PopUp para añadir un nuevo producto
                 final AlertDialog.Builder builder;
                 View viewInflated;
-                builder=new AlertDialog.Builder(this);
+                builder = new AlertDialog.Builder(this);
                 builder.setTitle("Añadir nuevo producto");
 
                 viewInflated = LayoutInflater.from(getBaseContext()).inflate(R.layout.nuevo_producto, (ViewGroup) findViewById(android.R.id.content), false);
