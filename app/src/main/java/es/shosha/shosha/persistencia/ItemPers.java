@@ -36,6 +36,7 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 public class ItemPers extends AsyncTask<String, Void, Void> {
     private final static String URL = "http://shosha.jiraizoz.es/getItems.php?";
     private final static String URL_ADD = "http://shosha.jiraizoz.es/addItem.php?";
+    private final static String URL_BUY = "http://shosha.jiraizoz.es/compraItem.php?";
     private final static String URL_DEL = "http://shosha.jiraizoz.es/delItem.php?";
     private final static String URL_UPD = "http://shosha.jiraizoz.es/updateItem.php?";
     private final static String ATRIBUTO = "lista=";

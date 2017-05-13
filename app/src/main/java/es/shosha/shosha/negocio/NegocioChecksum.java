@@ -1,7 +1,12 @@
 package es.shosha.shosha.negocio;
 
+import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Lista;
@@ -102,7 +107,7 @@ public class NegocioChecksum {
     }
 
     public static void secuenciaInsercion(Map<String, Double> mapa) {
-        Map<String, Double> mapaTree = new TreeMap<String, Double>();
+        Map<String, Double> mapaTree = new TreeMap<>();
         //Transformo a mapaTree para asegurar el orden
         mapaTree.putAll(mapa);
 
@@ -167,7 +172,7 @@ public class NegocioChecksum {
         }
         if (mapaTree.containsKey(PARTICIPA)) {
             List<Lista> lListas = abd.obtenerListas(MyApplication.getUser());
-            ParticipaPers pp = new ParticipaPers(MyApplication.getAppContext(), lListas);
+            ParticipaPers pp = new ParticipaPers(MyApplication.getAppContext(),null);
             pp.execute(ParticipaPers.MULTIPLES_LISTAS);
         }
         // En teoría, al insertar las listas se insertan sus correspondientes códigos QR
