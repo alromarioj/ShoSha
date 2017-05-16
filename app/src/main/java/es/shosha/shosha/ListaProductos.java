@@ -38,6 +38,7 @@ public class ListaProductos extends AppCompatActivity {
     private ListView list;
     private Lista lista;
     private List<Item> productos;
+    private double pTotal = 0;
     RecyclerView mRecyclerView;
     ListaProductos actividad=this;
     @Override
@@ -63,7 +64,11 @@ public class ListaProductos extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
         TextView precioTotal = (TextView) findViewById(R.id.textViewTotal);
-        precioTotal.setText("");
+        pTotal = 0;
+        for(Item i : productos){
+            pTotal += i.getPrecioTotal();
+        }
+        precioTotal.setText(String.valueOf(pTotal));
         super.onCreate(savedInstanceState);
     }
 
@@ -114,6 +119,12 @@ public class ListaProductos extends AppCompatActivity {
 
 
                 Toast.makeText(ListaProductos.this, "Editando producto " + producto.getNombre(), Toast.LENGTH_SHORT).show();
+                TextView precioTotal = (TextView) findViewById(R.id.textViewTotal);
+                pTotal = 0;
+                for(Item i : productos){
+                    pTotal += i.getPrecioTotal();
+                }
+                precioTotal.setText(String.valueOf(pTotal));
                 //Avisa de que la lista ha cambiado
                 mRecyclerView.getAdapter().notifyDataSetChanged();
                 dialog.dismiss();
@@ -202,6 +213,12 @@ public class ListaProductos extends AppCompatActivity {
         productos.add(producto);
         abd.close();
         Toast.makeText(ListaProductos.this, "Añadiendo producto " + producto.getNombre(), Toast.LENGTH_SHORT).show();
+        TextView precioTotal = (TextView) findViewById(R.id.textViewTotal);
+        pTotal = 0;
+        for(Item i : productos){
+            pTotal += i.getPrecioTotal();
+        }
+        precioTotal.setText(String.valueOf(pTotal));
         //Avisa de que la lista ha cambiado
         mRecyclerView.getAdapter().notifyDataSetChanged();
     }

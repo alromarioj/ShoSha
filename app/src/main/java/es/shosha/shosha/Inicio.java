@@ -14,8 +14,6 @@ import android.view.View;
 
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
-import es.shosha.shosha.negocio.CargaDatos;
-
 import static es.shosha.shosha.MyApplication.getAppContext;
 
 public class Inicio extends AppCompatActivity
@@ -56,14 +54,9 @@ public class Inicio extends AppCompatActivity
         int id = item.getItemId();
 
         switch (id){
-            case R.id.nav_perfil:
-
-                break;
-            case R.id.nav_configuracion:
-
-                break;
             case R.id.nav_ayuda:
-
+                Intent intent = new Intent(this, faq.class);
+                startActivity(intent);
                 break;
             case R.id.nav_cerrar:
                 SharedPreferences pref = getAppContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
@@ -74,10 +67,10 @@ public class Inicio extends AppCompatActivity
                 abd.open();
                 abd.vaciarBaseDatos();
                 abd.close();
-                Intent intent = new Intent(this, LoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                Intent intent2 = new Intent(this, LoginActivity.class);
+                intent2.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 finish();
-                startActivity(intent);
+                startActivity(intent2);
                 break;
         }
 

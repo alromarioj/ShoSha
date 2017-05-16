@@ -24,7 +24,6 @@
         android:name="android.hardware.touchscreen"
         android:required="false" />
 
-
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -81,7 +80,7 @@
 
         <service android:name=".servicios.ServicioFirebaseMessaging">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
         <service android:name=".servicios.ServicioInstanceId">
@@ -89,6 +88,8 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
+
+        <activity android:name=".faq"></activity>
     </application>
 
 </manifest>
