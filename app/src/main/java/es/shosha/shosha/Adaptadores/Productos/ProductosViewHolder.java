@@ -28,24 +28,14 @@ public class ProductosViewHolder extends RecyclerView.ViewHolder implements View
     CheckBox comprado;
     private RecyclerViewOnItemClickListener oicl;
 
-    public ProductosViewHolder(ViewGroup parent, RecyclerViewOnItemClickListener oicl, int idLista) {
+    public ProductosViewHolder(ViewGroup parent, RecyclerViewOnItemClickListener oicl) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_producto, parent, false));
-        final int lista=idLista;
         nombre = (TextView) itemView.findViewById(R.id.nombreP);
         precio=(TextView)itemView.findViewById(R.id.precioP);
         cantidad=(TextView)itemView.findViewById(R.id.cantidadP);
         undoButton = (Button) itemView.findViewById(R.id.undo_button);
         comprado=(CheckBox) itemView.findViewById(R.id.comprado);
-        comprado.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new ItemPers(MyApplication.getAppContext()).execute("buy",
-                        String.valueOf(lista),
-                        String.valueOf(itemView.getId()),//"1",//Id del producto seleccionado
-                        String.valueOf(MyApplication.getUser().getId()));
 
-            }
-        });
         itemView.setOnClickListener(this);
         this.oicl=oicl;
     }
