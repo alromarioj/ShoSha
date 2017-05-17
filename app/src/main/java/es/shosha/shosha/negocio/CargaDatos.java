@@ -21,6 +21,9 @@ public class CargaDatos implements Runnable {
         this.idUsr = idUsuario;
     }
 
+    public CargaDatos() {
+    }
+
     @Override
     public void run() {
         synchronized (this) {

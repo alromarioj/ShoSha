@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="es.shosha.shosha">
 
+    <uses-sdk
+        android:minSdkVersion="10"
+        android:targetSdkVersion="10" />
+
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <!--
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -10,14 +14,22 @@
     -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
-
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 
-    <uses-feature android:required="true" android:name="android.hardware.camera"/>
-    <uses-feature android:name="android.hardware.camera.focus" android:required="false"/>
-    <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
-    <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="10"/>
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.camera.focus"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:name=".MyApplication"
@@ -28,24 +40,27 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".Inicio"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ListasActivas" />
         <activity android:name=".AnadirLista" />
         <activity android:name=".ListaProductos" />
         <activity android:name=".ListaManual" />
-        <activity android:clearTaskOnLaunch="true"
-            android:stateNotNeeded="true"
-            android:configChanges="orientation|keyboardHidden"
+        <activity
             android:name="com.google.zxing.client.android.CaptureActivity"
+            android:clearTaskOnLaunch="true"
+            android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="landscape"
+            android:stateNotNeeded="true"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-            android:windowSoftInputMode="stateAlwaysHidden" >
-            <intent-filter >
+            android:windowSoftInputMode="stateAlwaysHidden">
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-            <intent-filter >
+            <intent-filter>
                 <action android:name="com.google.zxing.client.android.SCAN" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -61,11 +76,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LectorQR"/>
-        <activity android:name=".GenerarQR"/>
-        <activity android:name=".Condiciones"/>
-        <activity android:name=".EditarLista"/>
-
-</application>
+        <activity android:name=".LectorQR" />
+        <activity android:name=".GenerarQR" />
+        <activity android:name=".Condiciones" />
+        <activity android:name=".EditarLista" />
+        <activity android:name=".CargaActivity" />
+    </application>
 
 </manifest>
