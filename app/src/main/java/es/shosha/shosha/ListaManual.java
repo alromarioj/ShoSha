@@ -15,7 +15,9 @@ import android.widget.Toast;
 import java.io.File;
 import java.util.Random;
 
-import es.shosha.shosha.persistencia.ListaPers;
+import es.shosha.shosha.dominio.Lista;
+import es.shosha.shosha.dominio.Usuario;
+import es.shosha.shosha.persistencia.ListaFB;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 import static es.shosha.shosha.R.id.nombre;
@@ -72,9 +74,15 @@ public class ListaManual extends AppCompatActivity {
     public void crearLista(View view) {
         this.nomLista = ((EditText) findViewById(nombre)).getText().toString();
         this.claveLista = generarClave(5);
-        String idu = String.valueOf(MyApplication.getUser().getId());
+        //String idu = String.valueOf(MyApplication.getUser().getId());
+        int idu = MyApplication.getUser().getId();
 
-        new ListaPers(MyApplication.getAppContext(), null, this).execute("insert", idu, nomLista, claveLista);
+        // new ListaPers(MyApplication.getAppContext(), null, this).execute("insert", idu, nomLista, claveLista);
+        Lista aux = new Lista();
+        aux.setNombre(nomLista);
+        aux.setCodigoQR(claveLista);
+        aux.setPropietario(new Usuario(idu, "", ""));
+        ListaFB.insertaListaFB(aux);
     }
 
     public void sigueCrearLista(int id) {

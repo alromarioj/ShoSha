@@ -1,5 +1,7 @@
 package es.shosha.shosha.dominio;
 
+import com.google.firebase.database.Exclude;
+
 import java.io.Serializable;
 
 /**
@@ -21,11 +23,9 @@ public class Usuario implements Serializable{
         this.email = email;
     }
 
+    @Exclude
     public int getId() {
         return id;
-    }
-    public String getStringId(){
-        return String.valueOf(id);
     }
 
     public void setId(int id) {

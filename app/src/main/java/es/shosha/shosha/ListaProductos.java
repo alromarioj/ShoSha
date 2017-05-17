@@ -30,6 +30,7 @@ import es.shosha.shosha.AdaptadorLista.Productos.ProductosAdapter;
 import es.shosha.shosha.AdaptadorLista.Productos.RecyclerViewOnItemClickListener;
 import es.shosha.shosha.dominio.Item;
 import es.shosha.shosha.dominio.Lista;
+import es.shosha.shosha.persistencia.ItemFB;
 import es.shosha.shosha.persistencia.ItemPers;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
@@ -163,7 +164,8 @@ public class ListaProductos extends AppCompatActivity {
                         Item i = new Item(lista.getItems().size(), input_np1.getText().toString(), Double.valueOf(precio), lista.getId());
 
 
-                        new ItemPers(MyApplication.getAppContext()).execute("insert", String.valueOf(lista.getId()), i.getNombre(), String.valueOf(i.getPrecio()), "1");
+                        //new ItemPers(MyApplication.getAppContext()).execute("insert", String.valueOf(lista.getId()), i.getNombre(), String.valueOf(i.getPrecio()), "1");
+                        ItemFB.insertaItemFB(i);
 
                         AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
                         abd.open();

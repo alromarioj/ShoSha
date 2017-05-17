@@ -2,26 +2,17 @@ package es.shosha.shosha.negocio;
 
 import android.content.Context;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import es.shosha.shosha.MyApplication;
-import es.shosha.shosha.dominio.Lista;
-import es.shosha.shosha.negocio.Timer.ChecksumEjecutorTimer;
-import es.shosha.shosha.persistencia.ItemPers;
-import es.shosha.shosha.persistencia.ListaPers;
-import es.shosha.shosha.persistencia.UsuarioPers;
-import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
+import es.shosha.shosha.persistencia.ItemFB;
+import es.shosha.shosha.persistencia.ListaFB;
+import es.shosha.shosha.persistencia.ParticipaFB;
+import es.shosha.shosha.persistencia.UsuarioFB;
 
 /**
  * Created by Jesús Iráizoz on 09/03/2017.
  */
 
 public class CargaDatos implements Runnable {
+    private static final int DELAY = 3000;
     private Context contexto;
     private int idUsr;
 
@@ -32,9 +23,25 @@ public class CargaDatos implements Runnable {
 
     @Override
     public void run() {
+        synchronized (this) {
+            try {
+                new UsuarioFB();
+                this.wait(DELAY);
+                new ListaFB();
+                this.wait(DELAY);
+                new ItemFB();
+                new ParticipaFB();
+                this.wait(DELAY);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        //   UsuarioFB.insertaUsuarioFB(new Usuario(4,"Yisus","yisus@craist.org"));
+
         //Comprobamos primero si se han realizado cambios en la BD remota
         //Para ello, comprobamos checksums
-        boolean actualizar = false;
+       /* boolean actualizar = false;
 
         //TODO: Fallo de bucle infinito. buscarlo.
 
@@ -43,7 +50,7 @@ public class CargaDatos implements Runnable {
         if (mapaInsercion != null && mapaInsercion.size() > 0)
             actualizar = true;
 
-        /*
+        *//*
         ChecksumPers cp = new ChecksumPers();
         cp.execute();
 
@@ -60,7 +67,7 @@ public class CargaDatos implements Runnable {
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-        */
+        *//*
 
         //Si no coindicen las BD, se realiza la inserción
         if (actualizar) {
@@ -113,7 +120,7 @@ public class CargaDatos implements Runnable {
 
 
         // Iniciamos un timer de los checksums
-        new ChecksumEjecutorTimer();
+        new ChecksumEjecutorTimer();*/
 
 
     }

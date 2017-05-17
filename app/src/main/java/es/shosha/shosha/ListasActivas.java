@@ -125,7 +125,7 @@ public class ListasActivas extends AppCompatActivity {
     public boolean onContextItemSelected(MenuItem item) {
         String opcion = item.getTitle().toString();
         int id = listaClicada.getId();
-        String idu = MyApplication.getUser().getStringId();
+        String idu = String.valueOf(MyApplication.getUser().getId());
         if (opcion.equals("Eliminar")) {
             //Se elimina la lista seleccionada de las listas del usuario
             Toast.makeText(this, "Eliminando lista " + id, Toast.LENGTH_SHORT).show();

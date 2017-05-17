@@ -52,6 +52,8 @@ public class AdaptadorBD {
 
 
     private static final String ID_LOG = "USO DE BD";
+    public static final String ITM_CANT = "cantidad";
+    public static final String ITM_COMPR = "comprado";
 
     private final Context contexto;
 
@@ -116,6 +118,7 @@ public class AdaptadorBD {
         auxBD.close();
     }
 
+    @Deprecated
     public long insertarUsuario(int id, String nombre, String email) {
         bdatos.beginTransaction();
         long res;
@@ -136,6 +139,45 @@ public class AdaptadorBD {
         return res;
     }
 
+    public long insertarUsuario(String nombre, String email) {
+        bdatos.beginTransaction();
+        long res;
+        try {
+
+            ContentValues valores = new ContentValues();
+            valores.put(NOMBRE, nombre);
+            valores.put(USR_EMAIL, email);
+            bdatos.delete(TB_USUARIO, NOMBRE + "=" + nombre + " AND " + USR_EMAIL + "=" + email, null);
+            res = bdatos.insert(TB_USUARIO, null, valores);
+
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+
+        return res;
+    }
+
+    public long insertarUsuario(Usuario usuario) {
+        bdatos.beginTransaction();
+        long res;
+        try {
+
+            ContentValues valores = new ContentValues();
+            valores.put(ID, usuario.getId());
+            valores.put(NOMBRE, usuario.getNombre());
+            valores.put(USR_EMAIL, usuario.getEmail());
+            bdatos.delete(TB_USUARIO, ID + " = " + usuario.getId(), null);
+            res = bdatos.insert(TB_USUARIO, null, valores);
+
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+
+        return res;
+    }
+
     public long insertarLista(int id, String nombre, Usuario propietario, String estado) {
         bdatos.beginTransaction();
         long res;
@@ -146,6 +188,32 @@ public class AdaptadorBD {
             valores.put(LST_PROP, propietario.getId());
             valores.put(LST_ESTADO, estado);
             bdatos.delete(TB_LISTA, ID + " = " + id, null);
+            res = bdatos.insert(TB_LISTA, null, valores);
+
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+
+        return res;
+    }
+
+    public long insertarLista(Lista l) {
+        bdatos.beginTransaction();
+        long res;
+        try {
+            ContentValues valores = new ContentValues();
+            valores.put(ID, l.getId());
+            valores.put(NOMBRE, l.getNombre());
+            valores.put(LST_PROP, l.getPropietario().getId());
+            valores.put(LST_ESTADO, l.isEstado());
+            bdatos.delete(TB_LISTA, ID + " = " + l.getId(), null);
+
+            ContentValues cv = new ContentValues();
+            cv.put(QR_IDQR, l.getCodigoQR());
+            cv.put(IDLISTA, l.getId());
+
+            bdatos.replace(TB_QR, null, cv);
             res = bdatos.insert(TB_LISTA, null, valores);
 
             bdatos.setTransactionSuccessful();
@@ -179,6 +247,29 @@ public class AdaptadorBD {
         return res;
     }
 
+    public long insertarItem(Item i) {
+        //    bdatos.beginTransaction();
+
+    /*    try {*/
+        bdatos.beginTransaction();
+        long res = 0;
+        try {
+            ContentValues valores = new ContentValues();
+            valores.put(ID, i.getId());
+            valores.put(NOMBRE, i.getNombre());
+            valores.put(ITM_PRECIO, i.getPrecio());
+            valores.put(IDLISTA, i.getIdLista());
+
+            long l = bdatos.replace(TB_ITEM, null, valores);
+
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+
+        return res;
+    }
+
     public long insertarParticipa(int idUsr, int idLista, boolean activo) {
         bdatos.beginTransaction();
         long res;
@@ -188,8 +279,11 @@ public class AdaptadorBD {
             valores.put(IDLISTA, idLista);
             valores.put(PPA_IDUSR, idUsr);
             valores.put(PPA_ACTIVO, activo ? 1 : 0);
+            /*
             bdatos.delete(TB_PARTICIPA, IDLISTA + " = " + idLista + " AND " + PPA_IDUSR + " = " + idUsr, null);
             res = bdatos.insert(TB_PARTICIPA, null, valores);
+            */
+            res = bdatos.replace(TB_PARTICIPA, null, valores);
 
             bdatos.setTransactionSuccessful();
         } finally {
@@ -324,12 +418,26 @@ public class AdaptadorBD {
         return l;
     }
 
+    public int obtenerIdListaQR(String QR) {
+        Cursor c = bdatos.query(false, TB_QR, null, QR_IDQR + "=" + QR, null, null, null, null, null);
+        int i = 0;
+
+        if (c.moveToFirst()) {
+            do {
+                i = c.getInt(1);
+            } while (c.moveToNext());
+        }
+        return i;
+    }
+
     public Usuario obtenerUsuario(int id) {
         Cursor c = bdatos.query(false, TB_USUARIO, null, "id=" + id, null, null, null, null, null);
         Usuario u = null;
 
-        while (c.moveToNext()) {
-            u = new Usuario(c.getInt(0), c.getString(1), c.getString(2));
+        if (c.moveToFirst()) {
+            do {
+                u = new Usuario(c.getInt(0), c.getString(1), c.getString(2));
+            } while (c.moveToNext());
         }
         return u;
     }
@@ -425,6 +533,7 @@ public class AdaptadorBD {
             bdatos.endTransaction();
         }
     }
+
     public void updateLista(Lista lista, String nombre) {
         bdatos.beginTransaction();
         try {
@@ -433,6 +542,24 @@ public class AdaptadorBD {
             cv.put(NOMBRE, lista.getNombre());
 
             bdatos.update(TB_LISTA, cv, "id=" + lista.getId(), null);
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+    }
+
+    public void updateItem(Item i) {
+        bdatos.beginTransaction();
+        try {
+
+            ContentValues valores = new ContentValues();
+            valores.put(NOMBRE, i.getNombre());
+            valores.put(ITM_PRECIO, i.getPrecio());
+            valores.put(IDLISTA, i.getIdLista());
+            valores.put(ITM_CANT, i.getCantidad());
+            valores.put(ITM_COMPR, i.isComprado());
+
+            bdatos.update(TB_ITEM, valores, ID + "=?", new String[]{String.valueOf(i.getId())});
             bdatos.setTransactionSuccessful();
         } finally {
             bdatos.endTransaction();
@@ -463,6 +590,32 @@ public class AdaptadorBD {
 //                    Log.e("Método eliminarLista", "La transacción no se realizó correctamente", new Exception("Resultado QR: " + qr + " / Resultado método: " + res));
 //                }
             }
+        } finally {
+            bdatos.endTransaction();
+        }
+        return res;
+    }
+
+    /**
+     * Se elimina la lista dada de la base de datos local
+     *
+     * @param l Lista a borrar
+     * @return resultado del borrado
+     */
+    public long eliminarLista(Lista l) {
+        bdatos.beginTransaction();
+        long res = -1;
+        try {
+            res = bdatos.delete(TB_LISTA, ID + "=" + l.getId(), null);
+
+            //                long qr = eliminarQR(id);
+//                if (qr > -1) {
+            bdatos.setTransactionSuccessful();
+//                } else {
+//                    res = -1;
+//                    Log.e("Método eliminarLista", "La transacción no se realizó correctamente", new Exception("Resultado QR: " + qr + " / Resultado método: " + res));
+//                }
+
         } finally {
             bdatos.endTransaction();
         }
@@ -526,6 +679,18 @@ public class AdaptadorBD {
                 res = bdatos.delete(TB_ITEM, "id=? AND idLista=?", new String[]{idItem, idLista});
                 bdatos.setTransactionSuccessful();
             }
+        } finally {
+            bdatos.endTransaction();
+        }
+        return res;
+    }
+
+    public long eliminarUsuario(Usuario u) {
+        bdatos.beginTransaction();
+        long res = -1;
+        try {
+            res = bdatos.delete(TB_USUARIO, NOMBRE + "=? AND " + USR_EMAIL + "=?", new String[]{u.getNombre(), u.getEmail()});
+            bdatos.setTransactionSuccessful();
         } finally {
             bdatos.endTransaction();
         }
