@@ -1,5 +1,7 @@
 package es.shosha.shosha.dominio;
 
+import com.google.firebase.database.Exclude;
+
 import java.io.Serializable;
 
 /**

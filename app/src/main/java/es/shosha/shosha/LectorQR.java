@@ -37,8 +37,6 @@ public class LectorQR extends AppCompatActivity {
         if(getSupportActionBar()!=null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-
-
     }
 
     @Override
@@ -55,7 +53,7 @@ public class LectorQR extends AppCompatActivity {
                     int idu=MyApplication.getUser().getId();
                     // Añadir al usuario como participante en la lista
                     //Añade participante en bd remota
-                    new ParticipaPers(MyApplication.getAppContext(), null,this).execute("insert", lista,clave,String.valueOf(idu));
+                    //new ParticipaPers(MyApplication.getAppContext(), null,this).execute("insert", lista,clave,String.valueOf(idu));
                 }
                 catch (UnsupportedEncodingException e){
                     e.printStackTrace();
@@ -117,15 +115,6 @@ public class LectorQR extends AppCompatActivity {
             mapa.put(par[0], par[1]);
         }
         return mapa;
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.btEscanear) {
-            IntentIntegrator integrator = new IntentIntegrator(this);
-            integrator.addExtra("SCAN_MODE", "QR_CODE_MODE");
-            integrator.initiateScan();
-        }
     }
 }
 /*Intent intent = new Intent("com.google.zxing.client.android.SCAN");

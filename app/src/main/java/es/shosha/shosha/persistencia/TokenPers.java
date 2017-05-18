@@ -16,11 +16,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
-import es.shosha.shosha.ListaProductos;
-import es.shosha.shosha.MyApplication;
-import es.shosha.shosha.dominio.Item;
-import es.shosha.shosha.negocio.NegocioChecksum;
-import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 /**
  * Clase que se encarga de obtener los items de la base de datos remota y los añade a la interna.

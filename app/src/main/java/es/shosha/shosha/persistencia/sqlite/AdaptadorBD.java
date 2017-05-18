@@ -265,6 +265,27 @@ public class AdaptadorBD {
 
         return res;
     }
+    public long insertarItem(Item item) {
+        bdatos.beginTransaction();
+        long res = 0;
+        try {
+            ContentValues valores = new ContentValues();
+            valores.put(ID, item.getId());
+            valores.put(NOMBRE,item.getNombre());
+            valores.put(ITM_PRECIO, item.getPrecio());
+            valores.put(IDLISTA, item.getIdLista());
+            valores.put(ITM_CANTIDAD, item.getCantidad());
+            valores.put(ITM_COMPRADO, item.isComprado());
+
+            long l = bdatos.replace(TB_ITEM, null, valores);
+
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+
+        return res;
+    }
 
     public long insertarParticipa(int idUsr, int idLista, boolean activo) {
         bdatos.beginTransaction();
@@ -571,8 +592,8 @@ public class AdaptadorBD {
             valores.put(NOMBRE, i.getNombre());
             valores.put(ITM_PRECIO, i.getPrecio());
             valores.put(IDLISTA, i.getIdLista());
-            valores.put(ITM_CANT, i.getCantidad());
-            valores.put(ITM_COMPR, i.isComprado());
+            valores.put(ITM_CANTIDAD, i.getCantidad());
+            valores.put(ITM_COMPRADO, i.isComprado());
 
             bdatos.update(TB_ITEM, valores, ID + "=?", new String[]{String.valueOf(i.getId())});
             bdatos.setTransactionSuccessful();

@@ -1,4 +1,4 @@
-package es.shosha.shosha.AdaptadorLista.Productos;
+package es.shosha.shosha.Adaptadores.Productos;
 
 /**
  * Created by inhernan on 23/03/2017.
