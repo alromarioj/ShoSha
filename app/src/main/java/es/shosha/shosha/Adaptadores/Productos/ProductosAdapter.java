@@ -43,6 +43,7 @@ public class ProductosAdapter extends RecyclerView.Adapter {
         this.idLista=idLista;
     }
 
+    
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new ProductosViewHolder(parent,oicl,idLista);
