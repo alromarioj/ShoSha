@@ -15,7 +15,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.shosha.shosha.AdaptadorLista.AdapterLista;
+import es.shosha.shosha.Adaptadores.AdapterLista;
 import es.shosha.shosha.dominio.Lista;
 import es.shosha.shosha.persistencia.ListaFB;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
@@ -42,15 +42,6 @@ public class ListasActivas extends AppCompatActivity {
         setListas(listas);
 
         abd.close();
-
-     /*   try {
-            AsyncTask<String, Void, List<Lista>> at = new ListaPers().execute("u1");
-            setListas(at.get());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }*/
 
         super.onCreate(savedInstanceState);
 
@@ -133,6 +124,7 @@ public class ListasActivas extends AppCompatActivity {
             //new ListaPers(MyApplication.getAppContext(), null).execute("delete", String.valueOf(id), idu);
 
             ListaFB.borrarListaFB(id, listaClicada.getPropietario().getId() == MyApplication.getUser().getId());
+
 
             listas.remove(listaClicada);
             adaptador.notifyDataSetChanged();

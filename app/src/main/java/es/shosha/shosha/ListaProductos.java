@@ -22,13 +22,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import es.shosha.shosha.AdaptadorLista.Productos.ProductosAdapter;
-import es.shosha.shosha.AdaptadorLista.Productos.RecyclerViewOnItemClickListener;
+import es.shosha.shosha.Adaptadores.Productos.ProductosAdapter;
+import es.shosha.shosha.Adaptadores.Productos.RecyclerViewOnItemClickListener;
 import es.shosha.shosha.dominio.Item;
 import es.shosha.shosha.dominio.Lista;
 import es.shosha.shosha.persistencia.ItemFB;
@@ -37,8 +38,10 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 public class ListaProductos extends AppCompatActivity {
     private ListView list;
     private Lista lista;
-    private List<Item> productos;//=new ArrayList<>();
+    private List<Item> productos;
+    private double pTotal = 0;
     RecyclerView mRecyclerView;
+    ListaProductos actividad = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +68,13 @@ public class ListaProductos extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+        TextView precioTotal = (TextView) findViewById(R.id.textViewTotal);
+        pTotal = 0;
+        for (Item i : productos) {
+            pTotal += i.getPrecio() * i.getCantidad();
+        }
+
+        precioTotal.setText(String.format("%.2f",pTotal));
         super.onCreate(savedInstanceState);
     }
 
@@ -81,6 +91,8 @@ public class ListaProductos extends AppCompatActivity {
         input_np2.setText(producto.getNombre());
         final EditText input_pp = (EditText) viewInflated1.findViewById(R.id.in_precio_producto);
         input_pp.setText(String.valueOf(producto.getPrecio()));
+        final EditText input_cantidad = (EditText) viewInflated1.findViewById(R.id.in_cantidad_producto);
+        input_cantidad.setText(String.valueOf(producto.getCantidad()));
 
         // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
         builder1.setView(viewInflated1);
@@ -100,9 +112,12 @@ public class ListaProductos extends AppCompatActivity {
                 //Se inserta un producto a la lista a partir de los datos introducidos
                 String precio = input_pp.getText().toString();
                 precio = (precio.isEmpty() ? "0" : precio);
+                String cantidad = input_cantidad.getText().toString();
+                cantidad = (cantidad.isEmpty() ? "0" : cantidad);
                 //Item i=new Item("ref"+lista.getItems().size(),input_np2.getText().toString(),Double.valueOf(precio));
                 producto.setNombre(input_np2.getText().toString());
                 producto.setPrecio(Double.valueOf(precio));
+                producto.setCantidad(Integer.valueOf(cantidad));
 
                 //new ListaPers(MyApplication.getAppContext(), null).execute("update", id, MyApplication.getUser().getId());
 //                abd.insertarItem(producto.getId(), producto.getNombre(), producto.getPrecio(), lista.getId());
@@ -112,6 +127,12 @@ public class ListaProductos extends AppCompatActivity {
                 ItemFB.insertaItemFB(producto, false);
 
                 Toast.makeText(ListaProductos.this, "Editando producto " + producto.getNombre(), Toast.LENGTH_SHORT).show();
+                TextView precioTotal = (TextView) findViewById(R.id.textViewTotal);
+                pTotal = 0;
+                for (Item i : productos) {
+                    pTotal += i.getPrecio() * i.getCantidad();
+                }
+                precioTotal.setText(String.format("%.2f",pTotal));
                 //Avisa de que la lista ha cambiado
                 mRecyclerView.getAdapter().notifyDataSetChanged();
                 dialog.dismiss();

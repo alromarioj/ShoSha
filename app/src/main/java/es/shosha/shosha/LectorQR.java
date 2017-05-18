@@ -15,6 +15,11 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 
 import es.shosha.shosha.persistencia.ParticipaFB;
@@ -46,8 +51,6 @@ public class LectorQR extends AppCompatActivity implements OnClickListener {
             Log.e(e.getMessage(), e.getLocalizedMessage());
             Toast.makeText(MyApplication.getAppContext(), e.getMessage(), Toast.LENGTH_LONG);
         }
-
-
     }
 
     @Override
@@ -69,42 +72,6 @@ public class LectorQR extends AppCompatActivity implements OnClickListener {
             int lid = abd.obtenerIdListaQR(clave);
             abd.close();
             ParticipaFB.insertaParticipaFB(idu, lid);
-
-
-            /*try {
-//                JSONObject obj = new JSONObject(contents);
-//                String lista = obj.getString("idLista");//datos.get("idLista");
-
-
-                int idu = MyApplication.getUser().getId();
-
-                // Añadir al usuario como participante en la lista
-                //Comprobar clave
-                AdaptadorBD abd = new AdaptadorBD(getBaseContext());
-                abd.open();
-                int idl = Integer.valueOf(lista);
-                Lista l = abd.obtenerLista(idl, idu);
-
-                if (clave == l.getCodigoQR()) {
-                    //Añade participante en bd remota
-
-                    //Añade participante en bd local
-                    abd.insertarParticipa(idu, Integer.valueOf(lista), true);
-
-
-                    Toast.makeText(this, "Lista añadida", Toast.LENGTH_SHORT).show();
-                    Intent i = new Intent(this, ListasActivas.class);//Va al apartado de listas activas
-                    startActivity(i);
-                } else {
-                    Toast.makeText(this, "Error al añadir la lista", Toast.LENGTH_SHORT).show();
-                    startActivityForResult(data, 0);//Reinicia el escáner
-                }
-                abd.close();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }*/
-
-
         }
     }
 

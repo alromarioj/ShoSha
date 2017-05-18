@@ -32,35 +32,32 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
-            android:padding="16dp"
-            android:paddingBottom="16dp"
-            tools:context="es.shosha.shosha.GenerarQR">
+            tools:context="es.shosha.shosha.GenerarQR"
+            android:layout_margin="15dp">
 
             <TextView
                 android:id="@+id/descripcion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="25dp"
-                android:paddingBottom="16dp"
-                android:paddingTop="16dp"
+                android:paddingBottom="10dp"
                 android:text="@string/descripcion_generar"
                 android:textColor="@color/black" />
 
             <LinearLayout
                 android:id="@+id/espacioCodigo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/codigoQR"
-                    android:layout_width="700px"
-                    android:layout_height="700px"
+                    android:layout_width="270dp"
+                    android:layout_height="270dp"
                     android:layout_weight="1"
-                    android:adjustViewBounds="false" />
+                    android:adjustViewBounds="true" />
             </LinearLayout>
 
 

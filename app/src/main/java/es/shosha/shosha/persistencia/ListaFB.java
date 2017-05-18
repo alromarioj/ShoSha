@@ -1,5 +1,4 @@
 package es.shosha.shosha.persistencia;
-
 import android.util.Log;
 
 import com.google.firebase.database.ChildEventListener;
@@ -7,6 +6,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Lista;
@@ -33,7 +33,7 @@ public class ListaFB {
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
                 Log.d(LOG_MSG, "onChildAdded: {" + dataSnapshot.getKey() + ": " + dataSnapshot.getValue() + "}");
                 Lista l = parser(dataSnapshot);
-                cuenta++;
+                lastChild();
                 AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
                 abd.open();
                 abd.insertarLista(l);
@@ -54,7 +54,7 @@ public class ListaFB {
             public void onChildRemoved(DataSnapshot dataSnapshot) {
                 Log.d(LOG_MSG, "onChildRemoved: {" + dataSnapshot.getKey() + ": " + dataSnapshot.getValue() + "}");
                 Lista l = parser(dataSnapshot);
-                cuenta--;
+                lastChild();
                 AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
                 abd.open();
                 abd.eliminarLista(l);
@@ -158,6 +158,33 @@ public class ListaFB {
         } else {
             ParticipaFB.borrarParticipaFB(idLista);
         }
+    }
+
+    public static void lastChild() {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference messages = database
+                .getReference()
+                .child(LISTA); // change this to your databae ref
+
+        messages.limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot.exists()) {
+                    Iterable<DataSnapshot> it = dataSnapshot.getChildren();
+                    for (DataSnapshot snapshot : it) {
+                        String key = snapshot.getKey();
+                        cuenta = Long.parseLong(key);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
 }

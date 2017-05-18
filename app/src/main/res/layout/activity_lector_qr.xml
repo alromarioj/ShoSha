@@ -41,11 +41,13 @@
                 android:text="@string/descripcion_escaneo"
                 android:textColor="@color/black" />
 
-            <Button
-                android:id="@+id/btEscanear"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Escanear código" />
+                <Button
+                    android:id="@+id/btEscanear"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Escanear código"
+                    android:onClick="abrirEscaner"
+                    />
 
             <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="280dp"

@@ -1,19 +1,23 @@
-package es.shosha.shosha.AdaptadorLista.Productos;
+package es.shosha.shosha.Adaptadores.Productos;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Item;
 import es.shosha.shosha.persistencia.ItemFB;
+import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 /**
  * Created by inhernan on 23/03/2017.
@@ -35,16 +39,16 @@ public class ProductosAdapter extends RecyclerView.Adapter {
 
     public ProductosAdapter(List<Item> productos, @NonNull RecyclerViewOnItemClickListener oicl, Context contexto, int idLista) {
         items = productos;
-
         itemsPendingRemoval = new ArrayList<>();
         this.oicl = oicl;
         this.contexto = contexto;
         this.idLista = idLista;
     }
 
+
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ProductosViewHolder(parent, oicl);
+        return new ProductosViewHolder(parent, oicl, idLista);
     }
 
     @Override
@@ -52,12 +56,28 @@ public class ProductosAdapter extends RecyclerView.Adapter {
         ProductosViewHolder viewHolder = (ProductosViewHolder) holder;
         final Item item = items.get(position);
 
+        viewHolder.comprado.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CheckBox checkBox = (CheckBox) view;
+                if (checkBox.isChecked())
+                    item.setComprado(true);
+                else
+                    item.setComprado(false);
+
+                ItemFB.insertaItemFB(item, false);
+
+            }
+        });
+
         if (itemsPendingRemoval.contains(item)) {
             // we need to show the "undo" state of the row
             viewHolder.itemView.setBackgroundColor(Color.LTGRAY);
             viewHolder.nombre.setVisibility(View.GONE);
             viewHolder.precio.setVisibility(View.GONE);
             viewHolder.comprado.setVisibility(View.GONE);
+
+            viewHolder.cantidad.setVisibility(View.GONE);
             viewHolder.undoButton.setVisibility(View.VISIBLE);
             viewHolder.undoButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -78,8 +98,11 @@ public class ProductosAdapter extends RecyclerView.Adapter {
             viewHolder.nombre.setVisibility(View.VISIBLE);
             viewHolder.precio.setVisibility(View.VISIBLE);
             viewHolder.comprado.setVisibility(View.VISIBLE);
+            viewHolder.comprado.setChecked(item.isComprado());
+            viewHolder.cantidad.setVisibility(View.VISIBLE);
             viewHolder.nombre.setText(item.getNombre());
             viewHolder.precio.setText(item.getPrecio() + " €");
+            viewHolder.cantidad.setText(" | " + String.valueOf(item.getCantidad()));
             viewHolder.undoButton.setVisibility(View.GONE);
             viewHolder.undoButton.setOnClickListener(null);
         }
@@ -142,15 +165,16 @@ public class ProductosAdapter extends RecyclerView.Adapter {
             itemsPendingRemoval.remove(item);
         }
         if (items.contains(item)) {
-
             /*AdaptadorBD abd = new AdaptadorBD(contexto);
             abd.open();
             //Eliminar producto de BD local
-            abd.eliminarItem(idLista,item.getId());
+            abd.eliminarItem(idLista, item.getId());
             //Eliminar de BD remota
             new ItemPers(MyApplication.getAppContext()).execute("delete", String.valueOf(idLista), String.valueOf(item.getId()));
             abd.close();*/
+
             ItemFB.borrarItemFB(item.getId());
+
             //Toast.makeText(ListaProductos.this, "Eliminando producto ", Toast.LENGTH_SHORT).show();
             items.remove(position);
             notifyItemRemoved(position);

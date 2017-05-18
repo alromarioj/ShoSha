@@ -13,7 +13,7 @@ public class Item  implements Serializable{
     private String nombre;
     private double precio;
     private int idLista;
-    private int cantidad = 0;
+    private int cantidad;
     private boolean comprado = false;
 
     public Item() {
@@ -27,6 +27,7 @@ public class Item  implements Serializable{
         this.id = id;
         this.nombre = nombre;
         this.precio = precio;
+
     }
 
     public Item(int id, String nombre, double precio,int idLista) {
@@ -34,6 +35,15 @@ public class Item  implements Serializable{
         this.nombre = nombre;
         this.precio = precio;
         this.idLista=idLista;
+    }
+
+    public Item(int id, String nombre, double precio, int cantidad, boolean comprado, int idLista) {
+        this.id = id;
+        this.nombre = nombre;
+        this.precio = precio;
+        this.cantidad = cantidad;
+        this.comprado = comprado;
+        this.idLista = idLista;
     }
 
     @Exclude
@@ -55,6 +65,10 @@ public class Item  implements Serializable{
 
     public double getPrecio() {
         return precio;
+    }
+
+    public double getPrecioTotal(){
+        return precio*cantidad;
     }
 
     public void setPrecio(double precio) {

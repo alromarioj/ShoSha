@@ -1,5 +1,4 @@
 package es.shosha.shosha.persistencia;
-
 import android.util.Log;
 
 import com.google.firebase.database.ChildEventListener;

@@ -21,6 +21,7 @@ public class UsuarioFB {
     private static final String USUARIO = "usuario";
     public static final String LOG_MSG = "UsuarioFB";
     public static long cuenta = 0;
+    public static Object lock = new Object();
 
     public UsuarioFB() {
         DatabaseReference sbUsuario =
@@ -32,7 +33,7 @@ public class UsuarioFB {
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
                 Log.d(LOG_MSG, "onChildAdded: {" + dataSnapshot.getKey() + ": " + dataSnapshot.getValue() + "}");
                 Usuario u = parser(dataSnapshot);
-                cuenta++;
+                lastChild();
                 AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
                 abd.open();
                 abd.insertarUsuario(u);
@@ -53,7 +54,7 @@ public class UsuarioFB {
             public void onChildRemoved(DataSnapshot dataSnapshot) {
                 Log.d(LOG_MSG, "onChildRemoved: {" + dataSnapshot.getKey() + ": " + dataSnapshot.getValue() + "}");
                 Usuario u = parser(dataSnapshot);
-                cuenta--;
+                lastChild();
                 AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
                 abd.open();
                 abd.eliminarUsuario(u);
@@ -120,5 +121,32 @@ public class UsuarioFB {
             }
         });
         return u[0];
+    }
+
+    public static void lastChild() {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference messages = database
+                .getReference()
+                .child(USUARIO); // change this to your databae ref
+
+        messages.limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot.exists()) {
+                    Iterable<DataSnapshot> it = dataSnapshot.getChildren();
+                    for (DataSnapshot snapshot : it) {
+                        String key = snapshot.getKey();
+                        cuenta = Long.parseLong(key);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 }
