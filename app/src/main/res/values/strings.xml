@@ -52,4 +52,7 @@
     <string name="totalprecio">Total:  </string>
     <string name="preguntas_frecuentes">Preguntas Frecuentes</string>
     <string name="goback">Volver</string>
+    <string name="title_activity_main_activitys">MainActivitys</string>
+
+    <string name="action_settings">Settings</string>
 </resources>

@@ -1,7 +1,10 @@
 package es.shosha.shosha.negocio;
 
 import android.content.Context;
+import android.widget.TextView;
 
+import es.shosha.shosha.MyApplication;
+import es.shosha.shosha.R;
 import es.shosha.shosha.persistencia.ItemFB;
 import es.shosha.shosha.persistencia.ListaFB;
 import es.shosha.shosha.persistencia.ParticipaFB;

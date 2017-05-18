@@ -106,13 +106,7 @@ public class ItemFB {
                         .child(String.valueOf(idItem));
         dbRef.removeValue();
     }
-    public static void borrarItemFB(int idItem) {
-        DatabaseReference dbRef =
-                FirebaseDatabase.getInstance().getReference()
-                        .child(ITEM)
-                        .child(String.valueOf(idItem));
-        dbRef.removeValue();
-    }
+
     public static void lastChild() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference messages = database

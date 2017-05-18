@@ -175,6 +175,7 @@ public class ListaProductos extends AppCompatActivity {
                 // Set up the input
                 final EditText input_np1 = (EditText) viewInflated.findViewById(R.id.in_nombre_producto);
                 final EditText input_pp = (EditText) viewInflated.findViewById(R.id.in_precio_producto);
+                final EditText input_cant = (EditText) viewInflated.findViewById(R.id.in_cantidad_producto);
                 // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
                 builder.setView(viewInflated);
 
@@ -188,6 +189,7 @@ public class ListaProductos extends AppCompatActivity {
                         String precio = input_pp.getText().toString();
                         precio = (precio.isEmpty() ? "0" : precio);
                         Item i = new Item(lista.getItems().size(), input_np1.getText().toString(), Double.valueOf(precio), lista.getId());
+                        i.setCantidad(Integer.parseInt(input_cant.getText().toString()));
 
 
                         //new ItemPers(MyApplication.getAppContext()).execute("insert", String.valueOf(lista.getId()), i.getNombre(), String.valueOf(i.getPrecio()), "1");

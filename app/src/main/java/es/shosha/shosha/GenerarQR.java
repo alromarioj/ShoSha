@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Writer;
 import com.google.zxing.WriterException;
@@ -43,18 +44,28 @@ public class GenerarQR extends AppCompatActivity {
         }
     }
     public void generar(View view){
-        String datos="{'idLista'='"+idLista+"','clave'='"+clave+"'}";
-        ImageView qrcode=(ImageView)findViewById(R.id.codigoQR);
+
+//        String datos = "{'idLista'='" + idLista + ",'clave'='" + clave + "'";
+
+        //IntentIntegrator integrator = new IntentIntegrator(this);
+        //Integrator.addExtra("ENCODE_DATA", bundle);
+        System.out.println("Datos enviados en código QR: " + clave);
+
+
+        ImageView qrcode = (ImageView) findViewById(R.id.codigoQR);
 
         Writer writer = new QRCodeWriter();
-        String finaldata = Uri.encode(datos, "utf-8");
-        try{
-            BitMatrix bm = writer.encode(finaldata, BarcodeFormat.QR_CODE,150, 150);
+
+        Gson gson = new Gson();
+
+        String finaldata = gson.toJson(clave);
+        try {
+            BitMatrix bm = writer.encode(finaldata, BarcodeFormat.QR_CODE, 150, 150);
             Bitmap ImageBitmap = Bitmap.createBitmap(150, 150, Bitmap.Config.ARGB_8888);
 
             for (int i = 0; i < 150; i++) {//width
                 for (int j = 0; j < 150; j++) {//height
-                    ImageBitmap.setPixel(i, j, bm.get(i, j) ? Color.BLACK: Color.WHITE);
+                    ImageBitmap.setPixel(i, j, bm.get(i, j) ? Color.BLACK : Color.WHITE);
                 }
             }
 
@@ -63,10 +74,10 @@ public class GenerarQR extends AppCompatActivity {
             } else {
                 Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_SHORT).show();
             }
-        }
-        catch (WriterException e){
+        } catch (WriterException e) {
             e.printStackTrace();
         }
+
 
     }
     @Override
