@@ -55,7 +55,7 @@
             android:layout_height="fill_parent"
             android:layout_margin="10dp"
             android:background="@android:color/background_light"
-            android:drawableTop="@mipmap/nueva_lista"
+            android:drawableTop="@mipmap/unirse_lista"
             android:onClick="unirseALista"
             android:paddingTop="15dp"
             android:text="@string/unirse" />
@@ -67,7 +67,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:background="@android:color/background_light"
-            android:drawableTop="@mipmap/nueva_lista"
+            android:drawableTop="@mipmap/recetas"
             android:paddingTop="15dp"
             android:text="@string/buscar_receta" />
     </TableRow>
