@@ -1,5 +1,4 @@
 package es.shosha.shosha.persistencia.sqlite;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -247,38 +246,20 @@ public class AdaptadorBD {
         return res;
     }
 
-    public long insertarItem(int id, String nombre, double precio, int idLista, int cantidad, boolean comprado) {
+    public long insertarItem(Item i) {
+        //    bdatos.beginTransaction();
+
+    /*    try {*/
         bdatos.beginTransaction();
         long res = 0;
         try {
             ContentValues valores = new ContentValues();
-            valores.put(ID, id);
-            valores.put(NOMBRE, nombre);
-            valores.put(ITM_PRECIO, precio);
-            valores.put(IDLISTA, idLista);
-            valores.put(ITM_CANT, cantidad);
-            valores.put(ITM_COMPR, comprado);
-
-            long l = bdatos.replace(TB_ITEM, null, valores);
-
-            bdatos.setTransactionSuccessful();
-        } finally {
-            bdatos.endTransaction();
-        }
-
-        return res;
-    }
-    public long insertarItem(Item item) {
-        bdatos.beginTransaction();
-        long res = 0;
-        try {
-            ContentValues valores = new ContentValues();
-            valores.put(ID, item.getId());
-            valores.put(NOMBRE,item.getNombre());
-            valores.put(ITM_PRECIO, item.getPrecio());
-            valores.put(IDLISTA, item.getIdLista());
-            valores.put(ITM_CANT, item.getCantidad());
-            valores.put(ITM_COMPR, item.isComprado());
+            valores.put(ID, i.getId());
+            valores.put(NOMBRE, i.getNombre());
+            valores.put(ITM_PRECIO, i.getPrecio());
+            valores.put(IDLISTA, i.getIdLista());
+            valores.put(ITM_CANT, i.getCantidad());
+            valores.put(ITM_COMPR, i.isComprado());
 
             long l = bdatos.replace(TB_ITEM, null, valores);
 
@@ -361,7 +342,6 @@ public class AdaptadorBD {
                 l.setId(c.getInt(0));
                 l.setNombre(c.getString(1));
                 l.setEstado(c.getString(3).equals("1"));
-                l.setCodigoQR(obtenerQR(l.getId()));
                 int usrProp = c.getInt(2);
                 if (usrProp == idUsuario && u != null) {
                     l.setPropietario(u);
@@ -570,20 +550,6 @@ public class AdaptadorBD {
         } finally {
             bdatos.endTransaction();
         }
-    }
-    public long comprarItem(int idProducto) {
-        bdatos.beginTransaction();
-        long res=-1;
-        try {
-            ContentValues cv = new ContentValues();
-            cv.put(ITM_COMPR,1);
-
-            res=bdatos.update(TB_ITEM, cv, "id=" + idProducto, null);
-            bdatos.setTransactionSuccessful();
-        } finally {
-            bdatos.endTransaction();
-        }
-        return res;
     }
 
     public void updateItem(Item i) {
