@@ -2,17 +2,13 @@ package es.shosha.shosha;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -23,12 +19,9 @@ import static es.shosha.shosha.MyApplication.getAppContext;
 public class Inicio extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         //    new Thread(new CargaDatos(2,MyApplication.getAppContext())).start();
 
         setContentView(R.layout.activity_inicio);
@@ -43,7 +36,6 @@ public class Inicio extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
-
 
     @Override
     public void onBackPressed() {
@@ -61,7 +53,7 @@ public class Inicio extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        switch (id) {
+        switch (id){
             case R.id.nav_ayuda:
                 Intent intent = new Intent(this, faq.class);
                 startActivity(intent);
@@ -92,13 +84,11 @@ public class Inicio extends AppCompatActivity
         Intent i = new Intent(this, ListasActivas.class);
         startActivity(i);
     }
-
     public void mostrarAnadirLista(View view) {
         //Ejecuta la actividad de listas activas
         Intent i = new Intent(this, AnadirLista.class);
         startActivity(i);
     }
-
     public void unirseALista(View view) {
         //Ejecuta la actividad de listas activas
         Intent i = new Intent(this, LectorQR.class);

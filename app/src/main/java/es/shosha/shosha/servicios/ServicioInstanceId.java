@@ -31,6 +31,6 @@ public class ServicioInstanceId extends FirebaseInstanceIdService {
      */
     private void sendRegistrationToServer(String token) {
         // Guarda el token para asignarselo al usuario en la base de datos remota cuando se registre
-        MyApplication.setToken(token);
+        //MyApplication.setToken(token);
     }
 }

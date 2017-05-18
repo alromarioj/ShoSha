@@ -53,12 +53,10 @@
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
                 <action android:name="com.google.zxing.client.android.SCAN" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -93,7 +91,7 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".faq" />
+        <activity android:name=".faq"></activity>
     </application>
 
 </manifest>

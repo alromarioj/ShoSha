@@ -27,51 +27,71 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 import es.shosha.shosha.zxing.IntentIntegrator;
 import es.shosha.shosha.zxing.IntentResult;
 
-public class LectorQR extends AppCompatActivity implements OnClickListener {
+public class LectorQR extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        try {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_lector_qr);
-            // verifico si el usuario dio los permisos para la camara
-            if (ContextCompat.checkSelfPermission(getBaseContext(), android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                Button bt = (Button) findViewById(R.id.btEscanear);
-                bt.setOnClickListener(this);
-
-
-            } else {
-                Toast.makeText(getBaseContext(), "La aplicación necesita usar la cámara", Toast.LENGTH_LONG).show();
-            }
-            //Aparece el botón de atrás
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            }
-        } catch (Exception e) {
-            Log.e(e.getMessage(), e.getLocalizedMessage());
-            Toast.makeText(MyApplication.getAppContext(), e.getMessage(), Toast.LENGTH_LONG);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_lector_qr);
+        //Aparece el botón de atrás
+        if(getSupportActionBar()!=null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode==0){
+            if(resultCode==RESULT_OK){
+                String contents=data.getStringExtra("SCAN_RESULT");
 
-        IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if (scanResult != null) {
-
-            Gson gson = new Gson();
-
-            String clave = gson.fromJson(scanResult.getContents(), String.class);
-            Toast.makeText(this, "Código detectado: " + clave, Toast.LENGTH_LONG).show();
-
-            int idu = MyApplication.getUser().getId();
-
-            //new ParticipaPers(MyApplication.getAppContext(), (CountDownLatch) null).execute("insert", "qr", clave, String.valueOf(idu));
+                try{
+                    String decodificado= URLDecoder.decode(contents, "UTF-8");
+                    JSONObject obj = new JSONObject(decodificado);
+                    String lista=obj.getString("idLista");
+                    String clave=obj.getString("clave");
+                    int idu=MyApplication.getUser().getId();
+                    // Añadir al usuario como participante en la lista
+                    //Añade participante en bd remota
+                    //new ParticipaPers(MyApplication.getAppContext(), null,this).execute("insert", lista,clave,String.valueOf(idu));
+                }
+                catch (UnsupportedEncodingException e){
+                    e.printStackTrace();
+                }
+                catch(JSONException e){
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    public void sigueAnadirParticipante(boolean error, int usuario, int lista){
+        System.out.println("Error: "+error+" Usuario: "+usuario+" Lista: "+lista);
+        if(error){
+            Toast.makeText(this, "Error al añadir la lista", Toast.LENGTH_SHORT).show();
+        }
+        else{
             AdaptadorBD abd = new AdaptadorBD(getBaseContext());
             abd.open();
-            int lid = abd.obtenerIdListaQR(clave);
+            //Añade participante en bd local
+            abd.insertarParticipa(usuario, lista,true);
+
+            Toast.makeText(this, "Lista añadida", Toast.LENGTH_SHORT).show();
+            Intent i = new Intent(this, ListaProductos.class);//Muestra la lista nueva
+            Bundle bundle = new Bundle();
+            bundle.putInt("idLista", lista);
+            i.putExtras(bundle);
+            startActivity(i);
             abd.close();
-            ParticipaFB.insertaParticipaFB(idu, lid);
+        }
+    }
+    public void abrirEscaner(View view){
+        // verifico si el usuario dio los permisos para la camara
+        if (ContextCompat.checkSelfPermission(getBaseContext(), android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+            intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
+            startActivityForResult(intent, 0);
+        } else {
+            Toast.makeText(getBaseContext(), "La aplicación necesita usar la cámara", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -95,15 +115,6 @@ public class LectorQR extends AppCompatActivity implements OnClickListener {
             mapa.put(par[0], par[1]);
         }
         return mapa;
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.btEscanear) {
-            IntentIntegrator integrator = new IntentIntegrator(this);
-            integrator.addExtra("SCAN_MODE", "QR_CODE_MODE");
-            integrator.initiateScan();
-        }
     }
 }
 /*Intent intent = new Intent("com.google.zxing.client.android.SCAN");
