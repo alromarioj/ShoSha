@@ -15,7 +15,11 @@ import java.util.List;
 
 import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Item;
+import es.shosha.shosha.dominio.Lista;
+import es.shosha.shosha.dominio.Usuario;
 import es.shosha.shosha.persistencia.ItemFB;
+import es.shosha.shosha.persistencia.ListaFB;
+import es.shosha.shosha.persistencia.Notificacion;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 /**
@@ -52,7 +56,7 @@ public class ProductosAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        ProductosViewHolder viewHolder = (ProductosViewHolder) holder;
+        final ProductosViewHolder viewHolder = (ProductosViewHolder) holder;
         final Item item = items.get(position);
         viewHolder.comprado.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,8 +66,33 @@ public class ProductosAdapter extends RecyclerView.Adapter {
                             String.valueOf(idLista),
                             String.valueOf(item.getId()),//Id del producto seleccionado
                             String.valueOf(MyApplication.getUser().getId()));*/
-                item.setComprado(true);
+                if(viewHolder.comprado.isChecked()){
+                    item.setComprado(true);
+                    List<String> params=new ArrayList<String>();
+                    int idUsuario=MyApplication.getUser().getId();
+                    //Obtener usuarios que participen en la lista o propietarios de la misma
+                    AdaptadorBD abd=new AdaptadorBD(contexto);
+                    abd.open();
+                    List<Usuario> l=abd.getParticipantes(idLista);
+                    Lista lista=abd.obtenerLista(idLista,idUsuario);
+                    l.add(lista.getPropietario());
+                    abd.close();
+                    params.add(lista.getNombre());
+                    //Escoger usuarios que no sean el usuario actual
+                    for (Usuario u:l) {
+                        if(idUsuario!=u.getId()){
+                            params.add(String.valueOf(u.getId()));
+                        }
+                    }
+
+                    new Notificacion().execute(params);//Enviar notificación
+
+                }
+                else{
+                    item.setComprado(false);
+                }
                 ItemFB.insertaItemFB(item, false);
+
 
             }
         });

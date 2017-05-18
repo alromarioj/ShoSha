@@ -20,19 +20,20 @@ import java.util.Map;
  * Created by inhernan on 18/05/2017.
  */
 
-public class Notificacion extends AsyncTask<String, Void, Void> {
+public class Notificacion extends AsyncTask<List<String>, Void, Void> {
     private final static String URLCompra="http://shosha.jiraizoz.es/notificarCompra.php";
     public Notificacion(){
 
     }
     @Override
-    protected Void doInBackground(String... params) {
+    protected Void doInBackground(List<String>... params) {
         try{
+            List<String> parametros=params[0];
             List<String> usuarios=new ArrayList<>();
-            for(int i=1;i<params.length;i++){
-                usuarios.add(params[i]);
+            for(int i=1;i<parametros.size();i++){
+                usuarios.add(parametros.get(i));
             }
-            send(params[0],usuarios);
+            send(parametros.get(0),usuarios);
         }
         catch (IOException e){
             e.printStackTrace();
@@ -64,6 +65,7 @@ public class Notificacion extends AsyncTask<String, Void, Void> {
         conn.setDoOutput(true);
         conn.getOutputStream().write(postDataBytes);
 
+        System.out.println("---------Notificación-----------");
         Reader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
         for (int c = in.read(); c != -1; c = in.read())
             System.out.print((char) c);

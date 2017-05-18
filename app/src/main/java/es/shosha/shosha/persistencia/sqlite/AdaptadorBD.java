@@ -42,8 +42,8 @@ public class AdaptadorBD {
     private static final String LST_PROP = "propietario";
     private static final String LST_ESTADO = "estado";
     private static final String ITM_PRECIO = "precio";
-    private static final String ITM_CANTIDAD = "cantidad";
-    private static final String ITM_COMPRADO = "comprado";
+    private static final String ITM_CANT = "cantidad";
+    private static final String ITM_COMPR = "comprado";
     private static final String IDLISTA = "idLista";
     private static final String PPA_IDUSR = "idUsuario";
     private static final String PPA_ACTIVO = "activo";
@@ -558,7 +558,7 @@ public class AdaptadorBD {
         long res=-1;
         try {
             ContentValues cv = new ContentValues();
-            cv.put(ITM_COMPRADO,1);
+            cv.put(ITM_COMPR,1);
 
             res=bdatos.update(TB_ITEM, cv, "id=" + idProducto, null);
             bdatos.setTransactionSuccessful();
@@ -576,8 +576,8 @@ public class AdaptadorBD {
             valores.put(NOMBRE, i.getNombre());
             valores.put(ITM_PRECIO, i.getPrecio());
             valores.put(IDLISTA, i.getIdLista());
-            valores.put(ITM_CANTIDAD, i.getCantidad());
-            valores.put(ITM_COMPRADO, i.isComprado());
+            valores.put(ITM_CANT, i.getCantidad());
+            valores.put(ITM_COMPR, i.isComprado());
 
             bdatos.update(TB_ITEM, valores, ID + "=?", new String[]{String.valueOf(i.getId())});
             bdatos.setTransactionSuccessful();

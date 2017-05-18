@@ -22,16 +22,15 @@ import es.shosha.shosha.R;
  */
 
 public class ServicioFirebaseMessaging extends FirebaseMessagingService {
-    private static final String TAG = "FCM Service";
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
        super.onMessageReceived(remoteMessage);
         Map<String,String> datos=remoteMessage.getData();
         mostrarNotificacion(
-                datos.get("lista")
+                datos.get("message")
         );
     }
-    private void mostrarNotificacion(String lista){
+    private void mostrarNotificacion(String mensaje){
         int icono = R.mipmap.logo;
         Intent i = new Intent(this, ListaProductos.class);
         //Enviar id de lista
@@ -41,7 +40,7 @@ public class ServicioFirebaseMessaging extends FirebaseMessagingService {
         .setContentIntent(pendingIntent)
         .setSmallIcon(icono)
         .setContentTitle("Compra")
-        .setContentText("Se está comprando la lista "+lista)
+        .setContentText(mensaje)
         .setVibrate(new long[]{100,250,100,500})
         .setAutoCancel(true);//Al hacer click la notificación desaparece
 
