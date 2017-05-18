@@ -85,7 +85,7 @@ public class ListaFB {
         return lst;
     }
 
-    public static void insertaListaFB(Lista l) {
+    public static long insertaListaFB(Lista l) {
         DatabaseReference dbRef =
                 FirebaseDatabase.getInstance().getReference()
                         .child(LISTA);
@@ -139,6 +139,8 @@ public class ListaFB {
         }
 
         dbRef.child(String.valueOf(i)).setValue(new aux(l.getNombre(), l.isEstado(), l.getPropietario().getId(), l.getCodigoQR()));
+
+        return i;
 
     }
 

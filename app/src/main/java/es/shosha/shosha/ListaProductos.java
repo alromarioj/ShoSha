@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import es.shosha.shosha.AdaptadorLista.Productos.ProductosAdapter;
@@ -42,12 +43,15 @@ public class ListaProductos extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        this.lista = new Lista();
         AdaptadorBD abd = new AdaptadorBD(getBaseContext());
         abd.open();
         this.lista = abd.obtenerLista(this.getIntent().getExtras().getInt("idLista"), MyApplication.getUser().getId());//Se recoge la lista que se ha pasado desde ListasActivas
         abd.close();
-        productos = lista.getItems();
+        if (lista.getItems() != null)
+            productos = lista.getItems();
+        else
+            productos = new ArrayList<Item>();
         System.out.println("Número de productos: " + productos.size());
 
         setContentView(R.layout.activity_lista_productos);
@@ -167,13 +171,13 @@ public class ListaProductos extends AppCompatActivity {
                         //new ItemPers(MyApplication.getAppContext()).execute("insert", String.valueOf(lista.getId()), i.getNombre(), String.valueOf(i.getPrecio()), "1");
                         ItemFB.insertaItemFB(i);
 
-                        AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
+                    /*    AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
                         abd.open();
                         int sp = productos.size();
                         do {
                             productos = abd.obtenerItems(lista.getId());
                         } while (sp == productos.size());
-                        abd.close();
+                        abd.close();*/
 
                         Toast.makeText(ListaProductos.this, "Añadiendo producto " + i.getNombre(), Toast.LENGTH_SHORT).show();
                         //Avisa de que la lista ha cambiado

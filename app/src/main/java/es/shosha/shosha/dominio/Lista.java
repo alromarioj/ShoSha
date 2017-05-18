@@ -19,7 +19,7 @@ public class Lista implements Serializable {
     private boolean estado;
     private transient List<Usuario> participantes;
     private transient Drawable imagen = null;
-    private transient List<Item> items;
+    private transient List<Item> items = new ArrayList<Item>();
     private String codigoQR;
 
     /**

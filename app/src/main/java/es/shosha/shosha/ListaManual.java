@@ -1,6 +1,7 @@
 package es.shosha.shosha;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,14 +15,19 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import es.shosha.shosha.dominio.Lista;
 import es.shosha.shosha.dominio.Usuario;
 import es.shosha.shosha.persistencia.ListaFB;
-import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 import static es.shosha.shosha.R.id.nombre;
 
+/**
+ * Actividad que se ejecuta tras presionar el botón de "Manual" o el botón "+" para añadir listas.
+ * XML asociado: activity_lista_manual.xml
+ */
 public class ListaManual extends AppCompatActivity {
     private String nomLista, claveLista;
     private static final int SELECT_PICTURE = 1;
@@ -82,24 +88,39 @@ public class ListaManual extends AppCompatActivity {
         aux.setNombre(nomLista);
         aux.setCodigoQR(claveLista);
         aux.setPropietario(new Usuario(idu, "", ""));
-        ListaFB.insertaListaFB(aux);
+        aux.setEstado(true);
+        long l = ListaFB.insertaListaFB(aux);
+        sigueCrearLista((int) l);
     }
 
-    public void sigueCrearLista(int id) {
+    public void sigueCrearLista(final int id) {
         System.out.println("=?=" + id);
-        AdaptadorBD abd = new AdaptadorBD(getBaseContext());
+      /*  AdaptadorBD abd = new AdaptadorBD(getBaseContext());
         abd.open();
         abd.insertarLista(id, nomLista, MyApplication.getUser(), "1");//Añadir clave
-        abd.close();
+        abd.close();*/
         Toast.makeText(this, "Añadiendo lista ", Toast.LENGTH_SHORT).show();
 
+        final Context este = this;
+
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                Intent i = new Intent(este, ListaProductos.class);
+                Bundle bundle = new Bundle();
+                bundle.putInt("idLista", id);
+                i.putExtras(bundle);
+                startActivity(i);
+                finish();
+            }
+        };
+
+        // Simulate a long loading process on application startup.
+        Timer timer = new Timer();
+        timer.schedule(task, 2000);
+
         //Muestra las listas del usuario
-        Intent i = new Intent(this, ListaProductos.class);
-        Bundle bundle = new Bundle();
-        bundle.putInt("idLista", id);
-        i.putExtras(bundle);
-        startActivity(i);
-        this.finish();
+
     }
 
     private String generarClave(int longitud) {
@@ -117,6 +138,5 @@ public class ListaManual extends AppCompatActivity {
         return cadenaAleatoria;
     }
 
-    ;
 }
 

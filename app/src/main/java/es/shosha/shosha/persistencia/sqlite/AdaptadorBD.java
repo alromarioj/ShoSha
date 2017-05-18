@@ -398,9 +398,8 @@ public class AdaptadorBD {
         String sql = "SELECT DISTINCT l.* FROM lista l LEFT JOIN participa p ON l.id=p.idLista WHERE l.id=" + idLista + " AND ((l.propietario=" + idUsuario + " AND l.estado=1) OR (p.idUsuario=" + idUsuario + " AND p.activo=1))";
         Cursor c = bdatos.rawQuery(sql, null);
         Usuario u = this.obtenerUsuario(idUsuario);
-        Lista l = null;
+        Lista l = new Lista();
         if (c.moveToFirst()) {
-            l = new Lista();
             l.setId(c.getInt(0));
             l.setNombre(c.getString(1));
             l.setEstado(c.getString(3).equals("1"));
