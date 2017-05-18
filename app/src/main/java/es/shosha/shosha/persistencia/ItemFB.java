@@ -7,6 +7,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Item;
@@ -32,7 +33,7 @@ public class ItemFB {
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
                 Log.d(LOG_MSG, "onChildAdded: {" + dataSnapshot.getKey() + ": " + dataSnapshot.getValue() + "}");
                 Item i = parser(dataSnapshot);
-                cuenta++;
+                lastChild();
                 AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
                 abd.open();
                 abd.insertarItem(i);
@@ -53,7 +54,7 @@ public class ItemFB {
             public void onChildRemoved(DataSnapshot dataSnapshot) {
                 Log.d(LOG_MSG, "onChildRemoved: {" + dataSnapshot.getKey() + ": " + dataSnapshot.getValue() + "}");
                 Item i = parser(dataSnapshot);
-                cuenta--;
+                lastChild();
                 AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
                 abd.open();
                 abd.eliminarItem(i.getIdLista(), i.getId());
@@ -81,6 +82,11 @@ public class ItemFB {
         return itm;
     }
 
+    /**
+     * Inserta un item en la base de datos remota.
+     * @param it Item a añadir
+     * @param nuevo Indica si se añade un nuevo item o uno ya existente
+     */
     public static void insertaItemFB(Item it, boolean nuevo) {
         DatabaseReference dbRef =
                 FirebaseDatabase.getInstance().getReference()
@@ -100,5 +106,31 @@ public class ItemFB {
                         .child(ITEM)
                         .child(String.valueOf(idItem));
         dbRef.removeValue();
+    }
+    public static void lastChild() {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference messages = database
+                .getReference()
+                .child(ITEM); // change this to your databae ref
+
+        messages.limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot.exists()) {
+                    Iterable<DataSnapshot> it = dataSnapshot.getChildren();
+                    for (DataSnapshot snapshot : it) {
+                        String key = snapshot.getKey();
+                        cuenta = Long.parseLong(key);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 }
