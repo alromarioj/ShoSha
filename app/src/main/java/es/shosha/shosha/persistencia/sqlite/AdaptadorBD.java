@@ -225,9 +225,6 @@ public class AdaptadorBD {
     }
 
     public long insertarItem(int id, String nombre, double precio, int idLista) {
-        //    bdatos.beginTransaction();
-
-    /*    try {*/
         bdatos.beginTransaction();
         long res = 0;
         try {
