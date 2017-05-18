@@ -1,5 +1,4 @@
 package es.shosha.shosha.persistencia;
-
 import android.util.Log;
 
 import com.google.firebase.database.ChildEventListener;
@@ -145,6 +144,19 @@ public class ListaFB {
 
         return i;
 
+    }
+
+    public static void borrarListaFB(int idLista, boolean propietario) {
+        if (propietario) {
+            DatabaseReference dbRef =
+                    FirebaseDatabase.getInstance().getReference()
+                            .child(LISTA)
+                            .child(String.valueOf(idLista))
+                            .child("estado");
+            dbRef.setValue(false);
+        } else {
+            ParticipaFB.borrarParticipaFB(idLista);
+        }
     }
 
 }

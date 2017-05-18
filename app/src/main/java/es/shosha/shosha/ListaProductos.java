@@ -22,13 +22,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import es.shosha.shosha.AdaptadorLista.Productos.ProductosAdapter;
-import es.shosha.shosha.AdaptadorLista.Productos.RecyclerViewOnItemClickListener;
+import es.shosha.shosha.Adaptadores.Productos.ProductosAdapter;
+import es.shosha.shosha.Adaptadores.Productos.RecyclerViewOnItemClickListener;
 import es.shosha.shosha.dominio.Item;
 import es.shosha.shosha.dominio.Lista;
 import es.shosha.shosha.persistencia.ItemFB;
@@ -37,9 +38,10 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 public class ListaProductos extends AppCompatActivity {
     private ListView list;
     private Lista lista;
-    private List<Item> productos;//=new ArrayList<>();
+    private List<Item> productos;
+    private double pTotal = 0;
     RecyclerView mRecyclerView;
-
+    ListaProductos actividad=this;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this.lista = new Lista();
@@ -65,6 +67,12 @@ public class ListaProductos extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+        TextView precioTotal = (TextView) findViewById(R.id.textViewTotal);
+        pTotal = 0;
+        for(Item i : productos){
+            pTotal += i.getPrecioTotal();
+        }
+        precioTotal.setText(String.valueOf(pTotal));
         super.onCreate(savedInstanceState);
     }
 
@@ -81,6 +89,8 @@ public class ListaProductos extends AppCompatActivity {
         input_np2.setText(producto.getNombre());
         final EditText input_pp = (EditText) viewInflated1.findViewById(R.id.in_precio_producto);
         input_pp.setText(String.valueOf(producto.getPrecio()));
+        final EditText input_cantidad = (EditText) viewInflated1.findViewById(R.id.in_cantidad_producto);
+        input_cantidad.setText(String.valueOf(producto.getCantidad()));
 
         // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
         builder1.setView(viewInflated1);
@@ -100,9 +110,12 @@ public class ListaProductos extends AppCompatActivity {
                 //Se inserta un producto a la lista a partir de los datos introducidos
                 String precio = input_pp.getText().toString();
                 precio = (precio.isEmpty() ? "0" : precio);
+                String cantidad = input_cantidad.getText().toString();
+                cantidad = (cantidad.isEmpty() ? "0" : cantidad);
                 //Item i=new Item("ref"+lista.getItems().size(),input_np2.getText().toString(),Double.valueOf(precio));
                 producto.setNombre(input_np2.getText().toString());
                 producto.setPrecio(Double.valueOf(precio));
+                producto.setCantidad(Integer.valueOf(cantidad));
 
                 //new ListaPers(MyApplication.getAppContext(), null).execute("update", id, MyApplication.getUser().getId());
 //                abd.insertarItem(producto.getId(), producto.getNombre(), producto.getPrecio(), lista.getId());
@@ -112,6 +125,12 @@ public class ListaProductos extends AppCompatActivity {
                 ItemFB.insertaItemFB(producto, false);
 
                 Toast.makeText(ListaProductos.this, "Editando producto " + producto.getNombre(), Toast.LENGTH_SHORT).show();
+                TextView precioTotal = (TextView) findViewById(R.id.textViewTotal);
+                pTotal = 0;
+                for(Item i : productos){
+                    pTotal += i.getPrecioTotal();
+                }
+                precioTotal.setText(String.valueOf(pTotal));
                 //Avisa de que la lista ha cambiado
                 mRecyclerView.getAdapter().notifyDataSetChanged();
                 dialog.dismiss();
@@ -208,7 +227,22 @@ public class ListaProductos extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-
+    public void sigueNuevoProducto(int id){
+        AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
+        abd.open();
+        Item producto=abd.obtenerItem(id);
+        productos.add(producto);
+        abd.close();
+        Toast.makeText(ListaProductos.this, "Añadiendo producto " + producto.getNombre(), Toast.LENGTH_SHORT).show();
+        TextView precioTotal = (TextView) findViewById(R.id.textViewTotal);
+        pTotal = 0;
+        for(Item i : productos){
+            pTotal += i.getPrecioTotal();
+        }
+        precioTotal.setText(String.valueOf(pTotal));
+        //Avisa de que la lista ha cambiado
+        mRecyclerView.getAdapter().notifyDataSetChanged();
+    }
     private void setUpRecyclerView(List<Item> productos) {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(new ProductosAdapter(productos, new RecyclerViewOnItemClickListener() {
@@ -244,7 +278,6 @@ public class ListaProductos extends AppCompatActivity {
                 xMarkMargin = (int) ListaProductos.this.getResources().getDimension(R.dimen.fab_margin);
                 initiated = true;
             }
-
             // not important, we don't want drag & drop
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
@@ -254,7 +287,7 @@ public class ListaProductos extends AppCompatActivity {
             @Override
             public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
                 int position = viewHolder.getAdapterPosition();
-                ProductosAdapter testAdapter = (ProductosAdapter) recyclerView.getAdapter();
+                ProductosAdapter testAdapter = (ProductosAdapter)recyclerView.getAdapter();
                 if (testAdapter.isUndoOn() && testAdapter.isPendingRemoval(position)) {
                     return 0;
                 }
@@ -264,7 +297,7 @@ public class ListaProductos extends AppCompatActivity {
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 int swipedPosition = viewHolder.getAdapterPosition();
-                ProductosAdapter adapter = (ProductosAdapter) mRecyclerView.getAdapter();
+                ProductosAdapter adapter = (ProductosAdapter)mRecyclerView.getAdapter();
                 boolean undoOn = adapter.isUndoOn();
                 if (undoOn) {
                     adapter.pendingRemoval(swipedPosition);
@@ -273,7 +306,6 @@ public class ListaProductos extends AppCompatActivity {
                     adapter.remove(swipedPosition);
                 }
             }
-
             @Override
             public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
                 View itemView = viewHolder.itemView;
@@ -297,7 +329,7 @@ public class ListaProductos extends AppCompatActivity {
 
                 int xMarkLeft = itemView.getRight() - xMarkMargin - intrinsicWidth;
                 int xMarkRight = itemView.getRight() - xMarkMargin;
-                int xMarkTop = itemView.getTop() + (itemHeight - intrinsicHeight) / 2;
+                int xMarkTop = itemView.getTop() + (itemHeight - intrinsicHeight)/2;
                 int xMarkBottom = xMarkTop + intrinsicHeight;
                 xMark.setBounds(xMarkLeft, xMarkTop, xMarkRight, xMarkBottom);
 

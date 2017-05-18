@@ -233,4 +233,12 @@ public class Lista implements Serializable {
     public void setCodigoQR(String codigoQR) {
         this.codigoQR = codigoQR;
     }
+
+    public String getPrecioTotal(){
+        double precioTotal = 0;
+        for(Item i : this.items){
+            precioTotal += i.getPrecioTotal();
+        }
+        return String.valueOf(precioTotal);
+    }
 }

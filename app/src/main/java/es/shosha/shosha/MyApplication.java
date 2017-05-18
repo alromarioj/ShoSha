@@ -15,6 +15,7 @@ public class MyApplication extends Application {
 
     private static Context context;
     private static Usuario user;
+    private static String token;
 
     public static Usuario getUser() {
 
@@ -38,6 +39,16 @@ public class MyApplication extends Application {
         SharedPreferences.Editor editor = pref.edit();
         editor.putInt("idUsuario", MyApplication.user.getId());
         editor.apply();
+        //Añadir token a la base de datos con el usuario asignado
+//        new TokenPers(context).execute("insert",token,String.valueOf(user.getId()));
+    }
+
+    public static String getToken() {
+        return token;
+    }
+
+    public static void setToken(String token) {
+        MyApplication.token = token;
     }
 
     public void onCreate() {

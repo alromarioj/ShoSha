@@ -94,4 +94,11 @@ public class ItemFB {
 
 
     }
+    public static void borrarItemFB(int idItem) {
+        DatabaseReference dbRef =
+                FirebaseDatabase.getInstance().getReference()
+                        .child(ITEM)
+                        .child(String.valueOf(idItem));
+        dbRef.removeValue();
+    }
 }
