@@ -17,7 +17,7 @@ import java.util.List;
 
 import es.shosha.shosha.Adaptadores.AdapterLista;
 import es.shosha.shosha.dominio.Lista;
-import es.shosha.shosha.persistencia.ListaPers;
+import es.shosha.shosha.persistencia.ListaFB;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 public class ListasActivas extends AppCompatActivity {
@@ -116,23 +116,24 @@ public class ListasActivas extends AppCompatActivity {
     public boolean onContextItemSelected(MenuItem item) {
         String opcion = item.getTitle().toString();
         int id = listaClicada.getId();
-        String idu = MyApplication.getUser().getStringId();
+        String idu = String.valueOf(MyApplication.getUser().getId());
         if (opcion.equals("Eliminar")) {
             //Se elimina la lista seleccionada de las listas del usuario
             Toast.makeText(this, "Eliminando lista " + id, Toast.LENGTH_SHORT).show();
 
-            new ListaPers(MyApplication.getAppContext(), null).execute("delete", String.valueOf(id), idu);
+            //new ListaPers(MyApplication.getAppContext(), null).execute("delete", String.valueOf(id), idu);
+
+            ListaFB.borrarListaFB(id, listaClicada.getPropietario().getId() == MyApplication.getUser().getId());
 
 
             listas.remove(listaClicada);
             adaptador.notifyDataSetChanged();
 
 
-
         } else if (opcion.equals("Editar")) {
             Intent i = new Intent(ListasActivas.this, EditarLista.class);
             Bundle bundle = new Bundle();
-            bundle.putInt("idLista",id);
+            bundle.putInt("idLista", id);
             i.putExtras(bundle);
             startActivity(i);
         } else {
@@ -140,6 +141,7 @@ public class ListasActivas extends AppCompatActivity {
         }
         return true;
     }
+
     public void mostrarAnadirLista(View view) {
         //Ejecuta la actividad de listas activas
         Intent i = new Intent(this, AnadirLista.class);

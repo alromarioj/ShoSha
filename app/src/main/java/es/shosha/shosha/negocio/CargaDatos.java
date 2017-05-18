@@ -2,26 +2,17 @@ package es.shosha.shosha.negocio;
 
 import android.content.Context;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import es.shosha.shosha.MyApplication;
-import es.shosha.shosha.dominio.Lista;
-import es.shosha.shosha.negocio.Timer.ChecksumEjecutorTimer;
-import es.shosha.shosha.persistencia.ItemPers;
-import es.shosha.shosha.persistencia.ListaPers;
-import es.shosha.shosha.persistencia.UsuarioPers;
-import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
+import es.shosha.shosha.persistencia.ItemFB;
+import es.shosha.shosha.persistencia.ListaFB;
+import es.shosha.shosha.persistencia.ParticipaFB;
+import es.shosha.shosha.persistencia.UsuarioFB;
 
 /**
  * Created by Jesús Iráizoz on 09/03/2017.
  */
 
 public class CargaDatos implements Runnable {
+    private static final int DELAY = 3000;
     private Context contexto;
     private int idUsr;
 
@@ -30,91 +21,23 @@ public class CargaDatos implements Runnable {
         this.idUsr = idUsuario;
     }
 
+    public CargaDatos() {
+    }
+
     @Override
     public void run() {
-        //Comprobamos primero si se han realizado cambios en la BD remota
-        //Para ello, comprobamos checksums
-        boolean actualizar = false;
-
-        //TODO: Fallo de bucle infinito. buscarlo.
-
-        Map<String, Double> mapaInsercion = NegocioChecksum.setChecksum(true);
-
-        if (mapaInsercion != null && mapaInsercion.size() > 0)
-            actualizar = true;
-
-        /*
-        ChecksumPers cp = new ChecksumPers();
-        cp.execute();
-
-        Map<String, Double> mapaRemoto = null;
-
-        boolean actualizar = true;
-        try {
-            mapaRemoto = cp.get();
-
-            actualizar = NegocioChecksum.actualizaDatos(mapaRemoto);
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-        */
-
-        //Si no coindicen las BD, se realiza la inserción
-        if (actualizar) {
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-            System.out.println(">>>>>>>>>>>>>> Base de datos distinta >>>>>>>>>>>");
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
-
-            AdaptadorBD abd = new AdaptadorBD(this.contexto);
-            abd.open();
-            //    abd.insertarChecksum(mapaRemoto);
-
+        synchronized (this) {
             try {
-                final int N = 2;
-                final CountDownLatch count = new CountDownLatch(N);
-                ExecutorService pool = Executors.newFixedThreadPool(N);
-
-
-                UsuarioPers up = new UsuarioPers(this.contexto, count);
-                up.executeOnExecutor(pool, this.idUsr);
-
-                ListaPers lp = new ListaPers(this.contexto, count);
-                lp.executeOnExecutor(pool, String.valueOf(this.idUsr));
-
-                count.await();
-                try {
-                    MyApplication.setUser(up.get());
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
-
-                ItemPers ip = new ItemPers(this.contexto);
-
-
-                List<Lista> lListas = abd.obtenerListas(this.idUsr);
-
-                String[] idListas = new String[lListas.size()];
-                for (int i = 0; i < lListas.size(); i++) {
-                    idListas[i] = String.valueOf(lListas.get(i).getId());
-                }
-                System.out.println(idListas);
-                ip.execute(idListas);
-
+                new UsuarioFB();
+                this.wait(DELAY);
+                new ListaFB();
+                this.wait(DELAY);
+                new ItemFB();
+                new ParticipaFB();
+                this.wait(DELAY);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            abd.close();
         }
-
-
-        // Iniciamos un timer de los checksums
-        new ChecksumEjecutorTimer();
-
-
     }
 }

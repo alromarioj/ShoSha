@@ -43,6 +43,7 @@ public class Item  implements Serializable{
         this.idLista = idLista;
     }
 
+    @Exclude
     public int getId() {
         return id;
     }

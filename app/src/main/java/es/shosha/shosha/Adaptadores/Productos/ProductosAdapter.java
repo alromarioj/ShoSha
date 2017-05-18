@@ -14,7 +14,7 @@ import java.util.List;
 
 import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Item;
-import es.shosha.shosha.persistencia.ItemPers;
+import es.shosha.shosha.persistencia.ItemFB;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 /**
@@ -38,19 +38,20 @@ public class ProductosAdapter extends RecyclerView.Adapter {
     public ProductosAdapter(List<Item> productos, @NonNull RecyclerViewOnItemClickListener oicl, Context contexto, int idLista) {
         items = productos;
         itemsPendingRemoval = new ArrayList<>();
-        this.oicl=oicl;
-        this.contexto=contexto;
-        this.idLista=idLista;
+        this.oicl = oicl;
+        this.contexto = contexto;
+        this.idLista = idLista;
     }
+
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ProductosViewHolder(parent,oicl);
+        return new ProductosViewHolder(parent, oicl, idLista);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        ProductosViewHolder viewHolder = (ProductosViewHolder)holder;
+        ProductosViewHolder viewHolder = (ProductosViewHolder) holder;
         final Item item = items.get(position);
 
         if (itemsPendingRemoval.contains(item)) {
@@ -62,10 +63,12 @@ public class ProductosAdapter extends RecyclerView.Adapter {
             viewHolder.comprado.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    new ItemPers(MyApplication.getAppContext()).execute("buy",
+                    /*new ItemPers(MyApplication.getAppContext()).execute("buy",
                             String.valueOf(idLista),
                             String.valueOf(item.getId()),//Id del producto seleccionado
-                            String.valueOf(MyApplication.getUser().getId()));
+                            String.valueOf(MyApplication.getUser().getId()));*/
+                    item.setComprado(true);
+                    ItemFB.insertaItemFB(item, false);
 
                 }
             });
@@ -77,7 +80,8 @@ public class ProductosAdapter extends RecyclerView.Adapter {
                     // user wants to undo the removal, let's cancel the pending task
                     Runnable pendingRemovalRunnable = pendingRunnables.get(item);
                     pendingRunnables.remove(item);
-                    if (pendingRemovalRunnable != null) handler.removeCallbacks(pendingRemovalRunnable);
+                    if (pendingRemovalRunnable != null)
+                        handler.removeCallbacks(pendingRemovalRunnable);
                     itemsPendingRemoval.remove(item);
                     // this will rebind the row in "normal" state
                     notifyItemChanged(items.indexOf(item));
@@ -91,8 +95,8 @@ public class ProductosAdapter extends RecyclerView.Adapter {
             viewHolder.comprado.setVisibility(View.VISIBLE);
             viewHolder.cantidad.setVisibility(View.VISIBLE);
             viewHolder.nombre.setText(item.getNombre());
-            viewHolder.precio.setText(item.getPrecio()+" €");
-            viewHolder.cantidad.setText(" | "+String.valueOf(item.getCantidad()));
+            viewHolder.precio.setText(item.getPrecio() + " €");
+            viewHolder.cantidad.setText(" | " + String.valueOf(item.getCantidad()));
             viewHolder.undoButton.setVisibility(View.GONE);
             viewHolder.undoButton.setOnClickListener(null);
         }
@@ -155,13 +159,16 @@ public class ProductosAdapter extends RecyclerView.Adapter {
             itemsPendingRemoval.remove(item);
         }
         if (items.contains(item)) {
-            AdaptadorBD abd = new AdaptadorBD(contexto);
+            /*AdaptadorBD abd = new AdaptadorBD(contexto);
             abd.open();
             //Eliminar producto de BD local
-            abd.eliminarItem(idLista,item.getId());
+            abd.eliminarItem(idLista, item.getId());
             //Eliminar de BD remota
             new ItemPers(MyApplication.getAppContext()).execute("delete", String.valueOf(idLista), String.valueOf(item.getId()));
-            abd.close();
+            abd.close();*/
+
+            ItemFB.borrarItemFB(item.getId());
+
             //Toast.makeText(ListaProductos.this, "Eliminando producto ", Toast.LENGTH_SHORT).show();
             items.remove(position);
             notifyItemRemoved(position);

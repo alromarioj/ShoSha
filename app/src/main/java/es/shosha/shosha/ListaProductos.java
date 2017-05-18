@@ -25,13 +25,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import es.shosha.shosha.Adaptadores.Productos.ProductosAdapter;
 import es.shosha.shosha.Adaptadores.Productos.RecyclerViewOnItemClickListener;
 import es.shosha.shosha.dominio.Item;
 import es.shosha.shosha.dominio.Lista;
-import es.shosha.shosha.persistencia.ItemPers;
+import es.shosha.shosha.persistencia.ItemFB;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 public class ListaProductos extends AppCompatActivity {
@@ -43,12 +44,15 @@ public class ListaProductos extends AppCompatActivity {
     ListaProductos actividad=this;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        this.lista = new Lista();
         AdaptadorBD abd = new AdaptadorBD(getBaseContext());
         abd.open();
         this.lista = abd.obtenerLista(this.getIntent().getExtras().getInt("idLista"), MyApplication.getUser().getId());//Se recoge la lista que se ha pasado desde ListasActivas
         abd.close();
-        productos = lista.getItems();
+        if (lista.getItems() != null)
+            productos = lista.getItems();
+        else
+            productos = new ArrayList<Item>();
         System.out.println("Número de productos: " + productos.size());
 
         setContentView(R.layout.activity_lista_productos);
@@ -97,10 +101,11 @@ public class ListaProductos extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 //Asumiendo que el precio es >=0
 
-                new ItemPers(MyApplication.getAppContext()).execute("update", String.valueOf(lista.getId()), String.valueOf(producto.getId()), producto.getNombre(), String.valueOf(producto.getPrecio()), String.valueOf(producto.getCantidad()));
+//                new ItemPers(MyApplication.getAppContext()).execute("update", String.valueOf(lista.getId()), String.valueOf(producto.getId()), producto.getNombre(), String.valueOf(producto.getPrecio()), "1");
 
-                AdaptadorBD abd = new AdaptadorBD(getBaseContext());
-                abd.open();
+
+//                AdaptadorBD abd = new AdaptadorBD(getBaseContext());
+//                abd.open();
                 //new ItemPers(MyApplication.getAppContext()).execute("insert", id, MyApplication.getUser().getId());
                 //Se inserta un producto a la lista a partir de los datos introducidos
                 String precio = input_pp.getText().toString();
@@ -113,10 +118,11 @@ public class ListaProductos extends AppCompatActivity {
                 producto.setCantidad(Integer.valueOf(cantidad));
 
                 //new ListaPers(MyApplication.getAppContext(), null).execute("update", id, MyApplication.getUser().getId());
-                abd.insertarItem(producto.getId(), producto.getNombre(), producto.getPrecio(), lista.getId(), producto.getCantidad(), false);
-                abd.close();
+//                abd.insertarItem(producto.getId(), producto.getNombre(), producto.getPrecio(), lista.getId());
+//                abd.close();
                 //Editar el producto en BD remota
 
+                ItemFB.insertaItemFB(producto, false);
 
                 Toast.makeText(ListaProductos.this, "Editando producto " + producto.getNombre(), Toast.LENGTH_SHORT).show();
                 TextView precioTotal = (TextView) findViewById(R.id.textViewTotal);
@@ -181,7 +187,22 @@ public class ListaProductos extends AppCompatActivity {
                         precio = (precio.isEmpty() ? "0" : precio);
                         Item i = new Item(lista.getItems().size(), input_np1.getText().toString(), Double.valueOf(precio), lista.getId());
 
-                        new ItemPers(MyApplication.getAppContext(),actividad).execute("insert", String.valueOf(lista.getId()), i.getNombre(), String.valueOf(i.getPrecio()), String.valueOf(i.getCantidad()));
+
+                        //new ItemPers(MyApplication.getAppContext()).execute("insert", String.valueOf(lista.getId()), i.getNombre(), String.valueOf(i.getPrecio()), "1");
+                        ItemFB.insertaItemFB(i, true);
+
+                    /*    AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
+                        abd.open();
+                        int sp = productos.size();
+                        do {
+                            productos = abd.obtenerItems(lista.getId());
+                        } while (sp == productos.size());
+                        abd.close();*/
+
+                        Toast.makeText(ListaProductos.this, "Añadiendo producto " + i.getNombre(), Toast.LENGTH_SHORT).show();
+                        //Avisa de que la lista ha cambiado
+
+                        mRecyclerView.getAdapter().notifyDataSetChanged();
                         dialog.dismiss();
                     }
                 });

@@ -30,7 +30,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 import es.shosha.shosha.dominio.Usuario;
-import es.shosha.shosha.negocio.CargaDatos;
 
 import static es.shosha.shosha.MyApplication.getAppContext;
 import static es.shosha.shosha.R.id.email;
@@ -57,11 +56,11 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences pref = getSharedPreferences("MyPref", 0); // 0 - for private mode
         int id = pref.getInt("idUsuario", -1);
         if (id > 0) {
-            new Thread(new CargaDatos(id, getAppContext())).start();
             SharedPreferences.Editor editor = pref.edit();
             editor.putInt("idUsuario", id);
             editor.apply();
-            Intent i = new Intent(LoginActivity.this, Inicio.class);
+            //Intent i = new Intent(LoginActivity.this, Inicio.class);
+            Intent i = new Intent(LoginActivity.this, CargaActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             finish();
             startActivity(i);
@@ -271,12 +270,13 @@ public class LoginActivity extends AppCompatActivity {
             showProgress(false);
 
             if (success) {
-                new Thread(new CargaDatos(idUsuario, getAppContext())).start();
+                //     new Thread(new CargaDatos(idUsuario, getAppContext())).start();
                 SharedPreferences pref = getAppContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
                 SharedPreferences.Editor editor = pref.edit();
                 editor.putInt("idUsuario", idUsuario);
                 editor.apply();
-                Intent i = new Intent(LoginActivity.this, Inicio.class);
+                //Intent i = new Intent(LoginActivity.this, Inicio.class);
+                Intent i = new Intent(LoginActivity.this, CargaActivity.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 finish();
                 startActivity(i);
@@ -293,4 +293,3 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 }
-

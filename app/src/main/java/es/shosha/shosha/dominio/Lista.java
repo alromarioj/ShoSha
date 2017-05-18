@@ -2,6 +2,8 @@ package es.shosha.shosha.dominio;
 
 import android.graphics.drawable.Drawable;
 
+import com.google.firebase.database.Exclude;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,11 +15,11 @@ import java.util.List;
 public class Lista implements Serializable {
     private int id;
     private String nombre;
-    private Usuario propietario;
+    private transient Usuario propietario;
     private boolean estado;
-    private List<Usuario> participantes;
-    private Drawable imagen = null;
-    private List<Item> items;
+    private transient List<Usuario> participantes;
+    private transient Drawable imagen = null;
+    private transient List<Item> items = new ArrayList<Item>();
     private String codigoQR;
 
     /**
@@ -109,18 +111,22 @@ public class Lista implements Serializable {
         return super.equals(obj);
     }
 
+    @Exclude
     public List<Usuario> getParticipantes() {
         return participantes;
     }
 
+    @Exclude
     public void setParticipantes(List<Usuario> participantes) {
         this.participantes = participantes;
     }
 
+    @Exclude
     public void setImagen(Drawable imagen) {
         this.imagen = imagen;
     }
 
+    @Exclude
     public int getId() {
         return id;
     }
@@ -137,10 +143,12 @@ public class Lista implements Serializable {
         this.nombre = nombre;
     }
 
+    @Exclude
     public Usuario getPropietario() {
         return propietario;
     }
 
+    @Exclude
     public void setPropietario(Usuario propietario) {
         this.propietario = propietario;
     }
@@ -153,6 +161,7 @@ public class Lista implements Serializable {
         this.estado = estado;
     }
 
+    @Exclude
     public void addItem(Item i) {
         this.items.add(i);
     }
@@ -163,6 +172,7 @@ public class Lista implements Serializable {
      * @param index Posición del objeto en la lista
      * @return Objeto <code>Item</code> con posición <code>index</code>.
      */
+    @Exclude
     public Item getItem(int index) {
         return this.items.get(index);
     }
@@ -175,6 +185,7 @@ public class Lista implements Serializable {
      * @param id    Booleano para buscar por id (<code>true</code>) o por nombre (<code>false</code>).
      * @return Si existe, el ítem solicitado, de lo contrario <code>null</code>.
      */
+    @Exclude
     public Item getItem(String valor, boolean id) {
         for (Item i : this.items) {
             if (id && i.getId() == Integer.valueOf(valor))
@@ -185,26 +196,32 @@ public class Lista implements Serializable {
         return null;
     }
 
+    @Exclude
     public void setListaItems(List<Item> lItem) {
         this.items = lItem;
     }
 
+    @Exclude
     public List<Item> getListaItems() {
         return this.items;
     }
 
+    @Exclude
     public int getNumParticipantes() {
         return this.participantes.size();
     }
 
+    @Exclude
     public Drawable getImagen() {
         return imagen;
     }
 
+    @Exclude
     public List<Item> getItems() {
         return items;
     }
 
+    @Exclude
     public void setItems(List<Item> items) {
         this.items = items;
     }

@@ -52,10 +52,13 @@ public class AdaptadorBD {
     private static final String QR_IDQR = "idQR";
     private static final String SQL_TRNCTE = "DELETE FROM ";
 
+
     private static final String ID_LOG = "USO DE BD";
 
     private final Context contexto;
+
     private SQLiteDatabase bdatos;
+
     private AuxiliarBD auxBD;
 
 
@@ -115,6 +118,7 @@ public class AdaptadorBD {
         auxBD.close();
     }
 
+    @Deprecated
     public long insertarUsuario(int id, String nombre, String email) {
         bdatos.beginTransaction();
         long res;
@@ -125,6 +129,45 @@ public class AdaptadorBD {
             valores.put(NOMBRE, nombre);
             valores.put(USR_EMAIL, email);
             bdatos.delete(TB_USUARIO, ID + " = " + id, null);
+            res = bdatos.insert(TB_USUARIO, null, valores);
+
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+
+        return res;
+    }
+
+    public long insertarUsuario(String nombre, String email) {
+        bdatos.beginTransaction();
+        long res;
+        try {
+
+            ContentValues valores = new ContentValues();
+            valores.put(NOMBRE, nombre);
+            valores.put(USR_EMAIL, email);
+            bdatos.delete(TB_USUARIO, NOMBRE + "=" + nombre + " AND " + USR_EMAIL + "=" + email, null);
+            res = bdatos.insert(TB_USUARIO, null, valores);
+
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+
+        return res;
+    }
+
+    public long insertarUsuario(Usuario usuario) {
+        bdatos.beginTransaction();
+        long res;
+        try {
+
+            ContentValues valores = new ContentValues();
+            valores.put(ID, usuario.getId());
+            valores.put(NOMBRE, usuario.getNombre());
+            valores.put(USR_EMAIL, usuario.getEmail());
+            bdatos.delete(TB_USUARIO, ID + " = " + usuario.getId(), null);
             res = bdatos.insert(TB_USUARIO, null, valores);
 
             bdatos.setTransactionSuccessful();
@@ -155,7 +198,32 @@ public class AdaptadorBD {
         return res;
     }
 
-    @Deprecated
+    public long insertarLista(Lista l) {
+        bdatos.beginTransaction();
+        long res;
+        try {
+            ContentValues valores = new ContentValues();
+            valores.put(ID, l.getId());
+            valores.put(NOMBRE, l.getNombre());
+            valores.put(LST_PROP, l.getPropietario().getId());
+            valores.put(LST_ESTADO, l.isEstado());
+            bdatos.delete(TB_LISTA, ID + " = " + l.getId(), null);
+
+            ContentValues cv = new ContentValues();
+            cv.put(QR_IDQR, l.getCodigoQR());
+            cv.put(IDLISTA, l.getId());
+
+            bdatos.replace(TB_QR, null, cv);
+            res = bdatos.insert(TB_LISTA, null, valores);
+
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+
+        return res;
+    }
+
     public long insertarItem(int id, String nombre, double precio, int idLista) {
         bdatos.beginTransaction();
         long res = 0;
@@ -203,15 +271,21 @@ public class AdaptadorBD {
         long res;
         try {
             ContentValues valores = new ContentValues();
+
             valores.put(IDLISTA, idLista);
             valores.put(PPA_IDUSR, idUsr);
             valores.put(PPA_ACTIVO, activo ? 1 : 0);
+            /*
             bdatos.delete(TB_PARTICIPA, IDLISTA + " = " + idLista + " AND " + PPA_IDUSR + " = " + idUsr, null);
             res = bdatos.insert(TB_PARTICIPA, null, valores);
+            */
+            res = bdatos.replace(TB_PARTICIPA, null, valores);
+
             bdatos.setTransactionSuccessful();
         } finally {
             bdatos.endTransaction();
         }
+
         return res;
     }
 
@@ -219,6 +293,7 @@ public class AdaptadorBD {
         bdatos.beginTransaction();
         try {
             ContentValues valores = new ContentValues();
+
             for (String k : mapaRemoto.keySet()) {
                 valores.put(CHK_TABLA, k);
                 valores.put(CHK_CRC, mapaRemoto.get(k));
@@ -271,13 +346,17 @@ public class AdaptadorBD {
                 } else if (usrProp != idUsuario) {
                     l.setPropietario(this.obtenerUsuario(usrProp));
                 }
+
                 l.setListaItems(this.obtenerItems(l.getId()));
+
                 l.setParticipantes(this.getParticipantes(l.getId()));
 
                 aux.add(l);
+
             } while (c.moveToNext());
         }
         c.close();
+
         return aux;
     }
 
@@ -319,9 +398,8 @@ public class AdaptadorBD {
                 "WHERE l.id=" + idLista + " AND ((l.propietario=" + idUsuario + " AND l.estado=1) OR (p.idUsuario=" + idUsuario + " AND p.activo=1))";
         Cursor c = bdatos.rawQuery(sql, null);
         Usuario u = this.obtenerUsuario(idUsuario);
-        Lista l = null;
+        Lista l = new Lista();
         if (c.moveToFirst()) {
-            l = new Lista();
             l.setId(c.getInt(0));
             l.setNombre(c.getString(1));
             l.setEstado(c.getString(3).equals("1"));
@@ -340,12 +418,27 @@ public class AdaptadorBD {
         return l;
     }
 
+    public int obtenerIdListaQR(String codigo) {
+//        Cursor c = bdatos.query(false, TB_QR, null, QR_IDQR + "=" + codigo, null, null, null, null, null);
+        Cursor c = bdatos.query(true, TB_QR, null, QR_IDQR + "=?", new String[]{codigo}, null, null, null, null);
+        int i = 0;
+
+        if (c.moveToFirst()) {
+            do {
+                i = c.getInt(c.getColumnIndex(IDLISTA));
+            } while (c.moveToNext());
+        }
+        return i;
+    }
+
     public Usuario obtenerUsuario(int id) {
         Cursor c = bdatos.query(false, TB_USUARIO, null, "id=" + id, null, null, null, null, null);
         Usuario u = null;
 
-        while (c.moveToNext()) {
-            u = new Usuario(c.getInt(0), c.getString(1), c.getString(2));
+        if (c.moveToFirst()) {
+            do {
+                u = new Usuario(c.getInt(0), c.getString(1), c.getString(2));
+            } while (c.moveToNext());
         }
         return u;
     }
@@ -357,7 +450,7 @@ public class AdaptadorBD {
         List<Item> aux = new ArrayList<Item>();
         if (c.moveToFirst()) {
             do {
-                i = new Item(c.getInt(0), c.getString(1), c.getDouble(3), idLista);
+                i = new Item(c.getInt(0), c.getString(1), c.getDouble(2), idLista);
                 aux.add(i);
             } while (c.moveToNext());
         }
@@ -441,6 +534,7 @@ public class AdaptadorBD {
             bdatos.endTransaction();
         }
     }
+
     public void updateLista(Lista lista, String nombre) {
         bdatos.beginTransaction();
         try {
@@ -469,6 +563,24 @@ public class AdaptadorBD {
         return res;
     }
 
+    public void updateItem(Item i) {
+        bdatos.beginTransaction();
+        try {
+
+            ContentValues valores = new ContentValues();
+            valores.put(NOMBRE, i.getNombre());
+            valores.put(ITM_PRECIO, i.getPrecio());
+            valores.put(IDLISTA, i.getIdLista());
+            valores.put(ITM_CANT, i.getCantidad());
+            valores.put(ITM_COMPR, i.isComprado());
+
+            bdatos.update(TB_ITEM, valores, ID + "=?", new String[]{String.valueOf(i.getId())});
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+    }
+
     public long eliminarLista(int id, Usuario usuario) {
         bdatos.beginTransaction();
         long res = -1;
@@ -493,6 +605,32 @@ public class AdaptadorBD {
 //                    Log.e("Método eliminarLista", "La transacción no se realizó correctamente", new Exception("Resultado QR: " + qr + " / Resultado método: " + res));
 //                }
             }
+        } finally {
+            bdatos.endTransaction();
+        }
+        return res;
+    }
+
+    /**
+     * Se elimina la lista dada de la base de datos local
+     *
+     * @param l Lista a borrar
+     * @return resultado del borrado
+     */
+    public long eliminarLista(Lista l) {
+        bdatos.beginTransaction();
+        long res = -1;
+        try {
+            res = bdatos.delete(TB_LISTA, ID + "=" + l.getId(), null);
+
+            //                long qr = eliminarQR(id);
+//                if (qr > -1) {
+            bdatos.setTransactionSuccessful();
+//                } else {
+//                    res = -1;
+//                    Log.e("Método eliminarLista", "La transacción no se realizó correctamente", new Exception("Resultado QR: " + qr + " / Resultado método: " + res));
+//                }
+
         } finally {
             bdatos.endTransaction();
         }
@@ -556,6 +694,18 @@ public class AdaptadorBD {
                 res = bdatos.delete(TB_ITEM, "id=? AND idLista=?", new String[]{idItem, idLista});
                 bdatos.setTransactionSuccessful();
             }
+        } finally {
+            bdatos.endTransaction();
+        }
+        return res;
+    }
+
+    public long eliminarUsuario(Usuario u) {
+        bdatos.beginTransaction();
+        long res = -1;
+        try {
+            res = bdatos.delete(TB_USUARIO, NOMBRE + "=? AND " + USR_EMAIL + "=?", new String[]{u.getNombre(), u.getEmail()});
+            bdatos.setTransactionSuccessful();
         } finally {
             bdatos.endTransaction();
         }

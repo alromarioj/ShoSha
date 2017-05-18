@@ -1,18 +1,11 @@
 package es.shosha.shosha.servicios;
 
-import android.app.Service;
-import android.content.Context;
-import android.content.Intent;
-import android.os.IBinder;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
 import es.shosha.shosha.MyApplication;
-import es.shosha.shosha.dominio.Usuario;
-import es.shosha.shosha.persistencia.ItemPers;
-import es.shosha.shosha.persistencia.TokenPers;
 
 public class ServicioInstanceId extends FirebaseInstanceIdService {
     private static final String TAG = "FirebaseIDService";

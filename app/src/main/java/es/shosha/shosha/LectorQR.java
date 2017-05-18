@@ -6,11 +6,14 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,9 +22,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 
-import es.shosha.shosha.dominio.Lista;
-import es.shosha.shosha.persistencia.ParticipaPers;
+import es.shosha.shosha.persistencia.ParticipaFB;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
+import es.shosha.shosha.zxing.IntentIntegrator;
+import es.shosha.shosha.zxing.IntentResult;
 
 public class LectorQR extends AppCompatActivity {
 
@@ -33,6 +37,8 @@ public class LectorQR extends AppCompatActivity {
         if(getSupportActionBar()!=null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+
+
     }
 
     @Override
@@ -101,4 +107,28 @@ public class LectorQR extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    private HashMap<String, String> obtenerDatos(String query) {
+        HashMap<String, String> mapa = new HashMap<>();
+        String[] datos = query.split("&");
+        String[] par;
+        for (int i = 0; i < datos.length; i++) {
+            par = datos[i].split("=");
+            mapa.put(par[0], par[1]);
+        }
+        return mapa;
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.btEscanear) {
+            IntentIntegrator integrator = new IntentIntegrator(this);
+            integrator.addExtra("SCAN_MODE", "QR_CODE_MODE");
+            integrator.initiateScan();
+        }
+    }
 }
+/*Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+                intent.setPackage("com.google.zxing.client.android");
+                intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
+                startActivityForResult(intent, 0);*/
