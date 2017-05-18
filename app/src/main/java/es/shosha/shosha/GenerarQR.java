@@ -7,20 +7,19 @@ import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.Display;
+
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
+
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.google.android.gms.drive.Contents;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Writer;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
-import com.google.zxing.qrcode.encoder.QRCode;
+
 
 public class GenerarQR extends AppCompatActivity {
     int idLista;
@@ -44,11 +43,7 @@ public class GenerarQR extends AppCompatActivity {
         }
     }
     public void generar(View view){
-        String datos="{'idLista'='"+idLista+",'clave'='"+clave+"'";
-
-        //IntentIntegrator integrator = new IntentIntegrator(this);
-        //Integrator.addExtra("ENCODE_DATA", bundle);
-        System.out.println("Datos enviados en código QR: "+datos);
+        String datos="{'idLista'='"+idLista+"','clave'='"+clave+"'}";
         ImageView qrcode=(ImageView)findViewById(R.id.codigoQR);
 
         Writer writer = new QRCodeWriter();

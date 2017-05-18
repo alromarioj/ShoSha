@@ -1,4 +1,4 @@
-package es.shosha.shosha.AdaptadorLista.Productos;
+package es.shosha.shosha.Adaptadores.Productos;
 
 import android.view.View;
 
@@ -9,3 +9,4 @@ import android.view.View;
 public interface  RecyclerViewOnItemClickListener {
     void onClick(View v, int position);
 }
+

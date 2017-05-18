@@ -28,6 +28,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import es.shosha.shosha.dominio.Usuario;
+import es.shosha.shosha.persistencia.UsuarioFB;
+
 import static es.shosha.shosha.R.id.email;
 
 public class RegistroActivity extends AppCompatActivity {
@@ -222,8 +225,8 @@ public class RegistroActivity extends AppCompatActivity {
             Integer success = -10;
             try {
                 URL urlObj = new URL("http://shosha.jiraizoz.es/addUsuario.php?nombre=" + URLEncoder.encode(mNombre, "UTF-8") + "&email=" + URLEncoder.encode(mEmail, "UTF-8") + "&pass=" + URLEncoder.encode(mPassword, "UTF-8"));
-                System.out.println("=============================");
-                System.out.println("http://shosha.jiraizoz.es/addUsuario.php?nombre=" + URLEncoder.encode(mNombre, "UTF-8") + "&email=" + URLEncoder.encode(mEmail, "UTF-8") + "&pass=" + URLEncoder.encode(mPassword, "UTF-8"));
+//                System.out.println("=============================");
+//                System.out.println("http://shosha.jiraizoz.es/addUsuario.php?nombre=" + URLEncoder.encode(mNombre, "UTF-8") + "&email=" + URLEncoder.encode(mEmail, "UTF-8") + "&pass=" + URLEncoder.encode(mPassword, "UTF-8"));
 
                 HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
 
@@ -242,6 +245,10 @@ public class RegistroActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            //TODO: VIGILAR BBDD, puede haber conflicto de id
+            UsuarioFB.insertaUsuarioFB(new Usuario(0, mNombre, mEmail), true);
+
             return success == 1;
         }
 
@@ -269,4 +276,3 @@ public class RegistroActivity extends AppCompatActivity {
         }
     }
 }
-

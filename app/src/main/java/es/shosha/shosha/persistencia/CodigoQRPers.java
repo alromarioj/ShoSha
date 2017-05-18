@@ -17,25 +17,31 @@ import java.net.URLEncoder;
 import java.util.Map;
 import java.util.TreeMap;
 
+import es.shosha.shosha.MyApplication;
+import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
+
 /**
- * Clase encargada de la persistencia de los Checksums de las bases de datos.
- * Created by Jesús Iráizoz on 04/04/2017.
+ * Created by Jesús Iráizoz on 09/05/2017.
  */
-public class ChecksumPers extends AsyncTask<String, Void, Map<String, Double>> {
-    private final static String URL = "http://shosha.jiraizoz.es/getChecksum.php";
-    private final static String ATRIBUTO = "?tabla=";
+public class CodigoQRPers extends AsyncTask<String, Void, Void> {
+    private final static String URL_GET = "http://shosha.jiraizoz.es/getCodigoQR.php?";
+    private final static String ATRIBUTO_USR = "usuario=";
+
+    //TODO: Obtener todos los códigos QR de la BD remota
+    //TODO: Insertar un código QR
+    //TODO: Eliminar un código QR
 
     @Override
-    protected Map<String, Double> doInBackground(String[] params) {
+    protected Void doInBackground(String[] params) {
 
         String data = "";
         java.net.URL urlObj = null;
-        Map<String,Double> mapa = null;
+        Map<String, String> mapa = null;
 
         if (params.length == 1) {
             try {
                 data = URLEncoder.encode(params[0].toString(), "UTF-8");
-                urlObj = new URL(ChecksumPers.URL + ChecksumPers.ATRIBUTO + data);
+                urlObj = new URL(CodigoQRPers.URL_GET + CodigoQRPers.ATRIBUTO_USR + data);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             } catch (MalformedURLException e) {
@@ -43,7 +49,7 @@ public class ChecksumPers extends AsyncTask<String, Void, Map<String, Double>> {
             }
         } else {
             try {
-                urlObj = new URL(ChecksumPers.URL);
+                urlObj = new URL(CodigoQRPers.URL_GET);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
@@ -62,29 +68,40 @@ public class ChecksumPers extends AsyncTask<String, Void, Map<String, Double>> {
             rd.close();
 
             mapa = jsonParser(res);
+            insertarBD(mapa);
+
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return mapa;
+        return null;
     }
 
-    private Map<String, Double> jsonParser(String data) {
+    private Map<String, String> jsonParser(String data) {
 
-        Map<String, Double> mapa = new TreeMap<String, Double>();
+        Map<String, String> mapa = new TreeMap<String, String>();
         try {
             JSONObject jso = new JSONObject(data);
-            JSONArray listas = jso.getJSONArray("chk");
+            JSONArray listas = jso.getJSONArray("codigos");
             for (int i = 0; i < listas.length(); i++) {
                 JSONObject o = listas.getJSONObject(i);
 
-                mapa.put(o.getString("tabla"),o.getDouble("crc"));
+                mapa.put(o.getString("idLista"), o.getString("codigoQR"));
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         return mapa;
+    }
+
+    private void insertarBD(Map<String, String> m) {
+        AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
+        abd.open();
+        for (String s : m.keySet()) {
+            abd.insertaQR(m.get(s), Integer.valueOf(s));
+        }
+        abd.close();
     }
 }

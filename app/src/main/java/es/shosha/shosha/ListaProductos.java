@@ -22,30 +22,37 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import es.shosha.shosha.AdaptadorLista.Productos.ProductosAdapter;
-import es.shosha.shosha.AdaptadorLista.Productos.RecyclerViewOnItemClickListener;
+import es.shosha.shosha.Adaptadores.Productos.ProductosAdapter;
+import es.shosha.shosha.Adaptadores.Productos.RecyclerViewOnItemClickListener;
 import es.shosha.shosha.dominio.Item;
 import es.shosha.shosha.dominio.Lista;
-import es.shosha.shosha.persistencia.ItemPers;
+import es.shosha.shosha.persistencia.ItemFB;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 public class ListaProductos extends AppCompatActivity {
     private ListView list;
     private Lista lista;
-    private List<Item> productos;//=new ArrayList<>();
+    private List<Item> productos;
+    private double pTotal = 0;
     RecyclerView mRecyclerView;
+    ListaProductos actividad=this;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        this.lista = new Lista();
         AdaptadorBD abd = new AdaptadorBD(getBaseContext());
         abd.open();
         this.lista = abd.obtenerLista(this.getIntent().getExtras().getInt("idLista"), MyApplication.getUser().getId());//Se recoge la lista que se ha pasado desde ListasActivas
         abd.close();
-        productos = lista.getItems();
+        if (lista.getItems() != null)
+            productos = lista.getItems();
+        else
+            productos = new ArrayList<Item>();
         System.out.println("Número de productos: " + productos.size());
 
         setContentView(R.layout.activity_lista_productos);
@@ -60,6 +67,12 @@ public class ListaProductos extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+        TextView precioTotal = (TextView) findViewById(R.id.textViewTotal);
+        pTotal = 0;
+        for(Item i : productos){
+            pTotal += i.getPrecioTotal();
+        }
+        precioTotal.setText(String.valueOf(pTotal));
         super.onCreate(savedInstanceState);
     }
 
@@ -76,6 +89,8 @@ public class ListaProductos extends AppCompatActivity {
         input_np2.setText(producto.getNombre());
         final EditText input_pp = (EditText) viewInflated1.findViewById(R.id.in_precio_producto);
         input_pp.setText(String.valueOf(producto.getPrecio()));
+        final EditText input_cantidad = (EditText) viewInflated1.findViewById(R.id.in_cantidad_producto);
+        input_cantidad.setText(String.valueOf(producto.getCantidad()));
 
         // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
         builder1.setView(viewInflated1);
@@ -86,25 +101,36 @@ public class ListaProductos extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 //Asumiendo que el precio es >=0
 
-                new ItemPers(MyApplication.getAppContext()).execute("update", String.valueOf(lista.getId()), String.valueOf(producto.getId()), producto.getNombre(), String.valueOf(producto.getPrecio()), "1");
+//                new ItemPers(MyApplication.getAppContext()).execute("update", String.valueOf(lista.getId()), String.valueOf(producto.getId()), producto.getNombre(), String.valueOf(producto.getPrecio()), "1");
 
-                AdaptadorBD abd = new AdaptadorBD(getBaseContext());
-                abd.open();
+
+//                AdaptadorBD abd = new AdaptadorBD(getBaseContext());
+//                abd.open();
                 //new ItemPers(MyApplication.getAppContext()).execute("insert", id, MyApplication.getUser().getId());
                 //Se inserta un producto a la lista a partir de los datos introducidos
                 String precio = input_pp.getText().toString();
                 precio = (precio.isEmpty() ? "0" : precio);
+                String cantidad = input_cantidad.getText().toString();
+                cantidad = (cantidad.isEmpty() ? "0" : cantidad);
                 //Item i=new Item("ref"+lista.getItems().size(),input_np2.getText().toString(),Double.valueOf(precio));
                 producto.setNombre(input_np2.getText().toString());
                 producto.setPrecio(Double.valueOf(precio));
+                producto.setCantidad(Integer.valueOf(cantidad));
 
                 //new ListaPers(MyApplication.getAppContext(), null).execute("update", id, MyApplication.getUser().getId());
-                abd.insertarItem(producto.getId(), producto.getNombre(), producto.getPrecio(), lista.getId());
-                abd.close();
+//                abd.insertarItem(producto.getId(), producto.getNombre(), producto.getPrecio(), lista.getId());
+//                abd.close();
                 //Editar el producto en BD remota
 
+                ItemFB.insertaItemFB(producto, false);
 
                 Toast.makeText(ListaProductos.this, "Editando producto " + producto.getNombre(), Toast.LENGTH_SHORT).show();
+                TextView precioTotal = (TextView) findViewById(R.id.textViewTotal);
+                pTotal = 0;
+                for(Item i : productos){
+                    pTotal += i.getPrecioTotal();
+                }
+                precioTotal.setText(String.valueOf(pTotal));
                 //Avisa de que la lista ha cambiado
                 mRecyclerView.getAdapter().notifyDataSetChanged();
                 dialog.dismiss();
@@ -118,15 +144,17 @@ public class ListaProductos extends AppCompatActivity {
         });
         builder1.show();
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //Mostrar menú para la lista de productos
-        getMenuInflater().inflate(R.menu.menu_lista_productos,menu);
+        getMenuInflater().inflate(R.menu.menu_lista_productos, menu);
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
                 return true;
@@ -138,7 +166,7 @@ public class ListaProductos extends AppCompatActivity {
                 //Se crea el PopUp para añadir un nuevo producto
                 final AlertDialog.Builder builder;
                 View viewInflated;
-                builder=new AlertDialog.Builder(this);
+                builder = new AlertDialog.Builder(this);
                 builder.setTitle("Añadir nuevo producto");
 
                 viewInflated = LayoutInflater.from(getBaseContext()).inflate(R.layout.nuevo_producto, (ViewGroup) findViewById(android.R.id.content), false);
@@ -160,17 +188,20 @@ public class ListaProductos extends AppCompatActivity {
                         Item i = new Item(lista.getItems().size(), input_np1.getText().toString(), Double.valueOf(precio), lista.getId());
 
 
-                        new ItemPers(MyApplication.getAppContext()).execute("insert", String.valueOf(lista.getId()), i.getNombre(), String.valueOf(i.getPrecio()), "1");
+                        //new ItemPers(MyApplication.getAppContext()).execute("insert", String.valueOf(lista.getId()), i.getNombre(), String.valueOf(i.getPrecio()), "1");
+                        ItemFB.insertaItemFB(i, true);
 
-                        AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
+                    /*    AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
                         abd.open();
                         int sp = productos.size();
                         do {
                             productos = abd.obtenerItems(lista.getId());
                         } while (sp == productos.size());
-                        abd.close();
+                        abd.close();*/
+
                         Toast.makeText(ListaProductos.this, "Añadiendo producto " + i.getNombre(), Toast.LENGTH_SHORT).show();
                         //Avisa de que la lista ha cambiado
+
                         mRecyclerView.getAdapter().notifyDataSetChanged();
                         dialog.dismiss();
                     }
@@ -187,7 +218,7 @@ public class ListaProductos extends AppCompatActivity {
                 Intent i = new Intent(this, GenerarQR.class);
                 Bundle bundle = new Bundle();
                 bundle.putInt("idLista", lista.getId());
-                bundle.putString("clave", "123fb");
+                bundle.putString("clave", lista.getCodigoQR());
                 bundle.putString("nombre", lista.getNombre());
                 i.putExtras(bundle);
                 startActivity(i);
@@ -196,18 +227,35 @@ public class ListaProductos extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+    public void sigueNuevoProducto(int id){
+        AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
+        abd.open();
+        Item producto=abd.obtenerItem(id);
+        productos.add(producto);
+        abd.close();
+        Toast.makeText(ListaProductos.this, "Añadiendo producto " + producto.getNombre(), Toast.LENGTH_SHORT).show();
+        TextView precioTotal = (TextView) findViewById(R.id.textViewTotal);
+        pTotal = 0;
+        for(Item i : productos){
+            pTotal += i.getPrecioTotal();
+        }
+        precioTotal.setText(String.valueOf(pTotal));
+        //Avisa de que la lista ha cambiado
+        mRecyclerView.getAdapter().notifyDataSetChanged();
+    }
     private void setUpRecyclerView(List<Item> productos) {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(new ProductosAdapter(productos, new RecyclerViewOnItemClickListener() {
             @Override
             public void onClick(View v, int position) {
-                editarProducto(v,position);
+                editarProducto(v, position);
             }
-        },getBaseContext(),lista.getId()));
+        }, getBaseContext(), lista.getId()));
         //mRecyclerView.setHasFixedSize(true);
         setUpItemTouchHelper();
         setUpAnimationDecoratorHelper();
     }
+
     /**
      * This is the standard support library way of implementing "swipe to delete" feature. You can do custom drawing in onChildDraw method
      * but whatever you draw will disappear once the swipe is over, and while the items are animating to their new position the recycler view

@@ -1,12 +1,15 @@
 package es.shosha.shosha;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 
+/**
+ * Actividad que se ejecuta tras presionar el botón de "Nueva Lista".
+ * XML asociado: activity_lista_manual.xml
+ */
 public class AnadirLista extends AppCompatActivity {
 
     @Override
@@ -14,13 +17,14 @@ public class AnadirLista extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_anadir_lista);
         //Aparece el botón de atrás
-        if(getSupportActionBar()!=null){
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
                 return true;
@@ -28,7 +32,8 @@ public class AnadirLista extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-    public void mostrarListaManual(View v){
+
+    public void mostrarListaManual(View v) {
         //Ejecuta la actividad para crear una lista manualmente
         Intent i = new Intent(this, ListaManual.class);
         startActivity(i);

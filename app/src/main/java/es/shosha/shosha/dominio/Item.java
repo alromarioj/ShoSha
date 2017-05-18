@@ -1,5 +1,7 @@
 package es.shosha.shosha.dominio;
 
+import com.google.firebase.database.Exclude;
+
 import java.io.Serializable;
 
 /**
@@ -34,6 +36,16 @@ public class Item  implements Serializable{
         this.idLista=idLista;
     }
 
+    public Item(int id, String nombre, double precio, int cantidad, boolean comprado, int idLista) {
+        this.id = id;
+        this.nombre = nombre;
+        this.precio = precio;
+        this.cantidad = cantidad;
+        this.comprado = comprado;
+        this.idLista = idLista;
+    }
+
+    @Exclude
     public int getId() {
         return id;
     }
@@ -52,6 +64,10 @@ public class Item  implements Serializable{
 
     public double getPrecio() {
         return precio;
+    }
+
+    public double getPrecioTotal(){
+        return precio*cantidad;
     }
 
     public void setPrecio(double precio) {
