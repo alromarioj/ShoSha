@@ -30,6 +30,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 import es.shosha.shosha.dominio.Usuario;
+import es.shosha.shosha.persistencia.UsuarioFB;
 
 import static es.shosha.shosha.MyApplication.getAppContext;
 import static es.shosha.shosha.R.id.email;
@@ -52,6 +53,8 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        UsuarioFB.lastChild();
 
         SharedPreferences pref = getSharedPreferences("MyPref", 0); // 0 - for private mode
         int id = pref.getInt("idUsuario", -1);

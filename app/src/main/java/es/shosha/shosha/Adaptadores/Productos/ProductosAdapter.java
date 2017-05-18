@@ -5,8 +5,10 @@ import android.graphics.Color;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,24 +56,27 @@ public class ProductosAdapter extends RecyclerView.Adapter {
         ProductosViewHolder viewHolder = (ProductosViewHolder) holder;
         final Item item = items.get(position);
 
+        viewHolder.comprado.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CheckBox checkBox = (CheckBox) view;
+                if (checkBox.isChecked())
+                    item.setComprado(true);
+                else
+                    item.setComprado(false);
+
+                ItemFB.insertaItemFB(item, false);
+
+            }
+        });
+
         if (itemsPendingRemoval.contains(item)) {
             // we need to show the "undo" state of the row
             viewHolder.itemView.setBackgroundColor(Color.LTGRAY);
             viewHolder.nombre.setVisibility(View.GONE);
             viewHolder.precio.setVisibility(View.GONE);
             viewHolder.comprado.setVisibility(View.GONE);
-            viewHolder.comprado.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    /*new ItemPers(MyApplication.getAppContext()).execute("buy",
-                            String.valueOf(idLista),
-                            String.valueOf(item.getId()),//Id del producto seleccionado
-                            String.valueOf(MyApplication.getUser().getId()));*/
-                    item.setComprado(true);
-                    ItemFB.insertaItemFB(item, false);
 
-                }
-            });
             viewHolder.cantidad.setVisibility(View.GONE);
             viewHolder.undoButton.setVisibility(View.VISIBLE);
             viewHolder.undoButton.setOnClickListener(new View.OnClickListener() {
@@ -93,6 +98,7 @@ public class ProductosAdapter extends RecyclerView.Adapter {
             viewHolder.nombre.setVisibility(View.VISIBLE);
             viewHolder.precio.setVisibility(View.VISIBLE);
             viewHolder.comprado.setVisibility(View.VISIBLE);
+            viewHolder.comprado.setChecked(item.isComprado());
             viewHolder.cantidad.setVisibility(View.VISIBLE);
             viewHolder.nombre.setText(item.getNombre());
             viewHolder.precio.setText(item.getPrecio() + " €");

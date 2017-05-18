@@ -76,7 +76,9 @@
         <activity android:name=".GenerarQR" />
         <activity android:name=".Condiciones" />
         <activity android:name=".EditarLista" />
-        <activity android:name=".CargaActivity" />
+        <activity
+            android:name=".CargaActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <service android:name=".servicios.ServicioFirebaseMessaging">
             <intent-filter>

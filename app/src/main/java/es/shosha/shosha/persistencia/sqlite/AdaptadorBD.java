@@ -1,5 +1,4 @@
 package es.shosha.shosha.persistencia.sqlite;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -259,6 +258,8 @@ public class AdaptadorBD {
             valores.put(NOMBRE, i.getNombre());
             valores.put(ITM_PRECIO, i.getPrecio());
             valores.put(IDLISTA, i.getIdLista());
+            valores.put(ITM_CANT, i.getCantidad());
+            valores.put(ITM_COMPR, i.isComprado());
 
             long l = bdatos.replace(TB_ITEM, null, valores);
 
@@ -451,6 +452,8 @@ public class AdaptadorBD {
         if (c.moveToFirst()) {
             do {
                 i = new Item(c.getInt(0), c.getString(1), c.getDouble(2), idLista);
+                i.setCantidad(c.getInt(4));
+                i.setComprado(c.getInt(5) == 1);
                 aux.add(i);
             } while (c.moveToNext());
         }

@@ -58,8 +58,7 @@ public class ListaManual extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-
-    public void abrirGaleria(View v) {
+    public void abrirGaleria(View v){
         Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
         intent.setType("image/*");
         startActivityForResult(intent, SELECT_PICTURE);
@@ -68,17 +67,16 @@ public class ListaManual extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == SELECT_PICTURE)
-            if (resultCode == Activity.RESULT_OK) {
-                Uri selectedImage = data.getData();
-                //lblPhoto.setText(getPath(selectedImage));
-                img.setImageURI(selectedImage);
+            if (requestCode == SELECT_PICTURE)
+                if (resultCode == Activity.RESULT_OK) {
+                    Uri selectedImage = data.getData();
+                    //lblPhoto.setText(getPath(selectedImage));
+                    img.setImageURI(selectedImage);
 
-            }
+                }
     }
-
-    public void crearLista(View view) {
-        this.nomLista = ((EditText) findViewById(nombre)).getText().toString();
+    public void crearLista(View view){
+        this.nomLista=((EditText)findViewById(nombre)).getText().toString();
         this.claveLista = generarClave(5);
         //String idu = String.valueOf(MyApplication.getUser().getId());
         int idu = MyApplication.getUser().getId();

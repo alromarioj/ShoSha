@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+
 import es.shosha.shosha.dominio.Usuario;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
@@ -39,16 +41,7 @@ public class MyApplication extends Application {
         SharedPreferences.Editor editor = pref.edit();
         editor.putInt("idUsuario", MyApplication.user.getId());
         editor.apply();
-        //Añadir token a la base de datos con el usuario asignado
-//        new TokenPers(context).execute("insert",token,String.valueOf(user.getId()));
-    }
-
-    public static String getToken() {
-        return token;
-    }
-
-    public static void setToken(String token) {
-        MyApplication.token = token;
+        FirebaseMessaging.getInstance().subscribeToTopic("user_"+user.getId());//Registra el tema en Firebase
     }
 
     public void onCreate() {
