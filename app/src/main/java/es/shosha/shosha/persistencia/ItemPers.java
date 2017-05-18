@@ -1,6 +1,5 @@
 package es.shosha.shosha.persistencia;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -16,13 +15,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.List;
-import java.util.Map;
 
 import es.shosha.shosha.ListaProductos;
 import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Item;
-import es.shosha.shosha.dominio.Usuario;
 import es.shosha.shosha.negocio.NegocioChecksum;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
@@ -76,8 +72,8 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
                 insertMode(params[1], params[2], params[3], params[4]);
             } else if (params.length == 3 && params[0].equals("delete")) {
                 deleteMode(params[1], params[2]);
-            } else if (params.length == 4 && params[0].equals("buy")) {
-                buyMode(params[1], params[2],params[3]);//lista+producto+usuario
+            } else if (params.length == 5 && params[0].equals("buy")) {
+                buyMode(params[1], params[2],params[3], params[4]);//lista+producto+usuario
             }else if (params.length == 6 && params[0].equals("update")) {
                 updateMode(params[1], params[2], params[3], params[4], params[5]);
             } else {
@@ -172,17 +168,19 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
     private void buyMode(String... params) {
         int idLista = -1,
                 idProducto = -1,
-                usuario = -1;
+                usuario = -1,
+                comprado = -1;
         try {
             idLista = Integer.valueOf(params[0]);
             idProducto = Integer.valueOf(params[1]);
             usuario = Integer.valueOf(params[2]);
+            comprado = Integer.valueOf(params[3]);
         }  catch (NumberFormatException e) {
             e.printStackTrace();
         }
 
         try {
-            java.net.URL urlObj = new URL(URL_BUY + ATRIBUTO + idLista + "&" + ID + idProducto + "&" + USUARIO+ usuario);
+            java.net.URL urlObj = new URL(URL_BUY + ATRIBUTO + idLista + "&" + ID + idProducto + "&" + USUARIO+ usuario+ "&comprado="+ comprado);
 
             HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
 

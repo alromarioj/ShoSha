@@ -36,6 +36,18 @@ public class ProductosViewHolder extends RecyclerView.ViewHolder implements View
         undoButton = (Button) itemView.findViewById(R.id.undo_button);
         comprado=(CheckBox) itemView.findViewById(R.id.comprado);
 
+        comprado.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String isComprado = comprado.isChecked() ? "1":"0";
+                new ItemPers(MyApplication.getAppContext()).execute("buy",
+                        String.valueOf(lista),
+                        String.valueOf(itemView.getId()),//"1",//Id del producto seleccionado
+                        String.valueOf(MyApplication.getUser().getId()),
+                        isComprado);
+            }
+        });
+
         itemView.setOnClickListener(this);
         this.oicl=oicl;
     }
