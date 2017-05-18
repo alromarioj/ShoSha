@@ -30,10 +30,10 @@ public class Notificacion extends AsyncTask<List<String>, Void, Void> {
         try{
             List<String> parametros=params[0];
             List<String> usuarios=new ArrayList<>();
-            for(int i=1;i<parametros.size();i++){
+            for(int i=2;i<parametros.size();i++){
                 usuarios.add(parametros.get(i));
             }
-            send(parametros.get(0),usuarios);
+            send(parametros.get(0),parametros.get(1),usuarios);
         }
         catch (IOException e){
             e.printStackTrace();
@@ -41,11 +41,12 @@ public class Notificacion extends AsyncTask<List<String>, Void, Void> {
         return null;
     }
 
-    public static void send(String idLista, List usuarios) throws IOException {
+    public static void send(String lista,String idLista, List usuarios) throws IOException {
         URL url = new URL(URLCompra);
         Map<String, Object> params = new LinkedHashMap<>();
 
-        params.put("lista", idLista);
+        params.put("lista", lista);
+        params.put("idLista",idLista);
         params.put("usuarios",usuarios);
 
         StringBuilder postData = new StringBuilder();
@@ -65,7 +66,6 @@ public class Notificacion extends AsyncTask<List<String>, Void, Void> {
         conn.setDoOutput(true);
         conn.getOutputStream().write(postDataBytes);
 
-        System.out.println("---------Notificación-----------");
         Reader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
         for (int c = in.read(); c != -1; c = in.read())
             System.out.print((char) c);

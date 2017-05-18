@@ -78,15 +78,14 @@ public class ProductosAdapter extends RecyclerView.Adapter {
                     l.add(lista.getPropietario());
                     abd.close();
                     params.add(lista.getNombre());
+                    params.add(String.valueOf(lista.getId()));
                     //Escoger usuarios que no sean el usuario actual
                     for (Usuario u:l) {
                         if(idUsuario!=u.getId()){
                             params.add(String.valueOf(u.getId()));
                         }
                     }
-
                     new Notificacion().execute(params);//Enviar notificación
-
                 }
                 else{
                     item.setComprado(false);

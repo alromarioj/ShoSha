@@ -53,6 +53,8 @@ public class LectorQR extends AppCompatActivity {
                     int idu=MyApplication.getUser().getId();
                     // Añadir al usuario como participante en la lista
                     //Añade participante en bd remota
+                    //Comprobar clave de la lista?
+                    ParticipaFB.insertaParticipaFB(MyApplication.getUser().getId(),Integer.valueOf(lista));
                     //new ParticipaPers(MyApplication.getAppContext(), null,this).execute("insert", lista,clave,String.valueOf(idu));
                 }
                 catch (UnsupportedEncodingException e){
@@ -62,26 +64,6 @@ public class LectorQR extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-        }
-    }
-    public void sigueAnadirParticipante(boolean error, int usuario, int lista){
-        System.out.println("Error: "+error+" Usuario: "+usuario+" Lista: "+lista);
-        if(error){
-            Toast.makeText(this, "Error al añadir la lista", Toast.LENGTH_SHORT).show();
-        }
-        else{
-            AdaptadorBD abd = new AdaptadorBD(getBaseContext());
-            abd.open();
-            //Añade participante en bd local
-            abd.insertarParticipa(usuario, lista,true);
-
-            Toast.makeText(this, "Lista añadida", Toast.LENGTH_SHORT).show();
-            Intent i = new Intent(this, ListaProductos.class);//Muestra la lista nueva
-            Bundle bundle = new Bundle();
-            bundle.putInt("idLista", lista);
-            i.putExtras(bundle);
-            startActivity(i);
-            abd.close();
         }
     }
     public void abrirEscaner(View view){
@@ -105,19 +87,4 @@ public class LectorQR extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-
-    private HashMap<String, String> obtenerDatos(String query) {
-        HashMap<String, String> mapa = new HashMap<>();
-        String[] datos = query.split("&");
-        String[] par;
-        for (int i = 0; i < datos.length; i++) {
-            par = datos[i].split("=");
-            mapa.put(par[0], par[1]);
-        }
-        return mapa;
-    }
 }
-/*Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-                intent.setPackage("com.google.zxing.client.android");
-                intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
-                startActivityForResult(intent, 0);*/
