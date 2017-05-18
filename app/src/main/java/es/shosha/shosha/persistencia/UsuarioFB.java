@@ -20,6 +20,7 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 public class UsuarioFB {
     private static final String USUARIO = "usuario";
     public static final String LOG_MSG = "UsuarioFB";
+    public static long cuenta = 0;
 
     public UsuarioFB() {
         DatabaseReference sbUsuario =
@@ -31,6 +32,7 @@ public class UsuarioFB {
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
                 Log.d(LOG_MSG, "onChildAdded: {" + dataSnapshot.getKey() + ": " + dataSnapshot.getValue() + "}");
                 Usuario u = parser(dataSnapshot);
+                cuenta++;
                 AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
                 abd.open();
                 abd.insertarUsuario(u);
@@ -51,6 +53,7 @@ public class UsuarioFB {
             public void onChildRemoved(DataSnapshot dataSnapshot) {
                 Log.d(LOG_MSG, "onChildRemoved: {" + dataSnapshot.getKey() + ": " + dataSnapshot.getValue() + "}");
                 Usuario u = parser(dataSnapshot);
+                cuenta--;
                 AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
                 abd.open();
                 abd.eliminarUsuario(u);
@@ -78,12 +81,24 @@ public class UsuarioFB {
         return usr;
     }
 
-    public static void insertaUsuarioFB(Usuario u) {
+
+    /**
+     * Método para insertar a la base de datos un nuevo usuario
+     *
+     * @param u     Usuario a insertar
+     * @param nuevo Especifica si es nuevo o ya existe
+     */
+    public static void insertaUsuarioFB(Usuario u, boolean nuevo) {
         DatabaseReference dbRef =
                 FirebaseDatabase.getInstance().getReference()
                         .child(USUARIO);
 
-        dbRef.child(String.valueOf(u.getId())).setValue(u);
+
+        long i = cuenta + 1;
+        if (nuevo)
+            dbRef.child(String.valueOf(i)).setValue(u);
+        else
+            dbRef.child(String.valueOf(u.getId())).setValue(u);
     }
 
     public static Usuario obtenerUsuario(int id) {

@@ -81,14 +81,16 @@ public class ItemFB {
         return itm;
     }
 
-    public static void insertaItemFB(Item it) {
+    public static void insertaItemFB(Item it, boolean nuevo) {
         DatabaseReference dbRef =
                 FirebaseDatabase.getInstance().getReference()
                         .child(ITEM);
 
         long i = cuenta + 1;
-
-        dbRef.child(String.valueOf(i)).setValue(it);
+        if (nuevo)
+            dbRef.child(String.valueOf(i)).setValue(it);
+        else
+            dbRef.child(String.valueOf(it.getId())).setValue(it);
 
 
     }

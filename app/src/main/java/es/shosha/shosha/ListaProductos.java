@@ -32,7 +32,6 @@ import es.shosha.shosha.AdaptadorLista.Productos.RecyclerViewOnItemClickListener
 import es.shosha.shosha.dominio.Item;
 import es.shosha.shosha.dominio.Lista;
 import es.shosha.shosha.persistencia.ItemFB;
-import es.shosha.shosha.persistencia.ItemPers;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 public class ListaProductos extends AppCompatActivity {
@@ -92,10 +91,11 @@ public class ListaProductos extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 //Asumiendo que el precio es >=0
 
-                new ItemPers(MyApplication.getAppContext()).execute("update", String.valueOf(lista.getId()), String.valueOf(producto.getId()), producto.getNombre(), String.valueOf(producto.getPrecio()), "1");
+//                new ItemPers(MyApplication.getAppContext()).execute("update", String.valueOf(lista.getId()), String.valueOf(producto.getId()), producto.getNombre(), String.valueOf(producto.getPrecio()), "1");
 
-                AdaptadorBD abd = new AdaptadorBD(getBaseContext());
-                abd.open();
+
+//                AdaptadorBD abd = new AdaptadorBD(getBaseContext());
+//                abd.open();
                 //new ItemPers(MyApplication.getAppContext()).execute("insert", id, MyApplication.getUser().getId());
                 //Se inserta un producto a la lista a partir de los datos introducidos
                 String precio = input_pp.getText().toString();
@@ -105,10 +105,11 @@ public class ListaProductos extends AppCompatActivity {
                 producto.setPrecio(Double.valueOf(precio));
 
                 //new ListaPers(MyApplication.getAppContext(), null).execute("update", id, MyApplication.getUser().getId());
-                abd.insertarItem(producto.getId(), producto.getNombre(), producto.getPrecio(), lista.getId());
-                abd.close();
+//                abd.insertarItem(producto.getId(), producto.getNombre(), producto.getPrecio(), lista.getId());
+//                abd.close();
                 //Editar el producto en BD remota
 
+                ItemFB.insertaItemFB(producto, false);
 
                 Toast.makeText(ListaProductos.this, "Editando producto " + producto.getNombre(), Toast.LENGTH_SHORT).show();
                 //Avisa de que la lista ha cambiado
@@ -169,7 +170,7 @@ public class ListaProductos extends AppCompatActivity {
 
 
                         //new ItemPers(MyApplication.getAppContext()).execute("insert", String.valueOf(lista.getId()), i.getNombre(), String.valueOf(i.getPrecio()), "1");
-                        ItemFB.insertaItemFB(i);
+                        ItemFB.insertaItemFB(i, true);
 
                     /*    AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
                         abd.open();
@@ -198,7 +199,7 @@ public class ListaProductos extends AppCompatActivity {
                 Intent i = new Intent(this, GenerarQR.class);
                 Bundle bundle = new Bundle();
                 bundle.putInt("idLista", lista.getId());
-                bundle.putString("clave", "123fb");
+                bundle.putString("clave", lista.getCodigoQR());
                 bundle.putString("nombre", lista.getNombre());
                 i.putExtras(bundle);
                 startActivity(i);

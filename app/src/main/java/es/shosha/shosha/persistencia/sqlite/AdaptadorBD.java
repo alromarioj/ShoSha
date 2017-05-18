@@ -411,19 +411,21 @@ public class AdaptadorBD {
             }
             l.setListaItems(this.obtenerItems(l.getId()));
             l.setParticipantes(this.getParticipantes(l.getId()));
+            l.setCodigoQR(this.obtenerQR(c.getInt(0)));
         }
 
         c.close();
         return l;
     }
 
-    public int obtenerIdListaQR(String QR) {
-        Cursor c = bdatos.query(false, TB_QR, null, QR_IDQR + "=" + QR, null, null, null, null, null);
+    public int obtenerIdListaQR(String codigo) {
+//        Cursor c = bdatos.query(false, TB_QR, null, QR_IDQR + "=" + codigo, null, null, null, null, null);
+        Cursor c = bdatos.query(true, TB_QR, null, QR_IDQR + "=?", new String[]{codigo}, null, null, null, null);
         int i = 0;
 
         if (c.moveToFirst()) {
             do {
-                i = c.getInt(1);
+                i = c.getInt(c.getColumnIndex(IDLISTA));
             } while (c.moveToNext());
         }
         return i;

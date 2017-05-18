@@ -89,7 +89,7 @@ public class ListaManual extends AppCompatActivity {
         aux.setCodigoQR(claveLista);
         aux.setPropietario(new Usuario(idu, "", ""));
         aux.setEstado(true);
-        long l = ListaFB.insertaListaFB(aux);
+        long l = ListaFB.insertaListaFB(aux, true);
         sigueCrearLista((int) l);
     }
 
