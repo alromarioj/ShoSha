@@ -45,7 +45,7 @@ public class ProductosAdapter extends RecyclerView.Adapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ProductosViewHolder(parent,oicl);
+        return new ProductosViewHolder(parent,oicl,idLista);
     }
 
     @Override
@@ -59,16 +59,6 @@ public class ProductosAdapter extends RecyclerView.Adapter {
             viewHolder.nombre.setVisibility(View.GONE);
             viewHolder.precio.setVisibility(View.GONE);
             viewHolder.comprado.setVisibility(View.GONE);
-            viewHolder.comprado.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    new ItemPers(MyApplication.getAppContext()).execute("buy",
-                            String.valueOf(idLista),
-                            String.valueOf(item.getId()),//Id del producto seleccionado
-                            String.valueOf(MyApplication.getUser().getId()));
-
-                }
-            });
             viewHolder.cantidad.setVisibility(View.GONE);
             viewHolder.undoButton.setVisibility(View.VISIBLE);
             viewHolder.undoButton.setOnClickListener(new View.OnClickListener() {
