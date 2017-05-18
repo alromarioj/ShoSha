@@ -13,6 +13,9 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.R;
+import es.shosha.shosha.dominio.Item;
+import es.shosha.shosha.persistencia.ItemFB;
+import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 /**
  * ViewHolder capable of presenting two states: "normal" and "undo" state.
