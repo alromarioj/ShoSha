@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,14 +59,11 @@ public class ProductosAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         final ProductosViewHolder viewHolder = (ProductosViewHolder) holder;
         final Item item = items.get(position);
+
         viewHolder.comprado.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.i("ITEM","entra");
-                    /*new ItemPers(MyApplication.getAppContext()).execute("buy",
-                            String.valueOf(idLista),
-                            String.valueOf(item.getId()),//Id del producto seleccionado
-                            String.valueOf(MyApplication.getUser().getId()));*/
                 if(viewHolder.comprado.isChecked()){
                     item.setComprado(true);
                     List<String> params=new ArrayList<String>();
@@ -124,6 +122,7 @@ public class ProductosAdapter extends RecyclerView.Adapter {
             viewHolder.nombre.setVisibility(View.VISIBLE);
             viewHolder.precio.setVisibility(View.VISIBLE);
             viewHolder.comprado.setVisibility(View.VISIBLE);
+            viewHolder.comprado.setChecked(item.isComprado());
             viewHolder.cantidad.setVisibility(View.VISIBLE);
             viewHolder.nombre.setText(item.getNombre());
             viewHolder.precio.setText(item.getPrecio() + " €");
