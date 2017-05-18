@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "470231411018",
+    "firebase_url": "https://shosha-fa518.firebaseio.com",
+    "project_id": "shosha-fa518",
+    "storage_bucket": "shosha-fa518.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:470231411018:android:61fe2341d297e219",
+        "android_client_info": {
+          "package_name": "es.shosha.shosha"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "470231411018-pe06dtd99fdoovhs7pld3crdilkjpdco.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBT-EtpARvoleHMwDG0B1dpNo2qb726deM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

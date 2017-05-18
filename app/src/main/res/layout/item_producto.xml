@@ -27,21 +27,28 @@
         android:background="@color/fondoClaro"
         >
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Precio"
-            android:id="@+id/precioP"
-            android:layout_below="@+id/nombreP"
-            android:textSize="12dp"/>
-
-        <TextView
             android:id="@+id/nombreP"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:text="Tomate"
+            android:text=""
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textSize="16dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Precio"
+            android:id="@+id/precioP"
+            android:layout_below="@id/nombreP"
+            android:textSize="12dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cantidad"
+            android:id="@+id/cantidadP"
+            android:layout_below="@id/nombreP"
+            android:layout_toRightOf="@id/precioP"
+            android:textSize="12dp"/>
 
         <Button
             android:id="@+id/undo_button"

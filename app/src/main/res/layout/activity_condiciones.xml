@@ -39,5 +39,5 @@
         android:layout_height="wrap_content"
         android:layout_weight="0.2"
         android:background="@color/colorPrimary"
-        android:text="Volver" />
+        android:text="@string/goback" />
 </LinearLayout>

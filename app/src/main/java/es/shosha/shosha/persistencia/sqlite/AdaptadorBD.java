@@ -42,6 +42,8 @@ public class AdaptadorBD {
     private static final String LST_PROP = "propietario";
     private static final String LST_ESTADO = "estado";
     private static final String ITM_PRECIO = "precio";
+    private static final String ITM_CANTIDAD = "cantidad";
+    private static final String ITM_COMPRADO = "comprado";
     private static final String IDLISTA = "idLista";
     private static final String PPA_IDUSR = "idUsuario";
     private static final String PPA_ACTIVO = "activo";
@@ -50,13 +52,10 @@ public class AdaptadorBD {
     private static final String QR_IDQR = "idQR";
     private static final String SQL_TRNCTE = "DELETE FROM ";
 
-
     private static final String ID_LOG = "USO DE BD";
 
     private final Context contexto;
-
     private SQLiteDatabase bdatos;
-
     private AuxiliarBD auxBD;
 
 
@@ -156,10 +155,8 @@ public class AdaptadorBD {
         return res;
     }
 
+    @Deprecated
     public long insertarItem(int id, String nombre, double precio, int idLista) {
-        //    bdatos.beginTransaction();
-
-    /*    try {*/
         bdatos.beginTransaction();
         long res = 0;
         try {
@@ -179,17 +176,19 @@ public class AdaptadorBD {
         return res;
     }
 
-    public long insertarParticipa(int idUsr, int idLista, boolean activo) {
+    public long insertarItem(int id, String nombre, double precio, int idLista, int cantidad, boolean comprado) {
         bdatos.beginTransaction();
-        long res;
+        long res = 0;
         try {
             ContentValues valores = new ContentValues();
-
+            valores.put(ID, id);
+            valores.put(NOMBRE, nombre);
+            valores.put(ITM_PRECIO, precio);
             valores.put(IDLISTA, idLista);
-            valores.put(PPA_IDUSR, idUsr);
-            valores.put(PPA_ACTIVO, activo ? 1 : 0);
-            bdatos.delete(TB_PARTICIPA, IDLISTA + " = " + idLista + " AND " + PPA_IDUSR + " = " + idUsr, null);
-            res = bdatos.insert(TB_PARTICIPA, null, valores);
+            valores.put(ITM_CANTIDAD, cantidad);
+            valores.put(ITM_COMPRADO, comprado);
+
+            long l = bdatos.replace(TB_ITEM, null, valores);
 
             bdatos.setTransactionSuccessful();
         } finally {
@@ -199,11 +198,27 @@ public class AdaptadorBD {
         return res;
     }
 
+    public long insertarParticipa(int idUsr, int idLista, boolean activo) {
+        bdatos.beginTransaction();
+        long res;
+        try {
+            ContentValues valores = new ContentValues();
+            valores.put(IDLISTA, idLista);
+            valores.put(PPA_IDUSR, idUsr);
+            valores.put(PPA_ACTIVO, activo ? 1 : 0);
+            bdatos.delete(TB_PARTICIPA, IDLISTA + " = " + idLista + " AND " + PPA_IDUSR + " = " + idUsr, null);
+            res = bdatos.insert(TB_PARTICIPA, null, valores);
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+        return res;
+    }
+
     public void insertarChecksum(Map<String, Double> mapaRemoto) {
         bdatos.beginTransaction();
         try {
             ContentValues valores = new ContentValues();
-
             for (String k : mapaRemoto.keySet()) {
                 valores.put(CHK_TABLA, k);
                 valores.put(CHK_CRC, mapaRemoto.get(k));
@@ -230,7 +245,9 @@ public class AdaptadorBD {
 
     public List<Lista> obtenerListas(int idUsuario) {
 
-        String sql = "SELECT distinct l.* FROM lista l LEFT JOIN participa p ON l.id=p.idLista WHERE (l.propietario=" + idUsuario + " AND l.estado=1) OR (p.idUsuario=" + idUsuario + " AND p.activo=1)";
+        String sql = "SELECT distinct l.*,c.idQR " +
+                "FROM codigoQR c JOIN lista l on c.idLista=l.id LEFT JOIN participa p ON l.id=p.idLista " +
+                "WHERE (l.propietario=" + idUsuario + " AND l.estado=1) OR (p.idUsuario=" + idUsuario + " AND p.activo=1)";
 
         //Cursor de las listas del usuario idUsuario
         //Cursor c = bdatos.query(false, TB_LISTA, null, "propietario='" + idUsuario + "'", null, null, null, null, null);
@@ -247,23 +264,20 @@ public class AdaptadorBD {
                 l.setId(c.getInt(0));
                 l.setNombre(c.getString(1));
                 l.setEstado(c.getString(3).equals("1"));
+                l.setCodigoQR(c.getString(4));
                 int usrProp = c.getInt(2);
                 if (usrProp == idUsuario && u != null) {
                     l.setPropietario(u);
                 } else if (usrProp != idUsuario) {
                     l.setPropietario(this.obtenerUsuario(usrProp));
                 }
-
                 l.setListaItems(this.obtenerItems(l.getId()));
-
                 l.setParticipantes(this.getParticipantes(l.getId()));
 
                 aux.add(l);
-
             } while (c.moveToNext());
         }
         c.close();
-
         return aux;
     }
 
@@ -300,8 +314,9 @@ public class AdaptadorBD {
     }
 
     public Lista obtenerLista(int idLista, int idUsuario) {
-
-        String sql = "SELECT DISTINCT l.* FROM lista l LEFT JOIN participa p ON l.id=p.idLista WHERE l.id=" + idLista + " AND ((l.propietario=" + idUsuario + " AND l.estado=1) OR (p.idUsuario=" + idUsuario + " AND p.activo=1))";
+        String sql = "SELECT DISTINCT l.*, c.idQR " +
+                "FROM codigoQR c JOIN lista l on c.idLista=l.id LEFT JOIN participa p ON l.id=p.idLista " +
+                "WHERE l.id=" + idLista + " AND ((l.propietario=" + idUsuario + " AND l.estado=1) OR (p.idUsuario=" + idUsuario + " AND p.activo=1))";
         Cursor c = bdatos.rawQuery(sql, null);
         Usuario u = this.obtenerUsuario(idUsuario);
         Lista l = null;
@@ -310,6 +325,7 @@ public class AdaptadorBD {
             l.setId(c.getInt(0));
             l.setNombre(c.getString(1));
             l.setEstado(c.getString(3).equals("1"));
+            l.setCodigoQR(c.getString(4));
             int usrProp = c.getInt(2);
             if (usrProp == idUsuario && u != null) {
                 l.setPropietario(u);
@@ -341,7 +357,7 @@ public class AdaptadorBD {
         List<Item> aux = new ArrayList<Item>();
         if (c.moveToFirst()) {
             do {
-                i = new Item(c.getInt(0), c.getString(1), c.getDouble(2), idLista);
+                i = new Item(c.getInt(0), c.getString(1), c.getDouble(3), idLista);
                 aux.add(i);
             } while (c.moveToNext());
         }
@@ -437,6 +453,20 @@ public class AdaptadorBD {
         } finally {
             bdatos.endTransaction();
         }
+    }
+    public long comprarItem(int idProducto) {
+        bdatos.beginTransaction();
+        long res=-1;
+        try {
+            ContentValues cv = new ContentValues();
+            cv.put(ITM_COMPRADO,1);
+
+            res=bdatos.update(TB_ITEM, cv, "id=" + idProducto, null);
+            bdatos.setTransactionSuccessful();
+        } finally {
+            bdatos.endTransaction();
+        }
+        return res;
     }
 
     public long eliminarLista(int id, Usuario usuario) {

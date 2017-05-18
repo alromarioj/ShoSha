@@ -1,4 +1,4 @@
-package es.shosha.shosha.AdaptadorLista;
+package es.shosha.shosha.Adaptadores;
 
 import android.app.Activity;
 import android.content.Context;

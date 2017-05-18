@@ -16,8 +16,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import es.shosha.shosha.ListaProductos;
 import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Item;
+import es.shosha.shosha.negocio.NegocioChecksum;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 /**
@@ -30,36 +32,49 @@ import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 public class ItemPers extends AsyncTask<String, Void, Void> {
     private final static String URL = "http://shosha.jiraizoz.es/getItems.php?";
     private final static String URL_ADD = "http://shosha.jiraizoz.es/addItem.php?";
+    private final static String URL_BUY = "http://shosha.jiraizoz.es/compraItem.php?";
     private final static String URL_DEL = "http://shosha.jiraizoz.es/delItem.php?";
     private final static String URL_UPD = "http://shosha.jiraizoz.es/updateItem.php?";
     private final static String ATRIBUTO = "lista=";
     private final static String ID = "producto=";
+    private final static String USUARIO="usuario=";
     private final static String NOMBRE = "nombre=";
     private final static String PRECIO = "precio=";
     private final static String CANTIDAD = "cantidad=";
 
     private Context contexto;
+    private ListaProductos lp;
+    private int item;
+    private String accion="";
 
     public ItemPers(Context c) {
         this.contexto = c;
     }
+    public ItemPers(Context c, ListaProductos lp) {
+        this.contexto = c;
+        this.lp=lp;
+    }
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        //super.onPostExecute(aVoid);
-        //NegocioChecksum.setChecksum("item");
+        NegocioChecksum.setChecksum("item");
+        if (accion.equals("insert")) {
+            this.lp.sigueNuevoProducto(item);
+        }
     }
 
     @Override
     protected Void doInBackground(String... params) {
         String data = "";
-        System.out.println("ItemPers!");
         if (params.length > 0) {
             if (params.length == 5 && params[0].equals("insert")) {
+                accion=params[0];
                 insertMode(params[1], params[2], params[3], params[4]);
             } else if (params.length == 3 && params[0].equals("delete")) {
                 deleteMode(params[1], params[2]);
-            } else if (params.length == 6 && params[0].equals("update")) {
+            } else if (params.length == 5 && params[0].equals("buy")) {
+                buyMode(params[1], params[2],params[3], params[4]);//lista+producto+usuario
+            }else if (params.length == 6 && params[0].equals("update")) {
                 updateMode(params[1], params[2], params[3], params[4], params[5]);
             } else {
                 for (String s : params) {
@@ -95,6 +110,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
         return null;
     }
 
+
     /**
      * Añade un producto a una lista
      *
@@ -128,16 +144,62 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
 
             rd.close();
 
-            Log.i("--> respuesta ItmPers", ItemPers.URL_ADD + ItemPers.ATRIBUTO + idLista + "&" + ItemPers.NOMBRE + nombre + "&" + ItemPers.PRECIO + precio + "&" + ItemPers.CANTIDAD + cantidad);
+            Log.i("--> URL insercion lista", urlObj.toString());
 
             AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
             abd.open();
-            abd.insertarItem(Integer.valueOf(res), nombre, precio, Integer.valueOf(idLista));
+            abd.insertarItem(Integer.valueOf(res), nombre, precio, Integer.valueOf(idLista), cantidad, false);
             //Insertar en BD remota
 
             abd.close();
+            item=Integer.valueOf(res);
 
             System.out.println("Insert remote response: " + res);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    /**
+     * Compra un producto de una lista
+     *
+     * @param params 0:idLista, 1:idProducto, 2:usuario
+     */
+    private void buyMode(String... params) {
+        int idLista = -1,
+                idProducto = -1,
+                usuario = -1,
+                comprado = -1;
+        try {
+            idLista = Integer.valueOf(params[0]);
+            idProducto = Integer.valueOf(params[1]);
+            usuario = Integer.valueOf(params[2]);
+            comprado = Integer.valueOf(params[3]);
+        }  catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            java.net.URL urlObj = new URL(URL_BUY + ATRIBUTO + idLista + "&" + ID + idProducto + "&" + USUARIO+ usuario+ "&comprado="+ comprado);
+
+            HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
+
+            BufferedReader rd = new BufferedReader(new InputStreamReader(lu.getInputStream()));
+            String line = "", res = "";
+            while ((line = rd.readLine()) != null) {
+                res += line;
+            }
+
+            rd.close();
+            Log.i("--> URL compra item",  urlObj.toString());
+            AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
+            abd.open();
+            long resl = abd.comprarItem(idProducto);
+            abd.close();
+
+            System.out.println("Buy local response: " + resl);
+            System.out.println("Buy remote response: " + res);
+
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -179,6 +241,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
             }
 
             rd.close();
+            Log.i("--> URL update lista", URL_UPD + ATRIBUTO + idLista + "&" + ID + idProducto + "&" + NOMBRE + nombre + "&" + PRECIO + precio + "&" + CANTIDAD + cantidad);
 
             System.out.println("Update response: " + res);
 
@@ -255,10 +318,9 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
                     itm.setNombre(o.getString("nombre"));
                     itm.setPrecio(o.getDouble("precio"));
                     itm.setIdLista(o.getInt("idLista"));
-
-
+                    itm.setCantidad(o.getInt("cantidad"));
+                    itm.setComprado(o.getBoolean("comprado"));
                     insertarBD(itm, idLista);
-
 
                 }
             }
@@ -271,7 +333,7 @@ public class ItemPers extends AsyncTask<String, Void, Void> {
         AdaptadorBD adap = new AdaptadorBD(this.contexto);
         adap.open();
         try {
-            long l = adap.insertarItem(i.getId(), i.getNombre(), i.getPrecio(), idLista);
+            long l = adap.insertarItem(i.getId(), i.getNombre(), i.getPrecio(), idLista, i.getCantidad(), i.isComprado());
         } finally {
             adap.close();
         }

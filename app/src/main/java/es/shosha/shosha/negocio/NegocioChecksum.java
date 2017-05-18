@@ -107,7 +107,7 @@ public class NegocioChecksum {
     }
 
     public static void secuenciaInsercion(Map<String, Double> mapa) {
-        Map<String, Double> mapaTree = new TreeMap<String, Double>();
+        Map<String, Double> mapaTree = new TreeMap<>();
         //Transformo a mapaTree para asegurar el orden
         mapaTree.putAll(mapa);
 
@@ -172,7 +172,7 @@ public class NegocioChecksum {
         }
         if (mapaTree.containsKey(PARTICIPA)) {
             List<Lista> lListas = abd.obtenerListas(MyApplication.getUser());
-            ParticipaPers pp = new ParticipaPers(MyApplication.getAppContext(), lListas);
+            ParticipaPers pp = new ParticipaPers(MyApplication.getAppContext(),null);
             pp.execute(ParticipaPers.MULTIPLES_LISTAS);
         }
         // En teoría, al insertar las listas se insertan sus correspondientes códigos QR

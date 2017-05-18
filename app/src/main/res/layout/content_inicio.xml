@@ -4,32 +4,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/content_inicio"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:stretchColumns="*"
     android:background="@color/colorPrimary"
     android:gravity="center"
     android:orientation="vertical"
-    android:paddingBottom="10dp"
-    android:paddingEnd="10dp"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp"
-    android:paddingStart="10dp"
-    android:paddingTop="10dp"
+    android:padding="10dp"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="es.shosha.shosha.Inicio"
     tools:showIn="@layout/app_bar_inicio">
 
     <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_weight="1"
         android:gravity="center">
 
         <Button
             android:id="@+id/bt_nuevaLista"
-
             style="@android:style/Widget.Button"
-            android:layout_width="150dp"
-            android:layout_height="match_parent"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:layout_margin="10dp"
             android:background="@android:color/background_light"
             android:drawableTop="@mipmap/nueva_lista"
@@ -39,10 +33,9 @@
 
         <Button
             android:id="@+id/bt_listasActivas"
-
             style="@android:style/Widget.Button"
-            android:layout_width="150dp"
-            android:layout_height="200dp"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:layout_margin="10dp"
             android:background="@android:color/background_light"
             android:drawableTop="@mipmap/listas_activas"
@@ -52,16 +45,14 @@
     </TableRow>
 
     <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_weight="1"
         android:gravity="center">
 
         <Button
             android:id="@+id/bt_unirseLista"
-
             style="@android:style/Widget.Button"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:layout_margin="10dp"
             android:background="@android:color/background_light"
             android:drawableTop="@mipmap/nueva_lista"
@@ -71,11 +62,10 @@
 
         <Button
             android:id="@+id/bt_buscarReceta"
-
-            style="@android:style/Widget.Button"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
             android:layout_margin="10dp"
+            style="@android:style/Widget.Button"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:background="@android:color/background_light"
             android:drawableTop="@mipmap/nueva_lista"
             android:paddingTop="15dp"

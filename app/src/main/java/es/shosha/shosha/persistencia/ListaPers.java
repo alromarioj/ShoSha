@@ -41,6 +41,7 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
     private final static String NOMBRE_LISTA = "nombre=";
     private final static String PROPIETARIO = "propietario=";
     private final static String IMAGEN = "imagen=";
+    private final static String CLAVE="clave=";
     private List<Lista> lListas = null;
 
     private Context contexto;
@@ -113,9 +114,19 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
                 if (params[0].equals("update")) {
                     //lista y usuario
                     updateMode(params[1], params[2], params[3]);
-                } else if (params[0].equals("insert")) {
+                }
+                 else {
+                    try {
+                        lanzadorExcepcion();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            case 5:
+                if (params[0].equals("insert")) {
                     this.accion = "insert";
-                    insertMode(params[1], params[2], params[3]);
+                    insertMode(params[1], params[2], params[3],params[4]);
                 } else {
                     try {
                         lanzadorExcepcion();
@@ -132,8 +143,6 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
                 }
         }
 
-
-        //this.lListas = lListas;
         return lListas;
     }
 
@@ -152,12 +161,13 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
      * @param params 0:nombre, 2:propietario, 1:imagen
      */
     private void insertMode(String... params) {
-        String nombre = "", propietario = "";
+        String nombre = "", propietario = "",clave="";
         String imagen = "";//Tipo?
         try {
             propietario = URLEncoder.encode(params[0], "UTF-8");
             nombre = URLEncoder.encode(params[1], "UTF-8");
-            imagen = URLEncoder.encode(params[2], "UTF-8");
+            imagen = URLEncoder.encode(params[3], "UTF-8");
+            clave=URLEncoder.encode(params[2],"UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (NumberFormatException e) {
@@ -165,7 +175,7 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
         }
 
         try {
-            java.net.URL urlObj = new URL(URL_ADD + NOMBRE_LISTA + nombre + "&" + IMAGEN + imagen + "&" + PROPIETARIO + propietario);
+            java.net.URL urlObj = new URL(URL_ADD + NOMBRE_LISTA + nombre + "&" + IMAGEN + imagen + "&" + PROPIETARIO + propietario+"&"+CLAVE+clave);
 
             HttpURLConnection lu = (HttpURLConnection) urlObj.openConnection();
 
@@ -288,6 +298,7 @@ public class ListaPers extends AsyncTask<String, Void, List<Lista>> {
                 l.setId(o.getInt("id"));
                 l.setNombre(o.getString("nombre"));
                 l.setEstado(o.getString("estado").equals("1"));
+                l.setCodigoQR(o.getString("codigoQR"));
 
                 AdaptadorBD abd = new AdaptadorBD(this.contexto);
                 abd.open();

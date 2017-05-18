@@ -1,4 +1,4 @@
-package es.shosha.shosha.AdaptadorLista.Productos;
+package es.shosha.shosha.Adaptadores.Productos;
 
 import android.view.View;
 

@@ -1,4 +1,4 @@
-package es.shosha.shosha.AdaptadorLista.Productos;
+package es.shosha.shosha.Adaptadores.Productos;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -37,7 +37,6 @@ public class ProductosAdapter extends RecyclerView.Adapter {
 
     public ProductosAdapter(List<Item> productos, @NonNull RecyclerViewOnItemClickListener oicl, Context contexto, int idLista) {
         items = productos;
-
         itemsPendingRemoval = new ArrayList<>();
         this.oicl=oicl;
         this.contexto=contexto;
@@ -46,7 +45,7 @@ public class ProductosAdapter extends RecyclerView.Adapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ProductosViewHolder(parent,oicl);
+        return new ProductosViewHolder(parent,oicl,idLista);
     }
 
     @Override
@@ -60,6 +59,7 @@ public class ProductosAdapter extends RecyclerView.Adapter {
             viewHolder.nombre.setVisibility(View.GONE);
             viewHolder.precio.setVisibility(View.GONE);
             viewHolder.comprado.setVisibility(View.GONE);
+            viewHolder.cantidad.setVisibility(View.GONE);
             viewHolder.undoButton.setVisibility(View.VISIBLE);
             viewHolder.undoButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -79,8 +79,10 @@ public class ProductosAdapter extends RecyclerView.Adapter {
             viewHolder.nombre.setVisibility(View.VISIBLE);
             viewHolder.precio.setVisibility(View.VISIBLE);
             viewHolder.comprado.setVisibility(View.VISIBLE);
+            viewHolder.cantidad.setVisibility(View.VISIBLE);
             viewHolder.nombre.setText(item.getNombre());
             viewHolder.precio.setText(item.getPrecio()+" €");
+            viewHolder.cantidad.setText(" | "+String.valueOf(item.getCantidad()));
             viewHolder.undoButton.setVisibility(View.GONE);
             viewHolder.undoButton.setOnClickListener(null);
         }

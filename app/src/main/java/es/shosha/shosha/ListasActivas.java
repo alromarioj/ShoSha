@@ -15,7 +15,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.shosha.shosha.AdaptadorLista.AdapterLista;
+import es.shosha.shosha.Adaptadores.AdapterLista;
 import es.shosha.shosha.dominio.Lista;
 import es.shosha.shosha.persistencia.ListaPers;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
@@ -42,15 +42,6 @@ public class ListasActivas extends AppCompatActivity {
         setListas(listas);
 
         abd.close();
-
-     /*   try {
-            AsyncTask<String, Void, List<Lista>> at = new ListaPers().execute("u1");
-            setListas(at.get());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }*/
 
         super.onCreate(savedInstanceState);
 
