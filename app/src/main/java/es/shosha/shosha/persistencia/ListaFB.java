@@ -147,4 +147,17 @@ public class ListaFB {
 
     }
 
+    public static void borrarListaFB(int idLista, boolean propietario) {
+        if (propietario) {
+            DatabaseReference dbRef =
+                    FirebaseDatabase.getInstance().getReference()
+                            .child(LISTA)
+                            .child(String.valueOf(idLista))
+                            .child("estado");
+            dbRef.setValue(false);
+        } else {
+            ParticipaFB.borrarParticipaFB(idLista);
+        }
+    }
+
 }

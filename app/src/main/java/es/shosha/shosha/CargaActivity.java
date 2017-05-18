@@ -24,9 +24,9 @@ public class CargaActivity extends AppCompatActivity {
         // Set portrait orientation
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         // Hide title bar
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        setContentView(R.layout.activity_carga);
+        this.setContentView(R.layout.activity_carga);
 
         TimerTask task = new TimerTask() {
             @Override

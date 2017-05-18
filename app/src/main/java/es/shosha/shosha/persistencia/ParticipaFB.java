@@ -82,4 +82,13 @@ public class ParticipaFB {
 
         dbRef.child(String.valueOf(String.valueOf(idLista))).child(String.valueOf(idUsr)).setValue(true);
     }
+
+    public static void borrarParticipaFB(int idLista) {
+        DatabaseReference dbRef =
+                FirebaseDatabase.getInstance().getReference()
+                        .child(PARTICIPA)
+                        .child(String.valueOf(idLista))
+                        .child(String.valueOf(MyApplication.getUser().getId()));
+        dbRef.removeValue();
+    }
 }
