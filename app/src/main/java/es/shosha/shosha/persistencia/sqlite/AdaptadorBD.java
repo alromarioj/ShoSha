@@ -1,5 +1,4 @@
 package es.shosha.shosha.persistencia.sqlite;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
