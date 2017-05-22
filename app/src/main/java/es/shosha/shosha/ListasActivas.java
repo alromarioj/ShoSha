@@ -30,7 +30,6 @@ public class ListasActivas extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // obtener listas del usuario
-
         AdaptadorBD abd = new AdaptadorBD(getBaseContext());
         abd.open();
 
@@ -44,6 +43,18 @@ public class ListasActivas extends AppCompatActivity {
         abd.close();
 
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+
+        AdaptadorBD abd = new AdaptadorBD(getBaseContext());
+        abd.open();
+        listas.removeAll(listas);
+        listas.addAll(abd.obtenerListas(MyApplication.getUser().getId()));
+        abd.close();
+        adaptador.notifyDataSetChanged();
 
     }
 
@@ -120,15 +131,15 @@ public class ListasActivas extends AppCompatActivity {
         if (opcion.equals("Eliminar")) {
             //Se elimina la lista seleccionada de las listas del usuario
             Toast.makeText(this, "Eliminando lista " + id, Toast.LENGTH_SHORT).show();
-
-            //new ListaPers(MyApplication.getAppContext(), null).execute("delete", String.valueOf(id), idu);
-
             ListaFB.borrarListaFB(id, listaClicada.getPropietario().getId() == MyApplication.getUser().getId());
-
+            //Registra la eliminación en la abse de datos local, para recogerla correctamente al recargar la actividad
+            AdaptadorBD abd=new AdaptadorBD(getBaseContext());
+            abd.open();
+            abd.eliminarLista(id,MyApplication.getUser().getId());
+            abd.close();
 
             listas.remove(listaClicada);
             adaptador.notifyDataSetChanged();
-
 
         } else if (opcion.equals("Editar")) {
             Intent i = new Intent(ListasActivas.this, EditarLista.class);
