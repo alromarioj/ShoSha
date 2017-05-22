@@ -54,8 +54,8 @@ public class LectorQR extends AppCompatActivity {
                     // Añadir al usuario como participante en la lista
                     //Añade participante en bd remota
                     //Comprobar clave de la lista?
-                    ParticipaFB.insertaParticipaFB(MyApplication.getUser().getId(),Integer.valueOf(lista));
-                    //new ParticipaPers(MyApplication.getAppContext(), null,this).execute("insert", lista,clave,String.valueOf(idu));
+                    ParticipaFB.insertaParticipaFB(idu,Integer.valueOf(lista));
+                    sigueAnadirParticipante(false,Integer.valueOf(lista));
                 }
                 catch (UnsupportedEncodingException e){
                     e.printStackTrace();
@@ -74,53 +74,19 @@ public class LectorQR extends AppCompatActivity {
             startActivityForResult(intent, 0);
         } else {
             Toast.makeText(getBaseContext(), "La aplicación necesita usar la cámara", Toast.LENGTH_LONG).show();
-                try{
-                    String decodificado= URLDecoder.decode(contents, "UTF-8");
-                    JSONObject obj = new JSONObject(decodificado);
-                    String lista=obj.getString("idLista");
-                    String clave=obj.getString("clave");
-                    int idu=MyApplication.getUser().getId();
-                    // Añadir al usuario como participante en la lista
-                    //Añade participante en bd remota
-                    //new ParticipaPers(MyApplication.getAppContext(), null,this).execute("insert", lista,clave,String.valueOf(idu));
-                }
-                catch (UnsupportedEncodingException e){
-                    e.printStackTrace();
-                }
-                catch(JSONException e){
-                    e.printStackTrace();
-                }
-            }
         }
     }
-    public void sigueAnadirParticipante(boolean error, int usuario, int lista){
-        System.out.println("Error: "+error+" Usuario: "+usuario+" Lista: "+lista);
+    public void sigueAnadirParticipante(boolean error, int lista){
         if(error){
             Toast.makeText(this, "Error al añadir la lista", Toast.LENGTH_SHORT).show();
         }
         else{
-            AdaptadorBD abd = new AdaptadorBD(getBaseContext());
-            abd.open();
-            //Añade participante en bd local
-            abd.insertarParticipa(usuario, lista,true);
-
             Toast.makeText(this, "Lista añadida", Toast.LENGTH_SHORT).show();
             Intent i = new Intent(this, ListaProductos.class);//Muestra la lista nueva
             Bundle bundle = new Bundle();
             bundle.putInt("idLista", lista);
             i.putExtras(bundle);
             startActivity(i);
-            abd.close();
-        }
-    }
-    public void abrirEscaner(View view){
-        // verifico si el usuario dio los permisos para la camara
-        if (ContextCompat.checkSelfPermission(getBaseContext(), android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-            intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
-            startActivityForResult(intent, 0);
-        } else {
-            Toast.makeText(getBaseContext(), "La aplicación necesita usar la cámara", Toast.LENGTH_LONG).show();
         }
     }
 

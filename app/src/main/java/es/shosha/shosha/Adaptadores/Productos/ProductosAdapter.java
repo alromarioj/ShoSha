@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,13 +41,15 @@ public class ProductosAdapter extends RecyclerView.Adapter {
     HashMap<Item, Runnable> pendingRunnables = new HashMap<>(); // map of items to pending runnables, so we can cancel a removal if need be
     Context contexto;
     int idLista;
+    TextView input_precioTotal;
 
-    public ProductosAdapter(List<Item> productos, @NonNull RecyclerViewOnItemClickListener oicl, Context contexto, int idLista) {
+    public ProductosAdapter(List<Item> productos, @NonNull RecyclerViewOnItemClickListener oicl, Context contexto, int idLista, TextView input_precioTotal) {
         items = productos;
         itemsPendingRemoval = new ArrayList<>();
         this.oicl = oicl;
         this.contexto = contexto;
         this.idLista = idLista;
+        this.input_precioTotal=input_precioTotal;
     }
 
 
@@ -89,8 +92,6 @@ public class ProductosAdapter extends RecyclerView.Adapter {
                     item.setComprado(false);
                 }
                 ItemFB.insertaItemFB(item, false);
-
-
             }
         });
 
@@ -189,18 +190,13 @@ public class ProductosAdapter extends RecyclerView.Adapter {
             itemsPendingRemoval.remove(item);
         }
         if (items.contains(item)) {
-            /*AdaptadorBD abd = new AdaptadorBD(contexto);
-            abd.open();
-            //Eliminar producto de BD local
-            abd.eliminarItem(idLista, item.getId());
-            //Eliminar de BD remota
-            new ItemPers(MyApplication.getAppContext()).execute("delete", String.valueOf(idLista), String.valueOf(item.getId()));
-            abd.close();*/
-
             ItemFB.borrarItemFB(item.getId());
-
-            //Toast.makeText(ListaProductos.this, "Eliminando producto ", Toast.LENGTH_SHORT).show();
             items.remove(position);
+            double pTotal = 0;//Recalcula el precio total
+            for (Item i : items) {
+                pTotal += i.getPrecio() * i.getCantidad();
+            }
+            input_precioTotal.setText(String.format("%.2f",pTotal));
             notifyItemRemoved(position);
         }
     }
