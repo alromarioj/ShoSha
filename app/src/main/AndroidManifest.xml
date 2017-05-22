@@ -29,8 +29,6 @@
         android:name="android.hardware.touchscreen"
         android:required="false" />
 
-
-
     <application
         android:name=".MyApplication"
         android:allowBackup="true"

@@ -80,6 +80,7 @@ public class ProductosAdapter extends RecyclerView.Adapter {
                     abd.close();
                     params.add(lista.getNombre());
                     params.add(String.valueOf(lista.getId()));
+                    System.out.println("Notificación enviada");
                     //Escoger usuarios que no sean el usuario actual
                     for (Usuario u:l) {
                         if(idUsuario!=u.getId()){
