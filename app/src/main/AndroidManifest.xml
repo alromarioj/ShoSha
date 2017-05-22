@@ -43,7 +43,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ListasActivas" />
         <activity android:name=".AnadirLista" />
-        <activity android:name=".ListaProductos" />
+        <activity android:name=".ListaProductos" android:configChanges="screenSize|orientation" />
         <activity android:name=".ListaManual" />
         <activity
             android:name="com.google.zxing.client.android.CaptureActivity"
