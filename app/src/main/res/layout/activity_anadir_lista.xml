@@ -4,61 +4,55 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_anadir_lista"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".AnadirLista"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:background="@color/colorPrimary"
     android:gravity="center"
     android:orientation="vertical"
-    android:paddingBottom="10dp"
-    android:paddingEnd="10dp"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp"
-    android:paddingStart="10dp"
-    android:paddingTop="10dp"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    android:stretchColumns="*"
+    android:paddingBottom="20dp"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp"
+    android:paddingTop="20dp"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".AnadirLista">
 
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center">
+    <TableRow android:gravity="center"
+        android:layout_weight="1" android:layout_marginTop="10dp">
 
         <Button
             android:id="@+id/bt_nuevaLista"
             style="@android:style/Widget.Button"
-            android:layout_width="150dp"
-            android:layout_height="170dp"
-
-            android:layout_margin="10dp"
+            android:layout_width="100dp"
+            android:layout_height="fill_parent"
             android:background="@android:color/background_light"
             android:drawableTop="@mipmap/ic_camera"
             android:paddingTop="15dp"
             android:text="@string/OCR"
-            android:textSize="12sp"></Button>
+            android:textSize="12sp"/>
 
         <TextView
             android:id="@+id/textView2"
-            android:layout_width="100dp"
-            android:layout_height="170dp"
-            android:layout_margin="10dp"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
             android:gravity="center"
+            android:padding="10dp"
             android:text="@string/lista_camara"
             android:textColor="@color/black"
             android:textSize="14sp" />
 
     </TableRow>
 
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center">
+    <TableRow android:gravity="center"
+        android:layout_weight="1"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp">
 
         <Button
             android:id="@+id/bt_unirseLista"
             style="@android:style/Widget.Button"
-            android:layout_width="150dp"
-            android:layout_height="170dp"
-            android:layout_margin="10dp"
+            android:layout_width="100dp"
+            android:layout_height="fill_parent"
             android:background="@android:color/background_light"
             android:drawableTop="@mipmap/ic_manual"
             android:onClick="mostrarListaManual"
@@ -68,11 +62,10 @@
 
         <TextView
             android:id="@+id/textView3"
-            android:layout_width="100dp"
-            android:layout_height="170dp"
-            android:layout_margin="10dp"
-            android:gravity="center"
             android:text="@string/crea_lista_cero"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
             android:textColor="@color/black"
             android:textSize="14dp" />
 
