@@ -20,20 +20,19 @@ import java.util.Map;
  * Created by inhernan on 18/05/2017.
  */
 
-public class Notificacion extends AsyncTask<List<String>, Void, Void> {
+public class Notificacion extends AsyncTask<String, Void, Void> {
     private final static String URLCompra="http://shosha.jiraizoz.es/notificarCompra.php";
     public Notificacion(){
 
     }
     @Override
-    protected Void doInBackground(List<String>... params) {
+    protected Void doInBackground(String... params) {
         try{
-            List<String> parametros=params[0];
             List<String> usuarios=new ArrayList<>();
-            for(int i=2;i<parametros.size();i++){
-                usuarios.add(parametros.get(i));
+            for(int i=1;i<params.length;i++){
+                usuarios.add(params[i]);
             }
-            send(parametros.get(0),parametros.get(1),usuarios);
+            send(params[0],usuarios);
         }
         catch (IOException e){
             e.printStackTrace();
@@ -41,12 +40,11 @@ public class Notificacion extends AsyncTask<List<String>, Void, Void> {
         return null;
     }
 
-    public static void send(String lista,String idLista, List usuarios) throws IOException {
+    public static void send(String idLista, List usuarios) throws IOException {
         URL url = new URL(URLCompra);
         Map<String, Object> params = new LinkedHashMap<>();
 
-        params.put("lista", lista);
-        params.put("idLista",idLista);
+        params.put("lista", idLista);
         params.put("usuarios",usuarios);
 
         StringBuilder postData = new StringBuilder();
