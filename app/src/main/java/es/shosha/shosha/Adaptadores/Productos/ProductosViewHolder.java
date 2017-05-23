@@ -29,6 +29,7 @@ public class ProductosViewHolder extends RecyclerView.ViewHolder implements View
     CheckBox comprado;
     private RecyclerViewOnItemClickListener oicl;
 
+
     public ProductosViewHolder(ViewGroup parent, RecyclerViewOnItemClickListener oicl, int idLista) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_producto, parent, false));
         final int lista = idLista;

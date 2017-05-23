@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +17,11 @@ import java.util.List;
 
 import es.shosha.shosha.MyApplication;
 import es.shosha.shosha.dominio.Item;
+import es.shosha.shosha.dominio.Lista;
+import es.shosha.shosha.dominio.Usuario;
 import es.shosha.shosha.persistencia.ItemFB;
+import es.shosha.shosha.persistencia.ListaFB;
+import es.shosha.shosha.persistencia.Notificacion;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 /**
@@ -36,13 +41,15 @@ public class ProductosAdapter extends RecyclerView.Adapter {
     HashMap<Item, Runnable> pendingRunnables = new HashMap<>(); // map of items to pending runnables, so we can cancel a removal if need be
     Context contexto;
     int idLista;
+    TextView input_precioTotal;
 
-    public ProductosAdapter(List<Item> productos, @NonNull RecyclerViewOnItemClickListener oicl, Context contexto, int idLista) {
+    public ProductosAdapter(List<Item> productos, @NonNull RecyclerViewOnItemClickListener oicl, Context contexto, int idLista, TextView input_precioTotal) {
         items = productos;
         itemsPendingRemoval = new ArrayList<>();
         this.oicl = oicl;
         this.contexto = contexto;
         this.idLista = idLista;
+        this.input_precioTotal=input_precioTotal;
     }
 
 
@@ -53,20 +60,39 @@ public class ProductosAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        ProductosViewHolder viewHolder = (ProductosViewHolder) holder;
+        final ProductosViewHolder viewHolder = (ProductosViewHolder) holder;
         final Item item = items.get(position);
 
         viewHolder.comprado.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CheckBox checkBox = (CheckBox) view;
-                if (checkBox.isChecked())
+                Log.i("ITEM","entra");
+                if(viewHolder.comprado.isChecked()){
                     item.setComprado(true);
-                else
+                    List<String> params=new ArrayList<String>();
+                    int idUsuario=MyApplication.getUser().getId();
+                    //Obtener usuarios que participen en la lista o propietarios de la misma
+                    AdaptadorBD abd=new AdaptadorBD(contexto);
+                    abd.open();
+                    List<Usuario> l=abd.getParticipantes(idLista);
+                    Lista lista=abd.obtenerLista(idLista,idUsuario);
+                    l.add(lista.getPropietario());
+                    abd.close();
+                    params.add(lista.getNombre());
+                    params.add(String.valueOf(lista.getId()));
+                    System.out.println("Notificación enviada");
+                    //Escoger usuarios que no sean el usuario actual
+                    for (Usuario u:l) {
+                        if(idUsuario!=u.getId()){
+                            params.add(String.valueOf(u.getId()));
+                        }
+                    }
+                    new Notificacion().execute(params);//Enviar notificación
+                }
+                else{
                     item.setComprado(false);
-
+                }
                 ItemFB.insertaItemFB(item, false);
-
             }
         });
 
@@ -165,18 +191,13 @@ public class ProductosAdapter extends RecyclerView.Adapter {
             itemsPendingRemoval.remove(item);
         }
         if (items.contains(item)) {
-            /*AdaptadorBD abd = new AdaptadorBD(contexto);
-            abd.open();
-            //Eliminar producto de BD local
-            abd.eliminarItem(idLista, item.getId());
-            //Eliminar de BD remota
-            new ItemPers(MyApplication.getAppContext()).execute("delete", String.valueOf(idLista), String.valueOf(item.getId()));
-            abd.close();*/
-
             ItemFB.borrarItemFB(item.getId());
-
-            //Toast.makeText(ListaProductos.this, "Eliminando producto ", Toast.LENGTH_SHORT).show();
             items.remove(position);
+            double pTotal = 0;//Recalcula el precio total
+            for (Item i : items) {
+                pTotal += i.getPrecio() * i.getCantidad();
+            }
+            input_precioTotal.setText(String.format("%.2f",pTotal));
             notifyItemRemoved(position);
         }
     }

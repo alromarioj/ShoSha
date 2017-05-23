@@ -4,6 +4,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -22,26 +23,28 @@ import es.shosha.shosha.R;
  */
 
 public class ServicioFirebaseMessaging extends FirebaseMessagingService {
-    private static final String TAG = "FCM Service";
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
        super.onMessageReceived(remoteMessage);
         Map<String,String> datos=remoteMessage.getData();
         mostrarNotificacion(
-                datos.get("lista")
+                datos.get("message"),
+                datos.get("idLista")
         );
     }
-    private void mostrarNotificacion(String lista){
+    private void mostrarNotificacion(String mensaje, String lista){
         int icono = R.mipmap.logo;
         Intent i = new Intent(this, ListaProductos.class);
-        //Enviar id de lista
+        Bundle bundle = new Bundle();
+        bundle.putInt("idLista", Integer.valueOf(lista));
+        i.putExtras(bundle);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,i, 0);
         NotificationCompat.Builder builder=new NotificationCompat.Builder(getApplicationContext())
         .setContentIntent(pendingIntent)
         .setSmallIcon(icono)
         .setContentTitle("Compra")
-        .setContentText("Se está comprando la lista "+lista)
+        .setContentText(mensaje)
         .setVibrate(new long[]{100,250,100,500})
         .setAutoCancel(true);//Al hacer click la notificación desaparece
 

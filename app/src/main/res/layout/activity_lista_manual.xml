@@ -29,14 +29,16 @@
 
             <ImageButton
                 android:id="@+id/imagen"
+                style="@android:style/Widget.Material.Light.ImageButton"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
+
                 android:layout_marginRight="10dp"
-                android:onClick="abrirGaleria"
-                android:src="@android:drawable/ic_menu_gallery"
+                android:src="@mipmap/carro_pequeno"
                 android:tint="@color/black"
                 tools:layout_editor_absoluteX="239dp"
                 tools:layout_editor_absoluteY="24dp" />
+            <!--android:onClick="abrirGaleria"-->
 
             <EditText
                 android:id="@+id/nombre"
