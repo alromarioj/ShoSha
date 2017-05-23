@@ -266,7 +266,7 @@ public class AdaptadorBD {
 
         return res;
     }
-    public long insertarItem(Item item) {
+    public long insertarItem(Item i) {
         bdatos.beginTransaction();
         long res = 0;
         try {
