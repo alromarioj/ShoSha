@@ -14,6 +14,10 @@
     -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -24,10 +28,6 @@
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
-
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:name=".MyApplication"
@@ -41,7 +41,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ListasActivas" />
         <activity android:name=".AnadirLista" />
-        <activity android:name=".ListaProductos" />
+        <activity android:name=".ListaProductos" android:configChanges="screenSize|orientation" />
         <activity android:name=".ListaManual" />
         <activity
             android:name="com.google.zxing.client.android.CaptureActivity"
@@ -85,12 +85,6 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service android:name=".servicios.ServicioInstanceId">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
-            </intent-filter>
-        </service>
-
         <activity android:name=".faq"></activity>
     </application>
 

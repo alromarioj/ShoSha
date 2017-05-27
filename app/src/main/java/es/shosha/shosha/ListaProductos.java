@@ -36,7 +36,6 @@ import es.shosha.shosha.persistencia.ItemFB;
 import es.shosha.shosha.persistencia.sqlite.AdaptadorBD;
 
 public class ListaProductos extends AppCompatActivity {
-    private ListView list;
     private Lista lista;
     private List<Item> productos;
     private double pTotal = 0;
@@ -54,10 +53,8 @@ public class ListaProductos extends AppCompatActivity {
             productos = lista.getItems();
         else
             productos = new ArrayList<Item>();
-        System.out.println("Número de productos: " + productos.size());
 
         setContentView(R.layout.activity_lista_productos);
-
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         setUpRecyclerView(productos);
 
@@ -101,38 +98,11 @@ public class ListaProductos extends AppCompatActivity {
         builder1.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                //Asumiendo que el precio es >=0
-
-//                new ItemPers(MyApplication.getAppContext()).execute("update", String.valueOf(lista.getId()), String.valueOf(producto.getId()), producto.getNombre(), String.valueOf(producto.getPrecio()), "1");
-
-
-//                AdaptadorBD abd = new AdaptadorBD(getBaseContext());
-//                abd.open();
-                //new ItemPers(MyApplication.getAppContext()).execute("insert", id, MyApplication.getUser().getId());
                 //Se inserta un producto a la lista a partir de los datos introducidos
-                String precio = input_pp.getText().toString();
-                precio = (precio.isEmpty() ? "0" : precio);
-                String cantidad = input_cantidad.getText().toString();
-                cantidad = (cantidad.isEmpty() ? "0" : cantidad);
-                //Item i=new Item("ref"+lista.getItems().size(),input_np2.getText().toString(),Double.valueOf(precio));
-                producto.setNombre(input_np2.getText().toString());
-                producto.setPrecio(Double.valueOf(precio));
-                producto.setCantidad(Integer.valueOf(cantidad));
-
-                //new ListaPers(MyApplication.getAppContext(), null).execute("update", id, MyApplication.getUser().getId());
-//                abd.insertarItem(producto.getId(), producto.getNombre(), producto.getPrecio(), lista.getId());
-//                abd.close();
-                //Editar el producto en BD remota
-
-                ItemFB.insertaItemFB(producto, false);
-
+                datosProducto(producto,input_np2,input_pp,input_cantidad,false);
+                mostrarPrecio(productos);
                 Toast.makeText(ListaProductos.this, "Editando producto " + producto.getNombre(), Toast.LENGTH_SHORT).show();
-                TextView precioTotal = (TextView) findViewById(R.id.textViewTotal);
-                pTotal = 0;
-                for (Item i : productos) {
-                    pTotal += i.getPrecio() * i.getCantidad();
-                }
-                precioTotal.setText(String.format("%.2f",pTotal));
+
                 //Avisa de que la lista ha cambiado
                 mRecyclerView.getAdapter().notifyDataSetChanged();
                 dialog.dismiss();
@@ -173,8 +143,10 @@ public class ListaProductos extends AppCompatActivity {
 
                 viewInflated = LayoutInflater.from(getBaseContext()).inflate(R.layout.nuevo_producto, (ViewGroup) findViewById(android.R.id.content), false);
                 // Set up the input
-                final EditText input_np1 = (EditText) viewInflated.findViewById(R.id.in_nombre_producto);
+                final EditText input_np = (EditText) viewInflated.findViewById(R.id.in_nombre_producto);
                 final EditText input_pp = (EditText) viewInflated.findViewById(R.id.in_precio_producto);
+                final EditText input_cantidad=(EditText) viewInflated.findViewById(R.id.in_cantidad_producto);
+                final TextView input_ptotal=(TextView) findViewById(R.id.textViewTotal);
                 // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
                 builder.setView(viewInflated);
 
@@ -184,24 +156,13 @@ public class ListaProductos extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         //Asumiendo que el precio es >=0
                         //Se inserta un producto a la lista a partir de los datos introducidos
+                        Item producto=new Item();
+                        producto.setIdLista(lista.getId());
+                        datosProducto(producto,input_np,input_pp,input_cantidad,true);
+                        productos.add(producto);
+                        mostrarPrecio(productos);
 
-                        String precio = input_pp.getText().toString();
-                        precio = (precio.isEmpty() ? "0" : precio);
-                        Item i = new Item(lista.getItems().size(), input_np1.getText().toString(), Double.valueOf(precio), lista.getId());
-
-
-                        //new ItemPers(MyApplication.getAppContext()).execute("insert", String.valueOf(lista.getId()), i.getNombre(), String.valueOf(i.getPrecio()), "1");
-                        ItemFB.insertaItemFB(i, true);
-
-                    /*    AdaptadorBD abd = new AdaptadorBD(MyApplication.getAppContext());
-                        abd.open();
-                        int sp = productos.size();
-                        do {
-                            productos = abd.obtenerItems(lista.getId());
-                        } while (sp == productos.size());
-                        abd.close();*/
-
-                        Toast.makeText(ListaProductos.this, "Añadiendo producto " + i.getNombre(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ListaProductos.this, "Añadiendo producto " + producto.getNombre(), Toast.LENGTH_SHORT).show();
                         //Avisa de que la lista ha cambiado
 
                         mRecyclerView.getAdapter().notifyDataSetChanged();
@@ -229,6 +190,25 @@ public class ListaProductos extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+    private void datosProducto(Item producto, EditText in_nombre, EditText in_precio, EditText in_cantidad, boolean nuevo){
+        String precio = in_precio.getText().toString();
+        precio = (precio.isEmpty() ? "0" : precio);
+        String cantidad = in_cantidad.getText().toString();
+        cantidad = (cantidad.isEmpty() ? "0" : cantidad);
+        producto.setNombre(in_nombre.getText().toString());
+        producto.setPrecio(Double.valueOf(precio));
+        producto.setCantidad(Integer.valueOf(cantidad));
+
+        ItemFB.insertaItemFB(producto, nuevo);
+    }
+    private void mostrarPrecio(List<Item> productos){
+        TextView input_ptotal=(TextView)findViewById(R.id.textViewTotal);
+        pTotal = 0;
+        for (Item i : productos) {
+            pTotal += i.getPrecio() * i.getCantidad();
+        }
+        input_ptotal.setText(String.format("%.2f",pTotal));
+    }
 
     private void setUpRecyclerView(List<Item> productos) {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -237,7 +217,7 @@ public class ListaProductos extends AppCompatActivity {
             public void onClick(View v, int position) {
                 editarProducto(v,position);
             }
-        },getBaseContext(),lista.getId()));
+        },getBaseContext(),lista.getId(), (TextView)findViewById(R.id.textViewTotal)));
         //mRecyclerView.setHasFixedSize(true);
         setUpItemTouchHelper();
         setUpAnimationDecoratorHelper();
